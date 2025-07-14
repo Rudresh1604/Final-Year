@@ -1,15 +1,35 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema({
-  username: {
-    type: String,
-    required: true,
+const patientSchema = new mongoose.Schema({
+  name: String,
+  email: { type: String, unique: true },
+  phone: String,
+  gender: String,
+  password: String,
+  bloodGroup: String,
+  age: Number,
+  address: {
+    street: String,
+    city: String,
+    state: String,
+    pincode: String,
+    country: String,
+    coordinates: {
+      lat: Number,
+      long: Number,
+    },
   },
-  password: {
-    type: String,
-    required: true,
-  },
+  medicalHistory: [
+    {
+      diseaseId: { type: mongoose.Schema.Types, ref: "disease" }, // ref to Disease
+      diagnosedOn: Date,
+      notes: String,
+    },
+  ],
+  aiPredictions: [],
+  createdAt: Date,
+  updatedAt: Date,
 });
 
-const user = mongoose.model("user", userSchema);
-module.exports = user;
+const patient = mongoose.model("patient", patientSchema);
+module.exports = patient;

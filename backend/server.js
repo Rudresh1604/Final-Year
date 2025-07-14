@@ -9,12 +9,6 @@ require("./config/dbConnect");
 const portfolioRoute = require("./Routes/portFolio");
 app.use(express.json());
 
-// app.use(
-//   cors({
-//     origin: RequestUrl,
-//   })
-// );
-
 app.use(cors());
 
 app.use("/api/portfolio", portfolioRoute);
