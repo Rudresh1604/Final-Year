@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const doctorSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
+  password: String,
   phone: String,
   age: Number,
   specialization: String,
@@ -28,5 +29,5 @@ const doctorSchema = new mongoose.Schema({
   updatedAt: Date,
 });
 
-const doctor = mongoose.model("Doctor", doctorSchema);
-module.exports = doctor;
+const Doctor = mongoose.model("Doctor", doctorSchema);
+module.exports = Doctor;
