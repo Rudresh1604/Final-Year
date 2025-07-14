@@ -21,7 +21,7 @@ const patientSchema = new mongoose.Schema({
   },
   medicalHistory: [
     {
-      diseaseId: { type: mongoose.Schema.Types, ref: "Disease" }, // ref to Disease
+      // diseaseId: { type: mongoose.Schema.Types, ref: "Disease" }, // ref to Disease
       diagnosedOn: Date,
       notes: String,
     },
@@ -32,4 +32,4 @@ const patientSchema = new mongoose.Schema({
 });
 
 const Patient = mongoose.model("Patient", patientSchema);
-module.exports = patient;
+module.exports = Patient;
