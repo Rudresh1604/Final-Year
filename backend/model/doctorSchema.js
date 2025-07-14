@@ -22,11 +22,11 @@ const doctorSchema = new mongoose.Schema({
       to: String, // "13:00"
     },
   ],
-  appointments: [{ type: mongoose.Schema.Types, ref: "appointment" }],
-  patients: [{ type: mongoose.Schema.Types, ref: "patient" }],
+  appointments: [{ type: mongoose.Schema.Types, ref: "Appointment" }],
+  patients: [{ type: mongoose.Schema.Types, ref: "Patient" }],
   createdAt: Date,
   updatedAt: Date,
 });
 
-const doctor = mongoose.model("doctor", doctorSchema);
+const doctor = mongoose.model("Doctor", doctorSchema);
 module.exports = doctor;

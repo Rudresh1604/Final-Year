@@ -21,5 +21,5 @@ const diseaseSchema = new mongoose.Schema({
   updatedAt: Date,
 });
 
-const disease = mongoose.model("disease", diseaseSchema);
+const disease = mongoose.model("Disease", diseaseSchema);
 module.exports = disease;
