@@ -1,8 +1,8 @@
-const express=require('express');
-const { CreateDisease } = require('../controllers/diseaseController');
+const express = require("express");
+const { CreateDisease } = require("../controllers/diseaseController");
 
-const diseaseRoutes=express.Router();
+const diseaseRoutes = express.Router();
 
-diseaseRoutes.post("/",CreateDisease)
+diseaseRoutes.post("/add-disease", CreateDisease);
 
-module.exports=diseaseRoutes
+module.exports = diseaseRoutes;

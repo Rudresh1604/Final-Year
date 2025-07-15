@@ -8,7 +8,7 @@ exports.addDoctor = async (req, res) => {
       specialization,
       experience,
       password,
-      location
+      location,
     } = req.body;
 
     const doctor = await Doctor.create({
@@ -21,7 +21,7 @@ exports.addDoctor = async (req, res) => {
       password,
       location,
     });
-    return req.status(201).json({ success: true, doctor });
+    return res.status(201).json({ success: true, doctor });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }
