@@ -6,13 +6,13 @@ const {
 } = require("../controllers/diseaseController");
 const router = express.Router();
 
-// POST /diseases
-router.post("/diseases", CreateDisease);
+// POST a disease
+router.post("/", CreateDisease);
 
-// GET /diseases
-router.get("/diseases", getAllDiseases);
+// GET all disease
+router.get("/", getAllDiseases);
 
-// DELETE /diseases/:id
-router.delete("/diseases/:id", deleteDisease);
+// DELETE a disease
+router.delete("/", deleteDisease);
 
 module.exports = router;

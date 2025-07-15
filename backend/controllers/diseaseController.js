@@ -17,7 +17,7 @@ const CreateDisease = async (req, res) => {
     });
   }
 
-  // validate spreadLevel values 
+  // validate spreadLevel values
   const allowedSpreadLevels = ["Low", "Moderate", "High"];
   if (!allowedSpreadLevels.includes(spreadLevel)) {
     return res.status(400).json({
@@ -50,9 +50,16 @@ const getAllDiseases = async (req, res) => {
   }
 };
 
-//Delete a Disease 
+//Delete a Disease
 const deleteDisease = async (req, res) => {
-  const { id } = req.params;
+  const { id } = req.body;
+  //validate id
+  if (!id) {
+    return res.status(400).json({
+      success: false,
+      message: "Disease ID is required in the request body.Please provide it",
+    });
+  }
 
   try {
     const disease = await Disease.findByIdAndDelete(id);
@@ -68,7 +75,5 @@ const deleteDisease = async (req, res) => {
     return res.status(500).json({ success: false, error: error.message });
   }
 };
-
-
 
 module.exports = { CreateDisease, getAllDiseases, deleteDisease };

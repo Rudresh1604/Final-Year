@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 const reportSchema = new mongoose.Schema(
   {
-    appointmentId: { type: mongoose.Schema.Types, ref: "Appointment" },
-    patientId: { type: mongoose.Schema.Types, ref: "Patient" },
-    doctorId: { type: mongoose.Schema.Types, ref: "Doctor" },
+    appointmentId: { type: mongoose.Schema.Types.ObjectId, ref: "Appointment" },
+    patientId: { type: mongoose.Schema.Types.ObjectId, ref: "Patient" },
+    doctorId: { type: mongoose.Schema.Types.ObjectId, ref: "Doctor" },
     medicines: [
       {
         name: String,
