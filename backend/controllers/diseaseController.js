@@ -1,18 +1,74 @@
 const Disease = require("../model/diseaseSchema");
 
-const CreateDisease = async (req,res) => {
-    const {name,symptoms,spreadLevel,affectedRegions} = req.body;
-    try {
-        const disease = await Disease.create({
-            name,
-            symptoms,
-            spreadLevel,
-            affectedRegions
-        });
-        return req.status(201).json({ success: true, disease });
-    } catch (error) {
-        return res.status(500).json({ success: false, error: error.message });
-    }
+const CreateDisease = async (req, res) => {
+  const { name, symptoms, spreadLevel, affectedRegions } = req.body;
+
+  if (
+    !name ||
+    !Array.isArray(symptoms) ||
+    symptoms.length === 0 ||
+    !spreadLevel ||
+    !affectedRegions
+  ) {
+    return res.status(400).json({
+      success: false,
+      message:
+        "Missing or invalid required fields: name, symptoms, spreadLevel, affectedRegions",
+    });
+  }
+
+  // validate spreadLevel values 
+  const allowedSpreadLevels = ["Low", "Moderate", "High"];
+  if (!allowedSpreadLevels.includes(spreadLevel)) {
+    return res.status(400).json({
+      success: false,
+      message: `Invalid spreadLevel. Allowed values are: ${allowedSpreadLevels.join(
+        ", "
+      )}`,
+    });
+  }
+  try {
+    const disease = await Disease.create({
+      name,
+      symptoms,
+      spreadLevel,
+      affectedRegions,
+    });
+    return res.status(201).json({ success: true, disease });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
 };
 
-module.exports = { CreateDisease };
+//Get all disease
+const getAllDiseases = async (req, res) => {
+  try {
+    const diseases = await Disease.find();
+    return res.status(200).json({ success: true, diseases });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+//Delete a Disease 
+const deleteDisease = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const disease = await Disease.findByIdAndDelete(id);
+    if (!disease) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Disease not found" });
+    }
+    return res
+      .status(200)
+      .json({ success: true, message: "Disease deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+
+
+module.exports = { CreateDisease, getAllDiseases, deleteDisease };
