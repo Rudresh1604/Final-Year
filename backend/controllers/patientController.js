@@ -35,4 +35,28 @@ const createPatient = async (req, res) => {
   }
 };
 
-module.exports = { createPatient };
+const deletePatient = async (req, res) => {
+  const { _id } = req.body;
+  console.log(req.body);
+  try {
+    const patient = await Patient.findById(_id);
+    if (!patient) {
+      return res.json(
+        { success: false, message: "Failed, Try again later!" },
+        { status: 500 }
+      );
+    }
+    return res.json(
+      { success: true, message: "Patient Deleted Successfully" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.log(error);
+    return res.json(
+      { success: false, message: error.message },
+      { status: 500 }
+    );
+  }
+};
+
+module.exports = { createPatient, deletePatient };
