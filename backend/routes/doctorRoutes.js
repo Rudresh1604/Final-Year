@@ -1,7 +1,8 @@
 const express=require('express');
-const { addDoctor } = require('../controllers/doctorController');
-const doctorRoutes=express.Router();
+const { addDoctor, addDoctorSlot } = require('../controllers/doctorController');
+const router =express.Router();
 
-doctorRoutes.post("/",addDoctor)
+router.post("/",addDoctor)
+router.post("/doctors/slots", addDoctorSlot);
 
-module.exports=doctorRoutes
+module.exports=router;
