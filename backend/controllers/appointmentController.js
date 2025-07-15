@@ -1,6 +1,6 @@
-const Appointment = require("../models/Appointment");
-const Doctor = require("../models/Doctor");
-const Patient = require("../models/Patient");
+const Appointment = require("../model/appointmentSchema");
+const Doctor = require("../model/doctorSchema");
+const Patient = require("../model/patientSchema");
 const moment = require("moment");
 
 const bookAppointment = async (req, res) => {

@@ -1,8 +1,18 @@
 const express = require("express");
-const { CreateDisease } = require("../controllers/diseaseController");
+const {
+  CreateDisease,
+  getAllDiseases,
+  deleteDisease,
+} = require("../controllers/diseaseController");
+const router = express.Router();
 
-const diseaseRoutes = express.Router();
+// POST /diseases
+router.post("/diseases", CreateDisease);
 
-diseaseRoutes.post("/add-disease", CreateDisease);
+// GET /diseases
+router.get("/diseases", getAllDiseases);
 
-module.exports = diseaseRoutes;
+// DELETE /diseases/:id
+router.delete("/diseases/:id", deleteDisease);
+
+module.exports = router;

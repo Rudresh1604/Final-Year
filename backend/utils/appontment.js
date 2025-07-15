@@ -6,7 +6,7 @@ export const getAvailableSlot = (doctorTime, appointments, requestedTime) => {
     const docFrom = moment(doctorTime.from, format);
     const docTo = moment(doctorTime.to, format);
     const reqTime = moment(requestedTime, format);
-    const slotDuration = 30; // in minutes
+    const slotDuration = 30;
 
     // Check if requested time is within doctor’s available time
     if (
