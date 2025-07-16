@@ -7,12 +7,12 @@ const {
 const router = express.Router();
 
 // POST a disease
-router.post("/", CreateDisease);
+router.post("/add", CreateDisease);
 
 // GET all disease
 router.get("/", getAllDiseases);
 
 // DELETE a disease
-router.delete("/", deleteDisease);
+router.delete("/delete", deleteDisease);
 
 module.exports = router;
