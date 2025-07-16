@@ -7,8 +7,8 @@ const doctorSchema = new mongoose.Schema(
     password: String,
     phone: String,
     age: Number,
-    specialization: String,
-    experience: Number, // in years
+    specialization: [String],
+    experience: Number,
     location: {
       city: String,
       state: String,
@@ -19,9 +19,9 @@ const doctorSchema = new mongoose.Schema(
     },
     availableSlots: [
       {
-        day: String, // e.g., "Monday"
-        from: String, // "09:00"
-        to: String, // "13:00"
+        day: Date, 
+        from: String, 
+        to: String, 
       },
     ],
     // appointments: [{ type: mongoose.Schema.Types, ref: "Appointment" }],
