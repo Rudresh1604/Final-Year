@@ -29,6 +29,13 @@ exports.addDoctor = async (req, res) => {
         .json({ success: false, message: "All fields are required" });
     }
 
+    const existingDoctor = await Doctor.findOne({ email });
+    if (existingDoctor) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email already exists" });
+    }
+
     const doctor = await Doctor.create({
       name,
       email,
@@ -131,7 +138,8 @@ exports.getDoctors = async (req, res) => {
 
 exports.updateDoctor = async (req, res) => {
   try {
-    const { id, updatedData } = req.body;
+    const id=req.params.id
+    const updatedData = req.body;
     if (!id || !updatedData) {
       return res
         .status(400)
