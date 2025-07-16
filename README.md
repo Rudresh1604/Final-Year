@@ -70,7 +70,7 @@ npm run dev
 
 | Method | Route            | Description        |
 | ------ | ---------------- | ------------------ |
-| POST   | `/doctors`       | Register a doctor  |
+| POST   | `/doctors/add`   | Register a doctor  |
 | POST   | `/doctors/slots` | Add available slot |
 | GET    | `/doctors/:id`   | Get doctor by ID   |
 

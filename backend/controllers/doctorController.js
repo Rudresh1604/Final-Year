@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Doctor = require("../model/doctorSchema");
 
 exports.addDoctor = async (req, res) => {
@@ -12,6 +13,21 @@ exports.addDoctor = async (req, res) => {
       password,
       location,
     } = req.body;
+
+    if (
+      !name ||
+      !email ||
+      !phone ||
+      !age ||
+      !specialization ||
+      !experience ||
+      !password ||
+      !location
+    ) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
+    }
 
     const doctor = await Doctor.create({
       name,
@@ -30,18 +46,16 @@ exports.addDoctor = async (req, res) => {
 };
 
 exports.addDoctorSlot = async (req, res) => {
-  const { doctorId, day, from, to } = req.body;
-
-  if (!doctorId || !day || !from || !to) {
-    return res.status(400).json({
-      success: false,
-      message:
-        "Fields doctorId, day, from, and to are required.please enter them",
-    });
-  }
   try {
-    console.log(req.body);
-    console.log(req.body.doctorId);
+    const { doctorId, day, from, to } = req.body;
+
+    if (!doctorId || !day || !from || !to) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Fields doctorId, day, from, and to are required.please enter them",
+      });
+    }
 
     const doctor = await Doctor.findById(doctorId);
     if (!doctor) {
@@ -51,12 +65,12 @@ exports.addDoctorSlot = async (req, res) => {
     }
     //duplicate slot
     const duplicate = doctor.availableSlots.find(
-      (slot) => slot.day === day && slot.from === from && slot.to === to
+      (slot) => slot.day === day && slot.from === from || slot.to === to
     );
     if (duplicate) {
       return res
         .status(400)
-        .json({ success: false, message: "Slot already exists." });
+        .json({ success: false, message: "Slot already alloted." });
     }
     doctor.availableSlots.push({ day, from, to });
     await doctor.save();
@@ -66,6 +80,50 @@ exports.addDoctorSlot = async (req, res) => {
       message: "Slot added successfully.",
       slots: doctor.availableSlots,
     });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+exports.getDoctorById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: "Invalid ID" });
+    }
+
+    const doctor = await Doctor.findById(id);
+    if (!doctor) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Doctor not found" });
+    }
+    return res.status(200).json({ success: true, doctor });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+exports.getDoctors = async (req, res) => {
+  try {
+    const { specialization, experience, city, state } = req.query;
+    const query = {};
+    if (specialization) {
+      query.specialization = {$in: [specialization.toUpperCase()]};
+    }
+    if (experience) {
+      query.experience = {$gte:Number(experience)};
+    }
+    if (city) {
+      query["location.city"]= city;
+    }
+    if (state) {
+      query["location.state"] = state;
+    }
+
+    const doctors = await Doctor.find(query);
+
+    return res.status(200).json({ success: true, doctors });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }
