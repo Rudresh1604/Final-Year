@@ -22,7 +22,7 @@ const patientSchema = new mongoose.Schema(
     },
     medicalHistory: [
       {
-        // diseaseId: { type: mongoose.Schema.Types, ref: "Disease" }, // ref to Disease
+        // diseaseId: { type: mongoose.Schema.Types.ObjectId, ref: "Disease" }, // ref to Disease
         diagnosedOn: Date,
         notes: String,
       },
