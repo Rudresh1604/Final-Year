@@ -5,10 +5,13 @@ const moment = require("moment");
 
 const bookAppointment = async (req, res) => {
   try {
-    const { doctorId, patientId, date, time, reason } = req.body;
-    const appointmentDate = moment(date, "YYYY-MM-DD");
-    const startTime = moment(time, "HH:mm");
-    const endTime = startTime.clone().add(30, "minutes"); // 30 min slot
+    const { doctorId, patientId, time, reason } = req.body;
+
+    // No change in parsing
+    const appointmentDateTime = moment(time); // already ISO
+    const endTime = appointmentDateTime.clone().add(30, "minutes");
+
+    const appointmentDateOnly = appointmentDateTime.clone().startOf("day");
 
     // Validate doctor & patient existence
     const doctor = await Doctor.findById(doctorId);
@@ -17,8 +20,8 @@ const bookAppointment = async (req, res) => {
       return res.status(404).json({ message: "Doctor or Patient not found" });
     }
 
-    // Check if doctor is available on that day
-    const dayOfWeek = appointmentDate.format("dddd"); // e.g., "Monday"
+    // Check if doctor is available that day
+    const dayOfWeek = appointmentDateTime.format("dddd"); // "Tuesday"
     const availableSlot = doctor.availableSlots.find(
       (slot) => slot.day === dayOfWeek
     );
@@ -29,20 +32,20 @@ const bookAppointment = async (req, res) => {
         .json({ message: "Doctor not available on this day" });
     }
 
-    const slotFrom = moment(availableSlot.from, "HH:mm");
-    const slotTo = moment(availableSlot.to, "HH:mm");
+    const slotFrom = moment(availableSlot.from); // ISO datetime
+    const slotTo = moment(availableSlot.to); // ISO datetime
 
-    if (startTime.isBefore(slotFrom) || endTime.isAfter(slotTo)) {
-      return res
-        .status(400)
-        .json({ message: "Time outside doctor's availability" });
+    if (appointmentDateTime.isBefore(slotFrom) || endTime.isAfter(slotTo)) {
+      return res.status(400).json({
+        message: "Requested time is outside doctor's available hours",
+      });
     }
 
-    // Check if doctor has a conflicting appointment at that time
+    // Check for existing appointment conflict
     const existingAppointment = await Appointment.findOne({
       doctorId,
-      date: appointmentDate.toDate(),
-      time: time,
+      date: appointmentDateOnly.toDate(),
+      time: appointmentDateTime.toISOString(),
       status: { $in: ["Scheduled", "Completed"] },
     });
 
@@ -50,13 +53,13 @@ const bookAppointment = async (req, res) => {
       return res.status(409).json({ message: "Time slot already booked" });
     }
 
-    // Create appointment
+    // Create new appointment
     const newAppointment = new Appointment({
       doctorId,
       patientId,
-      date: appointmentDate.toDate(),
-      time,
-      endTime: endTime.format("HH:mm"),
+      date: appointmentDateOnly.toDate(), // optional
+      time: appointmentDateTime.toDate(), // ← as Date
+      endTime: endTime.toDate(), // ← as Date
       status: "Scheduled",
       reason,
       createdAt: new Date(),
@@ -65,9 +68,9 @@ const bookAppointment = async (req, res) => {
 
     await newAppointment.save();
 
-    // Update doctor & patient documents
+    // Update doctor & patient
     doctor.appointments.push(newAppointment._id);
-    doctor.patients.addToSet(patientId); // add only if not already present
+    doctor.patients.addToSet(patientId);
     patient.updatedAt = new Date();
 
     await doctor.save();

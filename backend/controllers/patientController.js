@@ -58,7 +58,7 @@ const deletePatient = async (req, res) => {
   const _id = req.params.id;
   console.log(req.body);
   try {
-    const patient = await Patient.findById(_id);
+    const patient = await Patient.findByIdAndDelete(_id);
     if (!patient) {
       return res.json(
         { success: false, message: "Failed, Try again later!" },
