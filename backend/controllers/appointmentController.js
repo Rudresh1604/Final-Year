@@ -42,9 +42,13 @@ const bookAppointment = async (req, res) => {
     // Check for existing appointment conflict
     const existingAppointment = await Appointment.findOne({
       doctorId,
-      date: appointmentDateOnly.toDate(),
-      time: appointmentDateTime.toISOString(),
-      status: { $in: ["Scheduled", "Completed"] },
+      status: { $in: ["Scheduled"] },
+      $or: [
+        {
+          time: { $lt: endTime.toDate() },
+          endTime: { $gt: appointmentDateTime.toDate() },
+        },
+      ],
     });
 
     if (existingAppointment) {
@@ -87,11 +91,10 @@ const bookAppointment = async (req, res) => {
 const cancelAppointment = async (req, res) => {
   try {
     const id = req.params.id;
-    const appointment = await Appointment.findById(id);
+    const appointment = await Appointment.findByIdAndDelete(id);
     if (!appointment) {
       return res.status(404).json({ message: "Appointment not found" });
     }
-    appointment.status = "Cancelled";
     const docId = appointment.doctorId;
     const patientId = appointment.patientId;
     const doctor = await Doctor.findById(docId);
@@ -100,7 +103,6 @@ const cancelAppointment = async (req, res) => {
     patient.appointments.pull(id);
     await doctor.save();
     await patient.save();
-    await appointment.save();
     return res
       .status(200)
       .json({ message: "Appointment cancelled successfully" });
@@ -110,6 +112,4 @@ const cancelAppointment = async (req, res) => {
   }
 };
 
-// const updateAppointment
-
-module.exports = { bookAppointment };
+module.exports = { bookAppointment ,cancelAppointment};

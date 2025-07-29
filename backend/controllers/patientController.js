@@ -46,7 +46,7 @@ const getPatientById = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
 
-    const patient = await Patient.findById(id);
+    const patient = await Patient.findById(id).populate("appointments");
     if (!patient) {
       return res
         .status(404)
