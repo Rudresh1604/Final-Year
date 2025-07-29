@@ -106,7 +106,7 @@ const getDoctorById = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
 
-    const doctor = await Doctor.findById(id);
+    const doctor = await Doctor.findById(id).populate("appointments");
     if (!doctor) {
       return res
         .status(404)
