@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Doctor = require("../model/doctorSchema");
-const bcrypt=require('bcryptjs')
+const bcrypt = require("bcryptjs");
 
 // add Doctor
 const addDoctor = async (req, res) => {
@@ -48,7 +48,7 @@ const addDoctor = async (req, res) => {
       age,
       specialization,
       experience,
-      password:hashedPassword,
+      password: hashedPassword,
       location,
     });
     return res.status(201).json({ success: true, doctor });
@@ -95,6 +95,35 @@ const addDoctorSlot = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const updateDoctorSlot = async (req, res) => {
+  try {
+    const { doctorId, day, from, to } = req.body;
+
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    // Remove old slot for the day if it exists
+    doctor.availableSlots = doctor.availableSlots.filter(
+      (slot) => slot.day !== day
+    );
+
+    // Push the new slot
+    doctor.availableSlots.push({ day, from, to });
+
+    await doctor.save();
+
+    return res.status(200).json({
+      message: `${day} slot updated successfully`,
+      availableSlots: doctor.availableSlots,
+    });
+  } catch (error) {
+    console.error("Error updating doctor slot:", error);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -147,7 +176,7 @@ const getDoctors = async (req, res) => {
 // update Doctor
 const updateDoctor = async (req, res) => {
   try {
-    const id=req.params.id
+    const id = req.params.id;
     const updatedData = req.body;
     if (!id || !updatedData) {
       return res
@@ -172,9 +201,9 @@ const updateDoctor = async (req, res) => {
 };
 
 // delete Doctor
-const deleteDoctor=async(req,res)=>{
+const deleteDoctor = async (req, res) => {
   try {
-    const id=req.params.id;
+    const id = req.params.id;
     if (!id) {
       return res
         .status(400)
@@ -189,10 +218,20 @@ const deleteDoctor=async(req,res)=>{
         .status(404)
         .json({ success: false, message: "Doctor not found" });
     }
-    return res.status(200).json({ success: true, message:"Deleted Successfully"});
+    return res
+      .status(200)
+      .json({ success: true, message: "Deleted Successfully" });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }
-}
+};
 
-module.exports={addDoctor,addDoctorSlot,getDoctorById,getDoctors,updateDoctor,deleteDoctor}
+module.exports = {
+  addDoctor,
+  addDoctorSlot,
+  getDoctorById,
+  getDoctors,
+  updateDoctor,
+  deleteDoctor,
+  updateDoctorSlot,
+};

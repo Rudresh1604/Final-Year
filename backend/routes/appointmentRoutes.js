@@ -1,9 +1,14 @@
-const { bookAppointment, cancelAppointment } = require("../controllers/appointmentController");
+const {
+  bookAppointment,
+  cancelAppointment,
+  getAppointmentById,
+} = require("../controllers/appointmentController");
 
 const express = require("express");
 const router = express.Router();
 
 router.post("/book", bookAppointment);
-router.put("/cancel/:id",cancelAppointment);
+router.delete("/cancel/:id", cancelAppointment);
+router.get("/:id", getAppointmentById);
 
 module.exports = router;

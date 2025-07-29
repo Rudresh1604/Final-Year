@@ -113,4 +113,29 @@ const cancelAppointment = async (req, res) => {
   }
 };
 
-module.exports = { bookAppointment ,cancelAppointment};
+const getAppointmentById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!id) {
+      return res.status(500).json({ message: "Invalid Appointment" });
+    }
+
+    const appointment = await Appointment.findById(id);
+
+    if (!appointment) {
+      return res.status(409).json({ message: "Appointment not available" });
+    }
+
+    // Create new appointment
+
+    return res.status(201).json({
+      success: true,
+      appointment,
+    });
+  } catch (error) {
+    console.error("Error booking appointment:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = { bookAppointment, cancelAppointment, getAppointmentById };
