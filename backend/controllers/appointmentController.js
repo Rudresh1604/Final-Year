@@ -42,9 +42,13 @@ const bookAppointment = async (req, res) => {
     // Check for existing appointment conflict
     const existingAppointment = await Appointment.findOne({
       doctorId,
-      date: appointmentDateOnly.toDate(),
-      time: appointmentDateTime.toISOString(),
-      status: { $in: ["Scheduled", "Completed"] },
+      status: { $in: ["Scheduled"] },
+      $or: [
+        {
+          time: { $lt: endTime.toDate() },
+          endTime: { $gt: appointmentDateTime.toDate() },
+        },
+      ],
     });
 
     if (existingAppointment) {
@@ -69,7 +73,8 @@ const bookAppointment = async (req, res) => {
     // Update doctor & patient
     doctor.appointments.push(newAppointment._id);
     doctor.patients.addToSet(patientId);
-    patient.updatedAt = new Date();
+
+    patient.appointments.push(newAppointment._id);
 
     await doctor.save();
     await patient.save();
