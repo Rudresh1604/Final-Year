@@ -1,5 +1,6 @@
 const { mongoose } = require("mongoose");
 const Patient = require("../model/patientSchema");
+const bcrypt=require('bcryptjs')
 
 const createPatient = async (req, res) => {
   const { name, email, phone, gender, password, bloodGroup, age, address } =
@@ -7,11 +8,14 @@ const createPatient = async (req, res) => {
   console.log(req.body);
 
   try {
+
+    const salt=await bcrypt.genSalt(10);
+    const hashedPassword=await bcrypt.hash(password,salt);
     const patient = await Patient.create({
       name: name,
       email: email,
       phone: phone,
-      password: password,
+      password: hashedPassword,
       bloodGroup: bloodGroup,
       address: address,
       gender: gender,
