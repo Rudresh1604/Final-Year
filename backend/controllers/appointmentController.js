@@ -84,7 +84,6 @@ const bookAppointment = async (req, res) => {
   }
 };
 
-
 const cancelAppointment = async (req, res) => {
   try {
     const id = req.params.id;
@@ -111,6 +110,6 @@ const cancelAppointment = async (req, res) => {
   }
 };
 
-// const updateAppointment 
+// const updateAppointment
 
 module.exports = { bookAppointment };
