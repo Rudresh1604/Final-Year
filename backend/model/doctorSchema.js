@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 const doctorSchema = new mongoose.Schema(
   {
     name: String,
-    email: { type: String, unique: true },
-    password: String,
+    email: { type: String, unique: true, lowercase: true },
+    password: { type: String, required: true, minLength: 8 },
     phone: String,
-    age: Number,
+    age: { type: Number, required: true, min: 18, max: 100 },
     specialization: [String],
-    experience: Number,
+    experience: { type: Number, min: 0, max: 100 },
     location: {
       city: String,
       state: String,
@@ -19,9 +19,9 @@ const doctorSchema = new mongoose.Schema(
     },
     availableSlots: [
       {
-        day: Date, 
-        from: String, 
-        to: String, 
+        day: Date,
+        from: String,
+        to: String,
       },
     ],
     // appointments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Appointment" }],

@@ -29,6 +29,13 @@ exports.addDoctor = async (req, res) => {
         .json({ success: false, message: "All fields are required" });
     }
 
+    const existingDoctor = await Doctor.findOne({ email });
+    if (existingDoctor) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Email already exists" });
+    }
+
     const doctor = await Doctor.create({
       name,
       email,
@@ -65,7 +72,7 @@ exports.addDoctorSlot = async (req, res) => {
     }
     //duplicate slot
     const duplicate = doctor.availableSlots.find(
-      (slot) => slot.day === day && slot.from === from || slot.to === to
+      (slot) => (slot.day === day && slot.from === from) || slot.to === to
     );
     if (duplicate) {
       return res
@@ -109,13 +116,13 @@ exports.getDoctors = async (req, res) => {
     const { specialization, experience, city, state } = req.query;
     const query = {};
     if (specialization) {
-      query.specialization = {$in: [specialization.toUpperCase()]};
+      query.specialization = { $in: [specialization.toUpperCase()] };
     }
     if (experience) {
-      query.experience = {$gte:Number(experience)};
+      query.experience = { $gte: Number(experience) };
     }
     if (city) {
-      query["location.city"]= city;
+      query["location.city"] = city;
     }
     if (state) {
       query["location.state"] = state;
@@ -124,6 +131,32 @@ exports.getDoctors = async (req, res) => {
     const doctors = await Doctor.find(query);
 
     return res.status(200).json({ success: true, doctors });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+exports.updateDoctor = async (req, res) => {
+  try {
+    const id=req.params.id
+    const updatedData = req.body;
+    if (!id || !updatedData) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
+    }
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: "Invalid ID" });
+    }
+    const doctor = await Doctor.findByIdAndUpdate(id, updatedData, {
+      new: true,
+    });
+    if (!doctor) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Doctor not found" });
+    }
+    return res.status(200).json({ success: true, doctor });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }
