@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Doctor = require("../model/doctorSchema");
+const bcrypt=require('bcryptjs')
 
 // add Doctor
 const addDoctor = async (req, res) => {
@@ -37,6 +38,9 @@ const addDoctor = async (req, res) => {
         .json({ success: false, message: "Email already exists" });
     }
 
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     const doctor = await Doctor.create({
       name,
       email,
@@ -44,7 +48,7 @@ const addDoctor = async (req, res) => {
       age,
       specialization,
       experience,
-      password,
+      password:hashedPassword,
       location,
     });
     return res.status(201).json({ success: true, doctor });
