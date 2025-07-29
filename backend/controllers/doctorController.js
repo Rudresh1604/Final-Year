@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const Doctor = require("../model/doctorSchema");
 
-exports.addDoctor = async (req, res) => {
+// add Doctor
+const addDoctor = async (req, res) => {
   try {
     const {
       name,
@@ -52,7 +53,8 @@ exports.addDoctor = async (req, res) => {
   }
 };
 
-exports.addDoctorSlot = async (req, res) => {
+// add slot
+const addDoctorSlot = async (req, res) => {
   try {
     const { doctorId, day, from, to } = req.body;
 
@@ -92,7 +94,8 @@ exports.addDoctorSlot = async (req, res) => {
   }
 };
 
-exports.getDoctorById = async (req, res) => {
+// get Doctor by id
+const getDoctorById = async (req, res) => {
   try {
     const id = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -111,7 +114,8 @@ exports.getDoctorById = async (req, res) => {
   }
 };
 
-exports.getDoctors = async (req, res) => {
+// get all doctors
+const getDoctors = async (req, res) => {
   try {
     const { specialization, experience, city, state } = req.query;
     const query = {};
@@ -136,7 +140,8 @@ exports.getDoctors = async (req, res) => {
   }
 };
 
-exports.updateDoctor = async (req, res) => {
+// update Doctor
+const updateDoctor = async (req, res) => {
   try {
     const id=req.params.id
     const updatedData = req.body;
@@ -161,3 +166,29 @@ exports.updateDoctor = async (req, res) => {
     return res.status(500).json({ success: false, error: error.message });
   }
 };
+
+// delete Doctor
+const deleteDoctor=async(req,res)=>{
+  try {
+    const id=req.params.id;
+    if (!id) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
+    }
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: "Invalid ID" });
+    }
+    const doctor = await Doctor.findByIdAndDelete(id);
+    if (!doctor) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Doctor not found" });
+    }
+    return res.status(200).json({ success: true, message:"Deleted Successfully"});
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+}
+
+module.exports={addDoctor,addDoctorSlot,getDoctorById,getDoctors,updateDoctor,deleteDoctor}
