@@ -1,6 +1,13 @@
 const jwt = require("jsonwebtoken");
 
 const auth = (req, res, next) => {
+  if (
+    req.originalUrl == "/api/doctors/add" ||
+    req.originalUrl == "/api/patient/add"
+  ) {
+    return next();
+  }
+
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res
@@ -13,7 +20,7 @@ const auth = (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decoded;
     console.log("added");
-    
+
     next();
   } catch (error) {
     res.status(400).json({ success: false, message: "Invalid token." });
