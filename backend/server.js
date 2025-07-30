@@ -9,6 +9,7 @@ const appointmentRoutes = require("./routes/appointmentRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const loginRoutes = require("./routes/loginRoutes");
 const auth = require("./middleware/auth");
+const reportRoutes = require("./routes/reportRoutes");
 const app = express();
 const PORT = process.env.PORT || 3003;
 app.use(express.json());
@@ -21,6 +22,7 @@ app.use("/api/doctors", auth, doctorRoutes);
 app.use("/api/patient", auth, patientRoutes);
 app.use("/api/disease", auth, diseaseRoutes);
 app.use("/api/login", loginRoutes);
+app.use("/api/reports", reportRoutes);
 
 app.use(errorHandler);
 app.listen(PORT, () => {
