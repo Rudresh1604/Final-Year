@@ -1,3 +1,4 @@
+const { mongoose } = require("mongoose");
 const Disease = require("../model/diseaseSchema");
 
 const CreateDisease = async (req, res) => {
@@ -76,4 +77,23 @@ const deleteDisease = async (req, res) => {
   }
 };
 
-module.exports = { CreateDisease, getAllDiseases, deleteDisease };
+//get disease by id
+const getDiseaseById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: "Invalid ID" });
+    }
+
+    const disease = await Disease.findById(id);
+    if (!disease) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Disease not found" });
+    }
+    return res.status(200).json({ success: true, disease });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+module.exports = { CreateDisease, getAllDiseases, deleteDisease ,getDiseaseById};

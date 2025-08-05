@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 const Doctor = require("../model/doctorSchema");
+const bcrypt = require("bcryptjs");
 
-exports.addDoctor = async (req, res) => {
+// add Doctor
+const addDoctor = async (req, res) => {
   try {
     const {
       name,
@@ -36,6 +38,9 @@ exports.addDoctor = async (req, res) => {
         .json({ success: false, message: "Email already exists" });
     }
 
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     const doctor = await Doctor.create({
       name,
       email,
@@ -43,7 +48,7 @@ exports.addDoctor = async (req, res) => {
       age,
       specialization,
       experience,
-      password,
+      password: hashedPassword,
       location,
     });
     return res.status(201).json({ success: true, doctor });
@@ -52,7 +57,8 @@ exports.addDoctor = async (req, res) => {
   }
 };
 
-exports.addDoctorSlot = async (req, res) => {
+// add slot
+const addDoctorSlot = async (req, res) => {
   try {
     const { doctorId, day, from, to } = req.body;
 
@@ -92,14 +98,44 @@ exports.addDoctorSlot = async (req, res) => {
   }
 };
 
-exports.getDoctorById = async (req, res) => {
+const updateDoctorSlot = async (req, res) => {
+  try {
+    const { doctorId, day, from, to } = req.body;
+
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    // Remove old slot for the day if it exists
+    doctor.availableSlots = doctor.availableSlots.filter(
+      (slot) => slot.day !== day
+    );
+
+    // Push the new slot
+    doctor.availableSlots.push({ day, from, to });
+
+    await doctor.save();
+
+    return res.status(200).json({
+      message: `${day} slot updated successfully`,
+      availableSlots: doctor.availableSlots,
+    });
+  } catch (error) {
+    console.error("Error updating doctor slot:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// get Doctor by id
+const getDoctorById = async (req, res) => {
   try {
     const id = req.params.id;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
 
-    const doctor = await Doctor.findById(id);
+    const doctor = await Doctor.findById(id).populate("appointments");
     if (!doctor) {
       return res
         .status(404)
@@ -111,7 +147,8 @@ exports.getDoctorById = async (req, res) => {
   }
 };
 
-exports.getDoctors = async (req, res) => {
+// get all doctors
+const getDoctors = async (req, res) => {
   try {
     const { specialization, experience, city, state } = req.query;
     const query = {};
@@ -136,9 +173,10 @@ exports.getDoctors = async (req, res) => {
   }
 };
 
-exports.updateDoctor = async (req, res) => {
+// update Doctor
+const updateDoctor = async (req, res) => {
   try {
-    const id=req.params.id
+    const id = req.params.id;
     const updatedData = req.body;
     if (!id || !updatedData) {
       return res
@@ -160,4 +198,40 @@ exports.updateDoctor = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }
+};
+
+// delete Doctor
+const deleteDoctor = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!id) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
+    }
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, message: "Invalid ID" });
+    }
+    const doctor = await Doctor.findByIdAndDelete(id);
+    if (!doctor) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Doctor not found" });
+    }
+    return res
+      .status(200)
+      .json({ success: true, message: "Deleted Successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+module.exports = {
+  addDoctor,
+  addDoctorSlot,
+  getDoctorById,
+  getDoctors,
+  updateDoctor,
+  deleteDoctor,
+  updateDoctorSlot,
 };

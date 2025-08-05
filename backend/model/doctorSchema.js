@@ -19,13 +19,15 @@ const doctorSchema = new mongoose.Schema(
     },
     availableSlots: [
       {
-        day: Date,
+        day: String,
         from: String,
         to: String,
       },
     ],
-    // appointments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Appointment" }],
-    // patients: [{ type: mongoose.Schema.Types.ObjectId, ref: "Patient" }],
+    appointments: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "Appointment" },
+    ],
+    patients: [{ type: mongoose.Schema.Types.ObjectId, ref: "Patient" }],
   },
   { timestamps: true }
 );

@@ -5,10 +5,11 @@ const moment = require("moment");
 
 const bookAppointment = async (req, res) => {
   try {
-    const { doctorId, patientId, date, time, reason } = req.body;
-    const appointmentDate = moment(date, "YYYY-MM-DD");
-    const startTime = moment(time, "HH:mm");
-    const endTime = startTime.clone().add(30, "minutes"); // 30 min slot
+    const { doctorId, patientId, time, reason } = req.body;
+
+    const appointmentDateTime = moment(time); // full ISO datetime
+    const endTime = appointmentDateTime.clone().add(30, "minutes");
+    const appointmentDateOnly = appointmentDateTime.clone().startOf("day");
 
     // Validate doctor & patient existence
     const doctor = await Doctor.findById(doctorId);
@@ -17,8 +18,8 @@ const bookAppointment = async (req, res) => {
       return res.status(404).json({ message: "Doctor or Patient not found" });
     }
 
-    // Check if doctor is available on that day
-    const dayOfWeek = appointmentDate.format("dddd"); // e.g., "Monday"
+    // Check if doctor is available that day
+    const dayOfWeek = appointmentDateTime.format("dddd"); // "Tuesday"
     const availableSlot = doctor.availableSlots.find(
       (slot) => slot.day === dayOfWeek
     );
@@ -29,34 +30,38 @@ const bookAppointment = async (req, res) => {
         .json({ message: "Doctor not available on this day" });
     }
 
-    const slotFrom = moment(availableSlot.from, "HH:mm");
-    const slotTo = moment(availableSlot.to, "HH:mm");
+    const slotFrom = moment(availableSlot.from); // ISO datetime
+    const slotTo = moment(availableSlot.to); // ISO datetime
 
-    if (startTime.isBefore(slotFrom) || endTime.isAfter(slotTo)) {
-      return res
-        .status(400)
-        .json({ message: "Time outside doctor's availability" });
+    if (appointmentDateTime.isBefore(slotFrom) || endTime.isAfter(slotTo)) {
+      return res.status(400).json({
+        message: "Requested time is outside doctor's available hours",
+      });
     }
 
-    // Check if doctor has a conflicting appointment at that time
+    // Check for existing appointment conflict
     const existingAppointment = await Appointment.findOne({
       doctorId,
-      date: appointmentDate.toDate(),
-      time: time,
-      status: { $in: ["Scheduled", "Completed"] },
+      status: { $in: ["Scheduled"] },
+      $or: [
+        {
+          time: { $lt: endTime.toDate() },
+          endTime: { $gt: appointmentDateTime.toDate() },
+        },
+      ],
     });
 
     if (existingAppointment) {
       return res.status(409).json({ message: "Time slot already booked" });
     }
 
-    // Create appointment
+    // Create new appointment
     const newAppointment = new Appointment({
       doctorId,
       patientId,
-      date: appointmentDate.toDate(),
-      time,
-      endTime: endTime.format("HH:mm"),
+      date: appointmentDateOnly.toDate(),
+      time: appointmentDateTime.toISOString(),
+      endTime: endTime.toISOString(),
       status: "Scheduled",
       reason,
       createdAt: new Date(),
@@ -65,10 +70,11 @@ const bookAppointment = async (req, res) => {
 
     await newAppointment.save();
 
-    // Update doctor & patient documents
+    // Update doctor & patient
     doctor.appointments.push(newAppointment._id);
-    doctor.patients.addToSet(patientId); // add only if not already present
-    patient.updatedAt = new Date();
+    doctor.patients.addToSet(patientId);
+
+    patient.appointments.push(newAppointment._id);
 
     await doctor.save();
     await patient.save();
@@ -83,4 +89,53 @@ const bookAppointment = async (req, res) => {
   }
 };
 
-module.exports = { bookAppointment };
+const cancelAppointment = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const appointment = await Appointment.findByIdAndDelete(id);
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
+    }
+    const docId = appointment.doctorId;
+    const patientId = appointment.patientId;
+    const doctor = await Doctor.findById(docId);
+    const patient = await Patient.findById(patientId);
+    doctor.appointments.pull(id);
+    patient.appointments.pull(id);
+    await doctor.save();
+    await patient.save();
+    return res
+      .status(200)
+      .json({ message: "Appointment cancelled successfully" });
+  } catch (error) {
+    console.error("Error cancelling appointment:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getAppointmentById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    if (!id) {
+      return res.status(500).json({ message: "Invalid Appointment" });
+    }
+
+    const appointment = await Appointment.findById(id);
+
+    if (!appointment) {
+      return res.status(409).json({ message: "Appointment not available" });
+    }
+
+    // Create new appointment
+
+    return res.status(201).json({
+      success: true,
+      appointment,
+    });
+  } catch (error) {
+    console.error("Error booking appointment:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+module.exports = { bookAppointment, cancelAppointment, getAppointmentById };

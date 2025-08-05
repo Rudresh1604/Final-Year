@@ -85,9 +85,9 @@ npm run dev
 
 | Method | Route       | Description                        |
 | ------ | ----------- | ---------------------------------- |
-| POST   | `/diseases` | Create a new disease               |
-| GET    | `/diseases` | Get all diseases (with pagination) |
-| DELETE | `/diseases` | Delete a disease (from body)       |
+| POST   | `/disease/add` | Create a new disease               |
+| GET    | `/disease` | Get all diseases (with pagination) |
+| DELETE | `/disease/delete` | Delete a disease (from body)       |
 
 #### 📄 Report Routes
 
