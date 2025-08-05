@@ -6,7 +6,6 @@ const doctorRoutes = require("./routes/doctorRoutes");
 const patientRoutes = require("./routes/patientRoutes");
 const diseaseRoutes = require("./routes/diseaseRoutes");
 const appointmentRoutes = require("./routes/appointmentRoutes");
-const errorHandler = require("./middleware/errorHandler");
 const loginRoutes = require("./routes/loginRoutes");
 const auth = require("./middleware/auth");
 const reportRoutes = require("./routes/reportRoutes");
@@ -17,14 +16,13 @@ app.use(express.json());
 app.use(cors());
 dbConnect();
 
-app.use("/api/appointment", auth, appointmentRoutes);
-app.use("/api/doctors", auth, doctorRoutes);
-app.use("/api/patient", auth, patientRoutes);
-app.use("/api/disease", auth, diseaseRoutes);
+app.use("/api/appointment", appointmentRoutes);
+app.use("/api/doctors", doctorRoutes);
+app.use("/api/patient", patientRoutes);
+app.use("/api/disease", diseaseRoutes);
 app.use("/api/login", loginRoutes);
 app.use("/api/reports", reportRoutes);
 
-app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`server started on ${PORT}`);
 });
