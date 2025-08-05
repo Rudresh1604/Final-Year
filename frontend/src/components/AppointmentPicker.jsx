@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import AppointmentDateTimeCard from "./AppointmentDateTimeCard";
 
 const AppointmentPicker = () => {
+  const [openModal, setOpenModal] = useState(false);
   const [availableSlot, setAvailableSlot] = useState([
     {
       day: "Tuesday",
@@ -36,7 +37,7 @@ const AppointmentPicker = () => {
 
   useEffect(() => {
     selectedDay && getTimeSlots(selectedDay);
-  }, [selectedDay]);
+  }, [selectedDay, openModal]);
 
   function getTimeSlots(selectedDay, intervalMinutes = 30) {
     const slots = [];
@@ -59,12 +60,12 @@ const AppointmentPicker = () => {
   }
 
   return (
-    <div className="flex flex-col w-full items-center gap-3">
-      <div className="flex flex-col gap-4">
-        <h1 className="text-xl  lg:text-2xl font-medium">
-          Select Date to schedule the Appointment
+    <div className="flex flex-col mt-9 w-full items-center border border-gray-300 bg-gray-50 rounded-lg gap-3">
+      <div className="flex flex-col w-full p-3 lg:p-5 gap-4">
+        <h1 className="text-xl text-gray-700 lg:text-2xl font-medium">
+          Select Date to schedule the Appointment :
         </h1>
-        <div className="flex items-center bg-white border border-gray-200 rounded-lg justify-center gap-3 p-4 w-full">
+        <div className="grid grid-cols-3 lg:grid-cols-7 bg-white border border-gray-200 rounded-lg justify-center gap-3 p-4 w-full">
           {availableSlot?.map((item, index) => (
             <AppointmentDateTimeCard
               key={index}
@@ -77,17 +78,23 @@ const AppointmentPicker = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 p-4 rounded-lg lg:grid-cols-7 bg-white border lg:p-6 border-gray-200 mt-5 gap-3 md:gap-4 lg:gap-5">
-        {selectedDay &&
-          timeSlots?.map((time, index) => (
-            <AppointmentDateTimeCard
-              isDate={false}
-              time={time}
-              key={index}
-              setSelectedTime={setSelectedTime}
-              selectedTime={selectedTime}
-            />
-          ))}
+      <div className="w-full px-3 lg:px-5 py-4">
+        <h1 className="text-xl text-gray-700 ml-2 lg:text-2xl font-medium">
+          Select Time to schedule the Appointment :
+        </h1>
+        <div className="grid grid-cols-3 p-4 rounded-lg lg:grid-cols-7 w-full bg-white border lg:p-6 border-gray-200 mt-5 gap-3 md:gap-4 lg:gap-5">
+          {selectedDay &&
+            timeSlots?.map((time, index) => (
+              <AppointmentDateTimeCard
+                isDate={false}
+                time={time}
+                key={index}
+                setSelectedTime={setSelectedTime}
+                selectedTime={selectedTime}
+                setOpenModal={setOpenModal}
+              />
+            ))}
+        </div>
       </div>
     </div>
   );

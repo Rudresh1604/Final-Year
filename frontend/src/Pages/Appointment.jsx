@@ -1,9 +1,11 @@
 import React from "react";
 import AppointmentPicker from "../components/AppointmentPicker";
+import DoctorIntro from "../components/DoctorIntro";
 
 const Appointment = () => {
   return (
-    <div className="flex flex-col bg-gray-100">
+    <div className="flex flex-col max-w-screen h-full">
+      <DoctorIntro />
       <AppointmentPicker />
     </div>
   );

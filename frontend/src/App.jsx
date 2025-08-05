@@ -4,7 +4,7 @@ import Appointment from "./Pages/Appointment";
 
 function App() {
   return (
-    <div className="mx-4 mt-4 md:mx-6 md:my-9 ">
+    <div className="px-4 pt-4 md:px-6 md:py-9 bg-gray-100">
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Appointment />} />

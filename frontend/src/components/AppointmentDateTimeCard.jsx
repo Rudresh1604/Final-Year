@@ -8,6 +8,7 @@ const AppointmentDateTimeCard = ({
   time,
   setSelectedTime,
   selectedTime,
+  setOpenModal,
 }) => {
   function toIST(isoString) {
     const utcDate = new Date(isoString);
@@ -33,6 +34,7 @@ const AppointmentDateTimeCard = ({
 
   const handleSelected = (value) => {
     console.log(value);
+    !isDate && setOpenModal(true);
     isDate ? setSelectedDate(value) : setSelectedTime(value);
   };
 

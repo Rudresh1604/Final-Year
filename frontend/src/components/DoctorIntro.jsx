@@ -3,7 +3,7 @@ import { Phone, Mail, MapPin, Briefcase, HeartPulse } from "lucide-react";
 
 const DoctorIntro = () => {
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col items-center pb-12 border-b border-gray-400">
       {/* Top Image */}
       <div className="w-full h-96">
         <img
@@ -13,7 +13,7 @@ const DoctorIntro = () => {
         />
       </div>
 
-      <div className="flex flex-col space-x-4 md:flex-row justify-between mt-6 gap-12">
+      <div className="flex flex-col items-center space-x-4 p-3 lg:p-6 md:flex-row justify-between mt-6 rounded-lg gap-12 border bg-white border-gray-300">
         {/* LeftDetails */}
         <div className="ml-15 px-8 md:w-1/2 space-y-4">
           <h1 className="text-3xl font-bold">Dr. John Smith</h1>
@@ -25,7 +25,7 @@ const DoctorIntro = () => {
         </div>
 
         {/* Right: Details */}
-        <div className="ml-10 md:w-1/2 space-y-2 text-lg text-gray-800">
+        <div className="ml-10  md:w-1/2 space-y-2 text-lg p-3 text-gray-800 border-t pt-4 lg:border-l lg:pl-4 lg:border-t-0 border-gray-300">
           <p className="flex items-center gap-2">
             <HeartPulse className="w-5 h-5 text-red-600" />{" "}
             <span className="font-semibold">Specialty:</span> Cardiology
