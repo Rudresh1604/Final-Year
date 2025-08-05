@@ -68,4 +68,44 @@ const deleteReport = async (req, res) => {
     return res.status(500).json({ success: false, error: error.message });
   }
 };
-module.exports = { createReport, deleteReport };
+
+// Get all reports
+const getAllReports = async (req, res) => {
+  try {
+    const reports = await Report.find()
+      .populate("patientId", "name email")
+      .populate("doctorId", "name specialization")
+      .populate("appointmentId");
+
+    if (!reports || reports.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No reports found" });
+    }
+
+    return res.status(200).json({ success: true, reports });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Get report by ID
+const getReportById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const report = await Report.findById(id)
+      .populate("patientId", "name email")
+      .populate("doctorId", "name specialization")
+      .populate("appointmentId");
+
+    if (!report) {
+      return res.status(404).json({ success: false, message: "Report not found" });
+    }
+
+    return res.status(200).json({ success: true, report });
+  } catch (error) {
+    return res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+module.exports = { createReport, deleteReport, getAllReports, getReportById };
