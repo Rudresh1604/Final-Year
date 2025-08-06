@@ -7,8 +7,7 @@ import { store } from "./redux/store";
 import LoginPage from "./Pages/LoginPage";
 import NavbarComponent from "./components/Layout/Header";
 import FooterComponent from "./components/Layout/Footer";
-import DoctorSignup from "./components/Auth/DoctorSignup";
-import PatientSignUp from "./components/Auth/PatientSignUp";
+import SignupPage from "./Pages/SignupPage";
 
 function App() {
   return (
@@ -22,6 +21,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Appointment />} />
               <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
             </Routes>
           </BrowserRouter>
         </div>
