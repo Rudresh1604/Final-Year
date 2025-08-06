@@ -13,7 +13,7 @@ import {
   ListChecks,
   Mars,
 } from "lucide-react";
-import PatientImage from "/image.png"; 
+import PatientImage from "/IntroImage.png";
 
 const PatientSignUp = () => {
   const [formData, setFormData] = useState({
@@ -159,17 +159,17 @@ const PatientSignUp = () => {
                   Gender
                 </label>
                 <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
-                <Mars className="w-5 h-5 text-gray-500 mx-2" />
-                <select
-                  name="gender"
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl cursor-pointer"
-                >
-                  <option value="">Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                </select>
+                  <Mars className="w-5 h-5 text-gray-500 mx-2" />
+                  <select
+                    name="gender"
+                    onChange={handleChange}
+                    required
+                    className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl cursor-pointer"
+                  >
+                    <option value="">Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
                 </div>
               </div>
 
