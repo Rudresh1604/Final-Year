@@ -13,7 +13,7 @@ import {
   ListChecks,
   Mars,
 } from "lucide-react";
-import PatientImage from "../../../public/image.png"; // Replace with your image path
+import PatientImage from "/image.png"; 
 
 const PatientSignUp = () => {
   const [formData, setFormData] = useState({

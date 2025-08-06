@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import DoctorImage from "../../../public/image.png";
+import DoctorImage from "/image.png";
 import {
   Mail,
   KeyRound,
