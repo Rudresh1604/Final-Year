@@ -5,8 +5,8 @@ import { ThemeInit } from "../.flowbite-react/init";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 import LoginPage from "./Pages/LoginPage";
-import NavbarComponent from "./components/Header";
-import FooterComponent from "./components/Footer";
+import NavbarComponent from "./components/Layout/Header";
+import FooterComponent from "./components/Layout/Footer";
 
 function App() {
   return (

@@ -15,15 +15,7 @@ import { Facebook, Github, Instagram, Twitch, Twitter } from "lucide-react";
 const FooterComponent = () => {
   return (
     <div className="mt-5 border-t bg-gray-200 border-gray-300">
-      <Footer
-        container
-        // theme={{
-        //   root: {
-        //     base: "w-full  bg-white shadow md:flex md:items-center md:justify-between",
-        //     container: "w-full p-6",
-        //   },
-        // }}
-      >
+      <Footer container>
         <div className="w-full rounded-r-0">
           <div className="grid w-full justify-between sm:flex sm:justify-between md:flex md:grid-cols-1">
             <div>
