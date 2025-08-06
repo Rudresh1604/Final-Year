@@ -1,5 +1,5 @@
 import React from "react";
-import Doctor from "/image.png";
+import Doctor from "/IntroImage.png";
 import { KeyRound, Mail, User } from "lucide-react";
 
 const Login = () => {
