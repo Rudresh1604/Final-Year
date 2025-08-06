@@ -1,8 +1,17 @@
 import React, { useEffect, useState } from "react";
 import AppointmentDateTimeCard from "./AppointmentDateTimeCard";
+import { Button, ModalBody, ModalFooter, ModalHeader } from "flowbite-react";
+import { Modal } from "flowbite-react";
+import AppointmentForm from "./AppointmentForm";
+import { useSelector } from "react-redux";
+import { selectAuth, selectLoading } from "../redux/rootSlice";
 
 const AppointmentPicker = () => {
   const [openModal, setOpenModal] = useState(false);
+  const { user } = useSelector(selectAuth);
+  const { loading } = useSelector(selectLoading);
+  console.log(user);
+
   const [availableSlot, setAvailableSlot] = useState([
     {
       day: "Tuesday",
@@ -77,7 +86,7 @@ const AppointmentPicker = () => {
           ))}
         </div>
       </div>
-
+      <span className="w-full border-b mx-3 border-gray-300"></span>
       <div className="w-full px-3 lg:px-5 py-4">
         <h1 className="text-xl text-gray-700 ml-2 lg:text-2xl font-medium">
           Select Time to schedule the Appointment :
@@ -94,6 +103,23 @@ const AppointmentPicker = () => {
                 setOpenModal={setOpenModal}
               />
             ))}
+          <Modal
+            show={openModal}
+            size="md"
+            position="bottom-center"
+            onClose={() => setOpenModal(false)}
+            className="mt-28"
+            dismissible
+          >
+            <ModalHeader>
+              <div className="text-center">
+                Please provide some more details !
+              </div>
+            </ModalHeader>
+            <ModalBody>
+              <AppointmentForm />
+            </ModalBody>
+          </Modal>
         </div>
       </div>
     </div>
