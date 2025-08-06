@@ -1,5 +1,5 @@
 import React from "react";
-import AppointmentPicker from "../components/AppointmentPicker";
+import AppointmentPicker from "../components/Appointment/AppointmentPicker";
 import DoctorIntro from "../components/DoctorIntro";
 
 const Appointment = () => {
