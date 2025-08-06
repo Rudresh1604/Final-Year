@@ -4,6 +4,7 @@ import Appointment from "./Pages/Appointment";
 import { ThemeInit } from "../.flowbite-react/init";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
+import LoginPage from "./Pages/LoginPage";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Appointment />} />
+            <Route path="/login" element={<LoginPage />} />
           </Routes>
         </BrowserRouter>
       </div>
