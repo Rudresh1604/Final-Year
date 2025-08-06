@@ -5,7 +5,7 @@ import { KeyRound, Mail, User } from "lucide-react";
 const Login = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="flex flex-row bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-5xl">
+      <div className="flex flex-row bg-white rounded-xl shadow-lg overflow-hidden w-full max-w-5xl">
         {/* Left: Form */}
         <div className="w-full md:w-1/2 p-8">
           <div className="mb-14">
@@ -88,7 +88,7 @@ const Login = () => {
           <img
             src={Doctor}
             alt="Doctor illustration"
-            className="w-full h-full object-cover max-sm:hidden"
+            className="w-full h-full object-cover scale-105 max-sm:hidden"
           />
         </div>
       </div>
