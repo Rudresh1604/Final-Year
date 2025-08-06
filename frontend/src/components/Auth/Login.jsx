@@ -15,7 +15,7 @@ const Login = () => {
             <h1 className="text-xl font-bold">Hi There...</h1>
             <p className="text-sm">Welcome Back </p>
           </div>
-          <form className="flex max-w-md flex-col gap-4  text-lg ">
+          <form className="flex max-w flex-col gap-4 text-lg ">
             <div>
               <label
                 htmlFor="email"
@@ -81,6 +81,12 @@ const Login = () => {
               Submit
             </button>
           </form>
+          <div className="flex items-center justify-center mt-4">
+            <p>Don't have an account?</p>
+            <Link to="/signup" className="ml-2 text-blue-600 hover:underline">
+              Sign up
+            </Link>
+          </div>
         </div>
 
         {/* Right: Image */}

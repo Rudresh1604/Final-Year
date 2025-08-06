@@ -7,6 +7,8 @@ import { store } from "./redux/store";
 import LoginPage from "./Pages/LoginPage";
 import NavbarComponent from "./components/Layout/Header";
 import FooterComponent from "./components/Layout/Footer";
+import DoctorSignup from "./components/Auth/DoctorSignup";
+import PatientSignUp from "./components/Auth/PatientSignUp";
 
 function App() {
   return (

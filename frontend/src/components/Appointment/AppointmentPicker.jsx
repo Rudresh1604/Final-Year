@@ -112,7 +112,7 @@ const AppointmentPicker = () => {
             dismissible
           >
             <ModalHeader>
-              <div className="text-center">
+              <div className="text-center px-3">
                 Please provide some more details !
               </div>
             </ModalHeader>
