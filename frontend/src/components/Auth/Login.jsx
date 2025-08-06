@@ -1,6 +1,5 @@
 import React from "react";
-import Doctor from "/image.png";
-import { Link } from "react-router-dom";
+import Doctor from "/IntroImage.png";
 import { KeyRound, Mail, User } from "lucide-react";
 
 const Login = () => {
@@ -84,10 +83,7 @@ const Login = () => {
           </form>
           <div className="flex items-center justify-center mt-4">
             <p>Don't have an account?</p>
-            <Link
-              to="/signup"
-              className="ml-2 text-blue-600 hover:underline"
-            >
+            <Link to="/signup" className="ml-2 text-blue-600 hover:underline">
               Sign up
             </Link>
           </div>

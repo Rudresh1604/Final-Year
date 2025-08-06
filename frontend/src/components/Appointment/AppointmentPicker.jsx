@@ -4,7 +4,7 @@ import { Button, ModalBody, ModalFooter, ModalHeader } from "flowbite-react";
 import { Modal } from "flowbite-react";
 import AppointmentForm from "./AppointmentForm";
 import { useSelector } from "react-redux";
-import { selectAuth, selectLoading } from "../redux/rootSlice";
+import { selectAuth, selectLoading } from "../../redux/rootSlice";
 
 const AppointmentPicker = () => {
   const [openModal, setOpenModal] = useState(false);
