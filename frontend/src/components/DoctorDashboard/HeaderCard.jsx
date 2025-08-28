@@ -1,11 +1,11 @@
 import React from "react";
 import { Calendar, Users, Activity } from "lucide-react";
-import Card from "../components/Card/Card";
+import Card from "../Card/Card";
 
 const HeaderCard = () => {
   return (
-    <div className="ml-10">
-      <div className="grid gap-6 sm:grid-cols-1 lg:grid-cols-3">
+    <div className="lg:ml-8 my-5">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
         <Card
           number="94"
           description="Total number of scheduled Appointments"

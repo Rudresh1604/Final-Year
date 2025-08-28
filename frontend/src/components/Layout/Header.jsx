@@ -22,7 +22,7 @@ const NavbarComponent = () => {
             HealthScan AI
           </span>
         </NavbarBrand>
-        <div className="flex md:order-2 gap-3">
+        <div className="max-sm:hidden flex md:order-2 gap-3">
           <Button
             color={"alternative"}
             className="border border-black bg-gray-100 cursor-pointer"
@@ -30,9 +30,8 @@ const NavbarComponent = () => {
             Sign in
           </Button>
           <Button className="cursor-pointer">Sign Up</Button>
-          <NavbarToggle />
         </div>
-
+        <NavbarToggle />
         <NavbarCollapse>
           <NavbarLink href="#" active>
             Solutions
@@ -41,6 +40,12 @@ const NavbarComponent = () => {
           <NavbarLink href="#">Resources</NavbarLink>
           <NavbarLink href="#">Pricing</NavbarLink>
           <NavbarLink href="#">Contact</NavbarLink>
+          <NavbarLink href="#" className="md:hidden">
+            Sign in
+          </NavbarLink>
+          <NavbarLink href="#" className="md:hidden">
+            Sign Up
+          </NavbarLink>
         </NavbarCollapse>
       </Navbar>
     </div>

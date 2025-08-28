@@ -10,6 +10,8 @@ import {
 import { allAppointment } from "../../Constants/Doctor";
 import AllAppointment from "../components/DoctorDashboard/AllAppointment";
 import AppointmentCalendar from "../components/DoctorDashboard/Calender/AppointmentCalender";
+import HeaderCard from "../components/DoctorDashboard/HeaderCard";
+import { ReminderComponent } from "../components/DoctorDashboard/Reminder";
 
 const DoctorDashboard = () => {
   return (
@@ -23,8 +25,12 @@ const DoctorDashboard = () => {
           odio?
         </p>
       </div>
-      <div className="flex flex-row w-full">
+      <HeaderCard />
+      <div className="flex flex-col md:flex-row w-full">
         <AppointmentCalendar />
+        <div>
+          <ReminderComponent />
+        </div>
       </div>
       <AllAppointment />
     </div>
