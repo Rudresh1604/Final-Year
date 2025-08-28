@@ -1,80 +1,87 @@
-// import React from "react";
-// import FullCalendar from "@fullcalendar/react";
-// import timeGridPlugin from "@fullcalendar/timegrid";
-// import interactionPlugin from "@fullcalendar/interaction";
-// // import "./calendar.css"; // custom styles for styling
+import React from "react";
+import FullCalendar from "@fullcalendar/react";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import "./calendar.css"; // import css file
+import { assignRandomColors } from "../../lib/assignColors";
 
-// const AppointmentCalendar = () => {
-//   const events = [
-//     {
-//       title: "Cardiology Appointment\nDr. Orlando Diggs",
-//       start: "2025-08-28T10:00:00",
-//       end: "2025-08-28T11:00:00",
-//       color: "#bfdbfe", // light blue
-//       textColor: "#1e40af", // dark blue
-//     },
-//     {
-//       title: "Follow-up\nDr. Natali Craig",
-//       start: "2025-08-28T11:00:00",
-//       end: "2025-08-28T12:00:00",
-//       color: "#bbf7d0", // light green
-//       textColor: "#166534", // dark green
-//     },
-//   ];
-
-//   return (
-//     <div className="p-6 bg-white rounded-2xl shadow-md max-w-3xl">
-//       {/* Header */}
-//       <div className="flex justify-between items-center mb-4">
-//         <h2 className="text-md font-semibold">Appointments</h2>
-//       </div>
-
-//       {/* Calendar */}
-//       <FullCalendar
-//         plugins={[timeGridPlugin, interactionPlugin]}
-//         initialView="timeGridDay"
-//         initialDate="2025-08-28"
-//         allDaySlot={false}
-//         slotMinTime="09:00:00"
-//         slotMaxTime="18:00:00"
-//         events={events}
-//         slotDuration="01:00:00"
-//         height="600px"
-//       />
-//     </div>
-//   );
-// };
-
-// export default AppointmentCalendar;
-
-import { Calendar, momentLocalizer, Views } from "react-big-calendar";
-import moment from "moment";
-import { calendarEvents } from "@/lib/data";
-import "react-big-calendar/lib/css/react-big-calendar.css";
-import { useState } from "react";
-
-const localizer = momentLocalizer(moment);
+const events = [
+  {
+    title: "Cardiology Appointment",
+    start: "2025-08-28T10:00:00",
+    end: "2025-08-28T11:00:00",
+    extendedProps: { patient: "Dr. Orlando Diggs" },
+  },
+  {
+    title: "Follow-up",
+    start: "2025-08-28T11:00:00",
+    end: "2025-08-28T12:00:00",
+    extendedProps: { patient: "Dr. Natali Craig" },
+  },
+  {
+    title: "Physical Therapy",
+    start: "2025-08-28T14:00:00",
+    end: "2025-08-28T15:00:00",
+    extendedProps: { patient: "Dr. Sarah Wilson" },
+  },
+  {
+    title: "Checkup",
+    start: "2025-08-28T15:30:00",
+    end: "2025-08-28T16:00:00",
+    extendedProps: { patient: "Dr. Sarah Wilson" }, // ✅ same doctor → same color
+  },
+];
 
 const AppointmentCalendar = () => {
-  const [view, setView] = useState(Views.WORK_WEEK);
-
-  const handleOnChangeView = (selectedView) => {
-    setView(selectedView);
-  };
+  const coloredEvents = assignRandomColors(events);
 
   return (
-    <Calendar
-      localizer={localizer}
-      events={calendarEvents}
-      startAccessor="start"
-      endAccessor="end"
-      views={["work_week", "day"]}
-      view={view}
-      style={{ height: "98%" }}
-      onView={handleOnChangeView}
-      min={new Date(2025, 1, 0, 8, 0, 0)}
-      max={new Date(2025, 1, 0, 17, 0, 0)}
-    />
+    <div className="calendar-wrapper bg-white rounded-xl">
+      <h1 className="text-2xl font-bold mb-4">Appointments</h1>
+
+      <div className="calendar-box">
+        <div className="calendar-header">
+          <h2>Today's Schedule</h2>
+          <span>
+            August 28, 2025 
+            <button className="ml-3 px-4 py-2 rounded-lg font-semibold text-center bg-blue-600 text-white hover:bg-blue-700 transition-colors">Add Slot</button>
+          </span>
+        </div>
+
+        <div className="calendar-container">
+          <FullCalendar
+            plugins={[timeGridPlugin, interactionPlugin]}
+            initialView="timeGridDay"
+            initialDate="2025-08-28"
+            allDaySlot={false}
+            slotMinTime="09:00:00"
+            slotMaxTime="18:00:00"
+            events={coloredEvents}
+            slotDuration="00:30:00" // every slot = 30 minutes
+            slotLabelInterval="01:00" // labels only every hour
+            height="100%"
+            nowIndicator={true}
+            headerToolbar={false}
+            slotLabelFormat={{
+              hour: "numeric",
+              minute: "2-digit",
+              hour12: true,
+            }}
+            eventDisplay="block"
+            eventContent={(arg) => {
+              return {
+                html: `
+        <div class="custom-event-content" style="background:${arg.event.backgroundColor}; color:${arg.event.textColor}">
+          <div class="event-title">${arg.event.title}</div>
+          <div class="event-doctor">${arg.event.extendedProps.patient}</div>
+        </div>
+      `,
+              };
+            }}
+          />
+        </div>
+      </div>
+    </div>
   );
 };
 
