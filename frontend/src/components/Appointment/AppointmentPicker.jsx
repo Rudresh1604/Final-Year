@@ -106,7 +106,7 @@ const AppointmentPicker = () => {
           <Modal
             show={openModal}
             size="md"
-            position="bottom-center"
+            position="top-center"
             onClose={() => setOpenModal(false)}
             className="mt-28"
             dismissible
