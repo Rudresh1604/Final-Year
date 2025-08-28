@@ -25,3 +25,30 @@ export const allAppointment = [
     status: "Pending",
   },
 ];
+
+export const events = [
+  {
+    title: "Cardiology Appointment",
+    start: "2025-08-28T10:00:00",
+    end: "2025-08-28T11:00:00",
+    extendedProps: { patient: "Dr. Orlando Diggs" },
+  },
+  {
+    title: "Follow-up",
+    start: "2025-08-28T11:00:00",
+    end: "2025-08-28T12:00:00",
+    extendedProps: { patient: "Dr. Natali Craig" },
+  },
+  {
+    title: "Physical Therapy",
+    start: "2025-08-28T14:00:00",
+    end: "2025-08-28T15:00:00",
+    extendedProps: { patient: "Dr. Sarah Wilson" },
+  },
+  {
+    title: "Checkup",
+    start: "2025-08-28T15:30:00",
+    end: "2025-08-28T16:00:00",
+    extendedProps: { patient: "Dr. Sarah Wilson" }, // ✅ same doctor → same color
+  },
+];

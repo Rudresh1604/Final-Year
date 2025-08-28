@@ -3,48 +3,25 @@ import FullCalendar from "@fullcalendar/react";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import "./calendar.css"; // import css file
-import { assignRandomColors } from "../../lib/assignColors";
-
-const events = [
-  {
-    title: "Cardiology Appointment",
-    start: "2025-08-28T10:00:00",
-    end: "2025-08-28T11:00:00",
-    extendedProps: { patient: "Dr. Orlando Diggs" },
-  },
-  {
-    title: "Follow-up",
-    start: "2025-08-28T11:00:00",
-    end: "2025-08-28T12:00:00",
-    extendedProps: { patient: "Dr. Natali Craig" },
-  },
-  {
-    title: "Physical Therapy",
-    start: "2025-08-28T14:00:00",
-    end: "2025-08-28T15:00:00",
-    extendedProps: { patient: "Dr. Sarah Wilson" },
-  },
-  {
-    title: "Checkup",
-    start: "2025-08-28T15:30:00",
-    end: "2025-08-28T16:00:00",
-    extendedProps: { patient: "Dr. Sarah Wilson" }, // ✅ same doctor → same color
-  },
-];
+import { assignRandomColors } from "../../../lib/assignColors";
+import { events } from "../../../../Constants/Doctor";
 
 const AppointmentCalendar = () => {
   const coloredEvents = assignRandomColors(events);
 
   return (
-    <div className="calendar-wrapper bg-white rounded-xl">
-      <h1 className="text-2xl font-bold mb-4">Appointments</h1>
-
+    <div className="calendar-wrapper w-full">
       <div className="calendar-box">
+        <h1 className="text-2xl text-gray-600 font-semibold mb-4">
+          Appointments
+        </h1>
         <div className="calendar-header">
           <h2>Today's Schedule</h2>
           <span>
-            August 28, 2025 
-            <button className="ml-3 px-4 py-2 rounded-lg font-semibold text-center bg-blue-600 text-white hover:bg-blue-700 transition-colors">Add Slot</button>
+            August 28, 2025
+            <button className="ml-3 px-4 py-2 rounded-lg font-semibold text-center bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+              Add Slot
+            </button>
           </span>
         </div>
 

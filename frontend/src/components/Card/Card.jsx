@@ -8,7 +8,7 @@ const Card = ({
   iconColor = "text-yellow-600",
 }) => {
   return (
-    <div className="flex items-center w-full max-w-sm p-5 bg-white rounded-xl shadow-md hover:shadow-lg transition">
+    <div className="flex items-center w-auto p-5 bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-lg transition">
       {/* Icon */}
       <div className={`p-3 rounded-lg ${iconBg} ${iconColor}`}>
         {Icon && <Icon size={26} />}
