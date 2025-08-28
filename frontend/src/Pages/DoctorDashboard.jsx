@@ -10,8 +10,10 @@ import {
 
 const DoctorDashboard = () => {
   return (
-    <div class="flex flex-col items-center px-5 bg-white">
-      <h1 class="text-gray-700 font-semibold">All Appointments</h1>
+    <div class="flex flex-col items-center px-5 bg-white border border-gray-300 rounded-2xl">
+      <h1 class="text-gray-700 text-2xl my-2 font-semibold">
+        All Appointments
+      </h1>
       <div class="overflow-x-auto max-w-full  w-full my-3 lg:my-8">
         <table class=" rounded-lg w-full">
           <thead>
