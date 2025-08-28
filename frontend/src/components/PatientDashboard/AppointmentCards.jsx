@@ -1,8 +1,8 @@
 import React from "react";
 
-const AppointmentCards = ({name,speciality,dateTime}) => {
+const AppointmentCards = ({ name, speciality, dateTime }) => {
   return (
-    <div className="flex rounded-lg w-full h-16 justify-between items-center  px-2 border-1 border-gray-200 ">
+    <div className="flex rounded-lg w-full h-16 text-gray-600 justify-between items-center  px-2 border-1 border-gray-200 hover:bg-gray-100 ">
       <div className="flex justify-center items-center gap-2">
         <img
           className="rounded-full w-10 h-10 ml-1.5"
@@ -15,7 +15,7 @@ const AppointmentCards = ({name,speciality,dateTime}) => {
           <p className="text-xs text-gray-600">{dateTime}</p>
         </div>
       </div>
-      <button className="px-4 py-2 rounded-md font-semibold text-center bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+      <button className="px-4 py-2 rounded-md cursor-pointer font-medium text-center bg-blue-600 text-white hover:bg-blue-700 transition-colors">
         Join
       </button>
     </div>

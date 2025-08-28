@@ -9,6 +9,7 @@ import NavbarComponent from "./components/Layout/Header";
 import FooterComponent from "./components/Layout/Footer";
 import SignupPage from "./Pages/SignupPage";
 import DoctorDashboard from "./Pages/DoctorDashboard";
+import PatientDashboard from "./Pages/PatientDashboard";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/doctor" element={<DoctorDashboard />} />
+              <Route path="/patient" element={<PatientDashboard />} />
             </Routes>
           </BrowserRouter>
         </div>
