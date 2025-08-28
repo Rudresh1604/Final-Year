@@ -8,20 +8,23 @@ import LoginPage from "./Pages/LoginPage";
 import NavbarComponent from "./components/Layout/Header";
 import FooterComponent from "./components/Layout/Footer";
 import SignupPage from "./Pages/SignupPage";
+import DoctorDashboard from "./Pages/DoctorDashboard";
+import PatientDashboard from "./Pages/PatientDashboard";
 
 function App() {
   return (
     <Provider store={store}>
+      <ThemeInit />
       <div className="bg-gray-100">
         <NavbarComponent />
         <div className="px-4 pt-4 mt-15 md:px-6 md:py-9 ">
-          <ThemeInit />
-
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Appointment />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
+              <Route path="/doctor" element={<DoctorDashboard />} />
+              <Route path="/patient" element={<PatientDashboard />} />
             </Routes>
           </BrowserRouter>
         </div>

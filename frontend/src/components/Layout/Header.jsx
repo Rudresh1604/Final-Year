@@ -10,8 +10,8 @@ import {
 
 const NavbarComponent = () => {
   return (
-    <div className="mt-1 fixed top-0 left-0 right-3  w-full">
-      <Navbar fluid rounded className="mx-3 border border-gray-300 rounded-lg">
+    <div className="border-b border-gray-300 fixed top-0 left-0 right-3 z-50 w-full">
+      <Navbar fluid rounded className=" rounded-lg">
         <NavbarBrand href="/">
           <img
             src={"/Logo.png"}
