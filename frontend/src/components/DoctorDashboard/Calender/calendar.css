@@ -6,10 +6,11 @@
 .calendar-box {
   background: white;
   border-radius: 16px;
+
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   padding: 16px;
   max-width: 1000px;
-  margin: 0 auto;
+  /* margin: 0 auto; */
 }
 
 .calendar-header {
@@ -80,7 +81,6 @@
   border-width: 2px;
 }
 
-
 /* ✅ Scrollbar Styling (applied to FullCalendar's scroller, not container) */
 .calendar-container .fc-scroller::-webkit-scrollbar {
   width: 8px;
@@ -118,3 +118,8 @@
   scrollbar-color: #6b7280 #f3f4f6;
 }
 
+@media (max-width: 640px) {
+  .calendar-wrapper {
+    padding: 0px;
+  }
+}
