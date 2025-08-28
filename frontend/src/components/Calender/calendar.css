@@ -1,0 +1,23 @@
+/* Remove heavy borders */
+.fc .fc-timegrid-slot {
+  border: none;
+  border-top: 1px solid #e5e7eb; /* light gray divider */
+  height: 60px !important; /* control spacing */
+}
+
+/* Time column styling */
+.fc .fc-timegrid-axis {
+  font-size: 0.9rem;
+  color: #6b7280; /* gray */
+  padding-right: 10px;
+}
+
+/* Appointment block styling */
+.fc .fc-event {
+  border-radius: 0.5rem;
+  padding: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  white-space: pre-line; /* allow doctor name on new line */
+}
