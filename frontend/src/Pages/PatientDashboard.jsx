@@ -1,7 +1,11 @@
 import React from "react";
 import PatientAppointments from "../components/PatientDashboard/PatientAppointments";
 import HeaderCard from "../components/DoctorDashboard/HeaderCard";
-import { Activity, Calendar, FileText, History, Hourglass, Users } from "lucide-react/dist/cjs/lucide-react";
+import {
+  Calendar,
+  FileText,
+  History,
+} from "lucide-react/dist/cjs/lucide-react";
 
 const patientCards = [
   {
@@ -33,9 +37,7 @@ const PatientDashboard = () => {
         <h1 className="text-2xl lg:text-3xl font-semibold text-gray-600">
           Welcome,Patient
         </h1>
-        <p>
-          Here's a summary of your health journey.
-        </p>
+        <p>Here's a summary of your health journey.</p>
       </div>
       <HeaderCard cards={patientCards} />
       <div className="flex flex-col items-center w-full">

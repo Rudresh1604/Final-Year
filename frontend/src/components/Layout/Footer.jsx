@@ -10,7 +10,7 @@ import {
   FooterTitle,
 } from "flowbite-react";
 
-import { Facebook, Github, Instagram, Twitch, Twitter } from "lucide-react";
+import { Facebook, Github, Instagram, Twitter } from "lucide-react";
 
 const FooterComponent = () => {
   return (

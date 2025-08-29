@@ -38,10 +38,7 @@ const DoctorSignup = () => {
       <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
         Doctor Sign Up
       </h2>
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-4 text-lg"
-      >
+      <form onSubmit={handleSubmit} className="space-y-4 text-lg">
         {/* Name */}
         <div>
           <label
