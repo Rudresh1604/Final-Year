@@ -10,7 +10,7 @@ export function ReminderComponent() {
         className={`flex w-full lg:mt-5 justify-between border rounded-2xl border-gray-200 bg-gray-50 p-4`}
       >
         <div className="flex flex-row gap-4 items-center">
-          <Bell></Bell>
+          <Bell />
           <div className="flex flex-col gap-3">
             <h1>
               Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cumque,

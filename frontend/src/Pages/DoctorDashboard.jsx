@@ -3,7 +3,11 @@ import AllAppointment from "../components/DoctorDashboard/AllAppointment";
 import AppointmentCalendar from "../components/DoctorDashboard/Calender/AppointmentCalender";
 import HeaderCard from "../components/DoctorDashboard/HeaderCard";
 import { ReminderComponent } from "../components/DoctorDashboard/Reminder";
-import { Activity, Calendar, Users } from "lucide-react/dist/cjs/lucide-react";
+import {
+  Hourglass,
+  Calendar,
+  TriangleAlert,
+} from "lucide-react/dist/cjs/lucide-react";
 
 const doctorCards = [
   {
@@ -16,16 +20,16 @@ const doctorCards = [
   {
     number: "32",
     description: "Total number of the pending Appointments",
-    icon: Users,
+    icon: Hourglass,
     iconBg: "bg-blue-100",
     iconColor: "text-blue-600",
   },
   {
     number: "56",
     description: "Total numbers of cancelled Appointments",
-    icon: Activity,
-    iconBg: "bg-green-100",
-    iconColor: "text-green-600",
+    icon: TriangleAlert,
+    iconBg: "bg-red-200",
+    iconColor: "text-red-600",
   },
 ];
 
