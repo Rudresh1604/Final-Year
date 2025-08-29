@@ -1,32 +1,20 @@
 import React from "react";
-import { Calendar, Users, Activity } from "lucide-react";
 import Card from "../Card/Card";
 
-const HeaderCard = () => {
+const HeaderCard = ({ cards }) => {
   return (
     <div className="lg:ml-8 my-5">
       <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
-        <Card
-          number="94"
-          description="Total number of scheduled Appointments"
-          icon={Calendar}
-          iconBg="bg-yellow-100"
-          iconColor="text-yellow-600"
-        />
-        <Card
-          number="120"
-          description="Total number of pending Appointments"
-          icon={Users}
-          iconBg="bg-blue-100"
-          iconColor="text-blue-600"
-        />
-        <Card
-          number="76%"
-          description="Toal numbers of cancelled Appointments"
-          icon={Activity}
-          iconBg="bg-green-100"
-          iconColor="text-green-600"
-        />
+        {cards.map((card, index) => (
+          <Card
+            key={index}
+            number={card.number}
+            description={card.description}
+            icon={card.icon}
+            iconBg={card.iconBg}
+            iconColor={card.iconColor}
+          />
+        ))}
       </div>
     </div>
   );
