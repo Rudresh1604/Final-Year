@@ -39,7 +39,7 @@ const PatientDashboard = () => {
         </h1>
         <p>Here's a summary of your health journey.</p>
       </div>
-      <HeaderCard cards={patientCards} />
+      <HeaderCard cards={patientCards} className={"lg:ml-1"} />
       <div className="flex flex-col items-center w-full">
         <PatientAppointments />
       </div>
