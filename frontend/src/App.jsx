@@ -10,6 +10,9 @@ import FooterComponent from "./components/Layout/Footer";
 import SignupPage from "./Pages/SignupPage";
 import DoctorDashboard from "./Pages/DoctorDashboard";
 import PatientDashboard from "./Pages/PatientDashboard";
+// import Home from "./components/Home/Home";
+import Home from "./Pages/Home";
+
 
 function App() {
   return (
@@ -25,6 +28,8 @@ function App() {
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/doctor" element={<DoctorDashboard />} />
               <Route path="/patient" element={<PatientDashboard />} />
+              <Route path="/home" element={<Home />} />
+
             </Routes>
           </BrowserRouter>
         </div>
