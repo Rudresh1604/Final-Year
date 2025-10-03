@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useRef } from "react";
 import InfoRow from "../components/Report/InfoRow";
+import html2pdf from 'html2pdf.js'
 import InfoBlock from "../components/Report/InfoBlock";
 import PrescriptionTable from "../components/Report/PrescriptionTable";
-
 
 const reportData = {
   patient: {
@@ -22,24 +22,39 @@ const reportData = {
     { medicine: "Syrup", time: "Morning", amount: "5 ml" },
     { medicine: "Tablet", time: "Night", amount: "1 Pill" },
   ],
-    doctorName: "Dr. Smith Johnson",
-    nextSession: "10-09-2025",
-    notes: "Patient should continue medication and follow breathing exercises."
+  doctorName: "Dr. Smith Johnson",
+  nextSession: "10-09-2025",
+  notes: "Patient should continue medication and follow breathing exercises.",
 };
 
 const ReportPage = () => {
+  const reportRef = useRef();
+
+  const handleDownloadPdf = () => {
+    const element = reportRef.current;
+    const options = {
+      margin: 0.3,
+      filename: `Medical_Report_${reportData.patient.name}_${reportData.patient.dateOfCheckup}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+    };
+
+    html2pdf().set(options).from(element).save();
+  };
+
   return (
     <div className="max-w-3xl mx-auto p-6">
       {/* Header */}
       <section className="mb-6 flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">🩺 Medical Report</h1>
-        <button className="bg-green-600 hover:bg-green-700 transition-colors text-white rounded-lg py-2 px-5 shadow-md">
+        <button className="bg-green-600 hover:bg-green-700 transition-colors text-white rounded-lg py-2 px-5 shadow-md cursor-pointer" onClick={handleDownloadPdf}>
           Download PDF
         </button>
       </section>
 
       {/* Report Body */}
-      <section className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+      <section ref={reportRef} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
         {/* Patient Details */}
         <h2 className="text-xl font-semibold border-b pb-2 text-gray-700 mb-4">
           Patient Details
@@ -72,7 +87,7 @@ const ReportPage = () => {
         </div>
 
         {/* Doctor Section */}
-        <div className="mt-6 bg-gray-50 rounded-xl p-4 shadow-inner">
+        <div className="mt-4 ">
           <h3 className="text-lg font-semibold border-b pb-2 mb-3 text-gray-700">
             Doctor's Details
           </h3>
