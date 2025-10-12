@@ -1,6 +1,7 @@
 import React from "react";
 import SearchDisease from "../components/Disease/Search";
 import { PlusIcon, Trash } from "lucide-react";
+import PatientTimeline from "../components/Disease/PatientTimeline";
 
 const DiseaseManagement = () => {
   const diseaseList = [
@@ -16,7 +17,7 @@ const DiseaseManagement = () => {
       <div className="w-full flex flex-col md:flex-row">
         <div className="mt-3 lg:mt-7 mx-2 border w-full lg:w-[70%] rounded-lg p-2 border-gray-200">
           <SearchDisease />
-          <div className="flex flex-col mt-3 mx-3">
+          <div className="flex flex-col my-4 mx-3">
             <h1 className="text-xl text-gray-700">Current Diagnosis</h1>
             <div className="w-full flex flex-col gap-2 my-2 lg:my-4">
               {diseaseList?.map((item, index) => (
@@ -35,7 +36,7 @@ const DiseaseManagement = () => {
           </div>
         </div>
         <div className="mt-3 lg:mt-7 mx-2 w-full lg:w-[30%] border flex flex-col gap-2 rounded-lg py-2 px-4 border-gray-200">
-          <span className="flex items-center gap-3">
+          <span className="flex my-3 items-center gap-3">
             <svg
               width="20"
               height="20"
@@ -81,6 +82,42 @@ const DiseaseManagement = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+      <div className="mt-3 flex flex-col md:flex-row gap-4">
+        <div className="border mt-3 lg:w-[70%] rounded-lg px-4 lg:px-6 py-2 border-gray-200">
+          <PatientTimeline />
+        </div>
+        <div className="border h-fit mt-3 w-full md:w-[30%] border-gray-200 px-4 py-2 rounded-lg">
+          <h1 className="flex flex-row gap-4 my-2 items-center">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M11.2188 7.98438H13.9844V13.9844H11.2188V7.98438ZM5.59375 0.015625H8.40625V13.9844H5.59375V0.015625ZM0.015625 4.1875H3.01562V13.9844H0.015625V4.1875Z"
+                fill="#2563EB"
+              />
+            </svg>{" "}
+            Quick Stats
+          </h1>
+          <div className="grid grid-cols-3 mt-3">
+            <div className="flex flex-col items-center">
+              <h1 className="text-green-400 text-xl font-medium">12</h1>
+              <span className="text-sm">Active Case</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <h1 className="text-green-400 text-xl font-medium">12</h1>
+              <span className="text-sm">Active Case</span>
+            </div>
+            <div className="flex flex-col items-center">
+              <h1 className="text-green-400 text-xl font-medium">12</h1>
+              <span className="text-sm">Active Case</span>
+            </div>
           </div>
         </div>
       </div>
