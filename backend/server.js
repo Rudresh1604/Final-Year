@@ -13,7 +13,7 @@ const app = express();
 const PORT = process.env.PORT || 3003;
 app.use(express.json());
 
-app.use(cors());
+app.use(cors("*"));
 dbConnect();
 
 app.use("/api/appointment", appointmentRoutes);
@@ -22,6 +22,14 @@ app.use("/api/patient", patientRoutes);
 app.use("/api/disease", diseaseRoutes);
 app.use("/api/login", loginRoutes);
 app.use("/api/reports", reportRoutes);
+
+app.get("/healthz", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    uptime: process.uptime(),
+    timestamp: Date.now(),
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`server started on ${PORT}`);

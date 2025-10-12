@@ -45,10 +45,13 @@ const DoctorDashboard = () => {
           odio?
         </p>
       </div>
-      <HeaderCard cards={doctorCards} />
+      <HeaderCard cards={doctorCards} className={"lg:ml-6"} />
       <div className="flex flex-col md:flex-row w-full">
         <AppointmentCalendar />
-        <div>
+        <div className="flex flex-col gap-2 lg:gap-1 items-center">
+          <ReminderComponent />
+          <ReminderComponent />
+          <ReminderComponent />
           <ReminderComponent />
         </div>
       </div>

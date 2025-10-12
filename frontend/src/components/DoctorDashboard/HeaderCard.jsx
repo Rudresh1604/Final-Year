@@ -1,10 +1,10 @@
 import React from "react";
 import Card from "../Card/Card";
 
-const HeaderCard = ({ cards }) => {
+const HeaderCard = ({ cards, className }) => {
   return (
-    <div className="lg:ml-8 my-5">
-      <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
+    <div className={` my-5 ${className}`}>
+      <div className="grid gap-6  grid-cols-1 lg:grid-cols-3">
         {cards.map((card, index) => (
           <Card
             key={index}

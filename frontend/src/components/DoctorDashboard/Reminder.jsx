@@ -7,7 +7,7 @@ export function ReminderComponent() {
   return (
     <Banner>
       <div
-        className={`flex w-full lg:mt-5 justify-between border rounded-2xl border-gray-200 bg-gray-50 p-4`}
+        className={`flex w-full lg:mt-5 justify-between bg-white border rounded-2xl border-gray-200  p-3`}
       >
         <div className="flex flex-row gap-4 items-center">
           <Bell />
