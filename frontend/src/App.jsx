@@ -10,6 +10,8 @@ import FooterComponent from "./components/Layout/Footer";
 import SignupPage from "./Pages/SignupPage";
 import DoctorDashboard from "./Pages/DoctorDashboard";
 import PatientDashboard from "./Pages/PatientDashboard";
+import HomePage from "./Pages/HomePage";
+import ReportPage from "./Pages/ReportPage";
 
 function App() {
   return (
@@ -20,11 +22,13 @@ function App() {
         <div className="px-4 pt-4 mt-15 md:px-6 md:py-9 ">
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Appointment />} />
+              <Route path="/appointment" element={<Appointment />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/doctor" element={<DoctorDashboard />} />
               <Route path="/patient" element={<PatientDashboard />} />
+              <Route path="/" element={<HomePage />} />
+              <Route path="/report" element={<ReportPage />} />
             </Routes>
           </BrowserRouter>
         </div>
