@@ -7,14 +7,14 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password, role }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(`${API_URL}/login`, {
+      const response = await axios.post(`${API_URL}/api/login`, {
         email,
         password,
         role,
       });
       const token = response.data.token;
       localStorage.setItem("token", token);
-      return { token, role };
+      return { success: true, token, role };
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Login failed. Please try again."
@@ -28,7 +28,7 @@ export const registerDoctor = createAsyncThunk(
   "auth/registerDoctor",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API_URL}/doctors`, formData);
+      const res = await axios.post(`${API_URL}/api/doctors/add`, formData);
       return res.data;
     } catch (err) {
       return rejectWithValue(
@@ -43,7 +43,7 @@ export const registerPatient = createAsyncThunk(
   "auth/registerPatient",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API_URL}/patient`, formData);
+      const res = await axios.post(`${API_URL}/api/patient/add`, formData);
       return res.data;
     } catch (err) {
       return rejectWithValue(

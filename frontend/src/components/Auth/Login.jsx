@@ -1,9 +1,44 @@
-import React from "react";
+import React, { useState } from "react";
 import Doctor from "/IntroImage.png";
+import { useDispatch, useSelector } from "react-redux";
 import { KeyRound, Mail, User } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { loginUser } from "../../redux/authSlice";
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, error } = useSelector((state) => state.auth);
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    role: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await dispatch(loginUser(formData));
+      console.log(res);
+      if (res.payload && res.payload.success) {
+        navigate(formData.role === "Doctor" ? "/doctor" : "/patient");
+      } else {
+        console.error(
+          "Login failed:",
+          res.payload?.message || "Invalid credentials"
+        );
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <div className="flex flex-row bg-white rounded-xl shadow-lg overflow-hidden w-full max-w-5xl">
@@ -16,7 +51,10 @@ const Login = () => {
             <h1 className="text-xl font-bold">Hi There...</h1>
             <p className="text-sm">Welcome Back </p>
           </div>
-          <form className="flex max-w flex-col gap-4 text-lg ">
+          <form
+            onSubmit={handleSubmit}
+            className="flex max-w flex-col gap-4 text-lg "
+          >
             <div>
               <label
                 htmlFor="email"
@@ -24,14 +62,19 @@ const Login = () => {
               >
                 Your email
               </label>
-              <div className="flex rounded-lg border border-gray-300 bg-gray-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500">
+              <div
+                className="flex rounded-lg border border-gray-300 bg-gray-200
+               focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500"
+              >
                 <Mail className="w-8 h-8 my-auto text-gray-500 ml-2" />
                 <input
                   id="email"
                   type="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   placeholder="name@example.com"
+                  className="w-full  focus:outline-none p-2.5"
                   required
-                  className="w-full  focus:outline-none p-2.5  "
                 />
               </div>
             </div>
@@ -43,14 +86,19 @@ const Login = () => {
               >
                 Your password
               </label>
-              <div className="flex rounded-lg border border-gray-300 bg-gray-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500">
+              <div
+                className="flex rounded-lg border border-gray-300 bg-gray-200
+               focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500"
+              >
                 <KeyRound className="w-8 h-8 my-auto text-gray-500 ml-2" />
                 <input
-                  id="password1"
+                  id="password"
                   type="password"
-                  required
+                  value={formData.password}
+                  onChange={handleChange}
                   placeholder="Enter your password"
                   className="w-full p-2.5   focus:outline-none"
+                  required
                 />
               </div>
             </div>
@@ -62,26 +110,36 @@ const Login = () => {
               >
                 Select your role
               </label>
-              <div className="flex rounded-lg border border-gray-300 bg-gray-200 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500">
+              <div
+                className="flex rounded-lg border border-gray-300 bg-gray-200
+               focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500"
+              >
                 <User className="w-8 h-8 my-auto text-gray-500 ml-2 " />
                 <select
                   id="role"
-                  required
+                  value={formData.role}
+                  onChange={handleChange}
                   className="w-full  p-2.5   focus:outline-none  cursor-pointer"
+                  required
                 >
-                  <option value="patient">Patient</option>
-                  <option value="doctor">Doctor</option>
+                  <option value="Patient">Patient</option>
+                  <option value="Doctor">Doctor</option>
                 </select>
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full rounded-lg bg-blue-600 px-5 py-2.5 text-center text-white hover:bg-blue-700 focus:ring-4 focus:ring-blue-300"
+              disabled={loading}
+              className="w-full rounded-lg bg-blue-600 px-5 py-2.5 text-center text-white
+               hover:bg-blue-700 focus:ring-4 focus:ring-blue-300"
             >
-              Submit
+              {loading ? "Logging in..." : "Login"}
             </button>
           </form>
+          {error && (
+            <p className="text-red-600 text-sm mt-3 text-center">{error}</p>
+          )}
           <div className="flex items-center justify-center mt-4">
             <p>Don't have an account?</p>
             <Link to="/signup" className="ml-2 text-blue-600 hover:underline">
