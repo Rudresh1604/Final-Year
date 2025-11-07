@@ -1,6 +1,6 @@
 import React from "react";
-import AppointmentPicker from "../components/AppointmentPicker";
-import DoctorIntro from "../components/DoctorIntro";
+import AppointmentPicker from "../components/Appointment/AppointmentPicker";
+import DoctorIntro from "../components/Appointment/DoctorIntro";
 
 const Appointment = () => {
   return (
