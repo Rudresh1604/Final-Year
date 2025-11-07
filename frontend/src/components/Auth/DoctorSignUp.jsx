@@ -33,11 +33,7 @@ const DoctorSignup = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   console.log(formData);
-  // };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const payload = {
@@ -45,12 +41,21 @@ const DoctorSignup = () => {
       location: { city: formData.city, state: formData.state },
     };
 
-    dispatch(registerDoctor(payload)).then((res) => {
-      if (res.meta.requestStatus === "fulfilled") {
+    try {
+      const res = await dispatch(registerDoctor(payload));
+
+      if (res.payload && res.payload.success) {
         alert("Doctor registered successfully!");
+      } else {
+        alert(res.payload?.message || "Doctor registration failed!");
+        console.error("Registration failed:", res.payload);
       }
-    });
+    } catch (error) {
+      console.error("Error during registration:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
+
   return (
     <div className="w-full  p-8 rounded-lg">
       <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">

@@ -29,7 +29,7 @@ export const registerDoctor = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const res = await axios.post(`${API_URL}/api/doctors/add`, formData);
-      return res.data;
+      return { success: true, data: res.data };
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Doctor registration failed."
@@ -44,7 +44,7 @@ export const registerPatient = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const res = await axios.post(`${API_URL}/api/patient/add`, formData);
-      return res.data;
+      return { success: true, data: res.data };
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Patient registration failed."
