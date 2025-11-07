@@ -13,6 +13,7 @@ import PatientDashboard from "./Pages/PatientDashboard";
 import HomePage from "./Pages/HomePage";
 import ReportPage from "./Pages/ReportPage";
 import DiseaseManagement from "./Pages/DiseaseManagement";
+import MedicalAI from "./Pages/MedicalAI";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
               <Route path="/disease" element={<DiseaseManagement />} />
               <Route path="/" element={<HomePage />} />
               <Route path="/report" element={<ReportPage />} />
+              <Route path="/medical-ai" element={<MedicalAI />} />
             </Routes>
           </BrowserRouter>
         </div>
