@@ -10,8 +10,13 @@ import {
   HeartPulse,
   CalendarDays,
 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { registerDoctor } from "../../redux/authSlice";
 
 const DoctorSignup = () => {
+  const dispatch = useDispatch();
+  const { loading, error } = useSelector((state) => state.auth);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -28,9 +33,27 @@ const DoctorSignup = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
+    const payload = {
+      ...formData,
+      location: { city: formData.city, state: formData.state },
+    };
+
+    try {
+      const res = await dispatch(registerDoctor(payload));
+
+      if (res.payload && res.payload.success) {
+        alert("Doctor registered successfully!");
+      } else {
+        alert(res.payload?.message || "Doctor registration failed!");
+        console.error("Registration failed:", res.payload);
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -53,10 +76,11 @@ const DoctorSignup = () => {
               id="name"
               name="name"
               type="text"
+              value={formData.name}
               placeholder="Dr. John Smith"
-              required
               onChange={handleChange}
               className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
+              required
             />
           </div>
         </div>
@@ -75,10 +99,11 @@ const DoctorSignup = () => {
               id="email"
               name="email"
               type="email"
+              value={formData.email}
               placeholder="name@example.com"
-              required
               onChange={handleChange}
               className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
+              required
             />
           </div>
         </div>
@@ -97,11 +122,12 @@ const DoctorSignup = () => {
               id="password"
               name="password"
               type="password"
+              value={formData.password}
               minLength={8}
-              required
               placeholder="At least 8 characters"
               onChange={handleChange}
               className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
+              required
             />
           </div>
         </div>
@@ -120,6 +146,7 @@ const DoctorSignup = () => {
               id="phone"
               name="phone"
               type="tel"
+              value={formData.phone}
               placeholder="123-456-7890"
               onChange={handleChange}
               className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
@@ -143,10 +170,11 @@ const DoctorSignup = () => {
                 type="number"
                 min={18}
                 max={100}
+                value={formData.age}
                 onChange={handleChange}
-                required
                 placeholder="35"
                 className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
+                required
               />
             </div>
           </div>
@@ -164,6 +192,7 @@ const DoctorSignup = () => {
                 type="number"
                 min={0}
                 max={100}
+                value={formData.experience}
                 onChange={handleChange}
                 placeholder="10"
                 className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
@@ -184,6 +213,8 @@ const DoctorSignup = () => {
             <HeartPulse className="w-6 h-6 mx-2 text-gray-500" />
             <input
               name="specialization"
+              type="text"
+              value={formData.specialization}
               placeholder="Cardiology, Dermatology"
               onChange={handleChange}
               className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
@@ -205,6 +236,7 @@ const DoctorSignup = () => {
               <input
                 name="city"
                 type="text"
+                value={formData.city}
                 onChange={handleChange}
                 placeholder="Pune"
                 className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
@@ -223,6 +255,7 @@ const DoctorSignup = () => {
               <input
                 name="state"
                 type="text"
+                value={formData.state}
                 onChange={handleChange}
                 placeholder="Maharashtra"
                 className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
@@ -234,10 +267,12 @@ const DoctorSignup = () => {
         {/* Submit */}
         <button
           type="submit"
+          disabled={loading}
           className="w-full rounded-xl bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700 transition focus:ring-4 focus:ring-blue-300"
         >
-          Sign Up
+          {loading ? "Registering..." : "Sign Up"}
         </button>
+        {error && <p className="text-red-600 text-center">{error}</p>}
       </form>
     </div>
   );
