@@ -14,6 +14,7 @@ import HomePage from "./Pages/HomePage";
 import ReportPage from "./Pages/ReportPage";
 import DiseaseManagement from "./Pages/DiseaseManagement";
 import MedicalAI from "./Pages/MedicalAI";
+import ReportFormPage from "./Pages/ReportFormPage";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/report" element={<ReportPage />} />
               <Route path="/medical-ai" element={<MedicalAI />} />
+              <Route path="/create-report" element={<ReportFormPage />} />
             </Routes>
           </BrowserRouter>
         </div>
