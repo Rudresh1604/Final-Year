@@ -12,9 +12,11 @@ import {
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerDoctor } from "../../redux/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const DoctorSignup = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
@@ -46,6 +48,7 @@ const DoctorSignup = () => {
 
       if (res.payload && res.payload.success) {
         alert("Doctor registered successfully!");
+        navigate("/login");
       } else {
         alert(res.payload?.message || "Doctor registration failed!");
         console.error("Registration failed:", res.payload);
@@ -70,7 +73,10 @@ const DoctorSignup = () => {
           >
             Full Name
           </label>
-          <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200 focus-within:ring-2 focus-within:ring-blue-500">
+          <div
+            className="flex items-center rounded-xl border border-gray-300 bg-gray-200 
+          focus-within:ring-2 focus-within:ring-blue-500"
+          >
             <User className="w-6 h-6 mx-2 text-gray-500" />
             <input
               id="name"
@@ -93,7 +99,10 @@ const DoctorSignup = () => {
           >
             Email
           </label>
-          <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200 focus-within:ring-2 focus-within:ring-blue-500">
+          <div
+            className="flex items-center rounded-xl border border-gray-300 bg-gray-200 
+          focus-within:ring-2 focus-within:ring-blue-500"
+          >
             <Mail className="w-6 h-6 mx-2 text-gray-500" />
             <input
               id="email"
@@ -116,7 +125,10 @@ const DoctorSignup = () => {
           >
             Password
           </label>
-          <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200 focus-within:ring-2 focus-within:ring-blue-500">
+          <div
+            className="flex items-center rounded-xl border border-gray-300 bg-gray-200 
+          focus-within:ring-2 focus-within:ring-blue-500"
+          >
             <KeyRound className="w-6 h-6 mx-2 text-gray-500" />
             <input
               id="password"
@@ -140,7 +152,10 @@ const DoctorSignup = () => {
           >
             Phone
           </label>
-          <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200 focus-within:ring-2 focus-within:ring-blue-500">
+          <div
+            className="flex items-center rounded-xl border border-gray-300 bg-gray-200 
+          focus-within:ring-2 focus-within:ring-blue-500"
+          >
             <Phone className="w-6 h-6 mx-2 text-gray-500" />
             <input
               id="phone"
@@ -163,7 +178,10 @@ const DoctorSignup = () => {
             >
               Age
             </label>
-            <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200 focus-within:ring-2 focus-within:ring-blue-500">
+            <div
+              className="flex items-center rounded-xl border border-gray-300 bg-gray-200 
+            focus-within:ring-2 focus-within:ring-blue-500"
+            >
               <CalendarDays className="w-6 h-6 mx-2 text-gray-500" />
               <input
                 name="age"
@@ -185,7 +203,10 @@ const DoctorSignup = () => {
             >
               Experience (yrs)
             </label>
-            <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200 focus-within:ring-2 focus-within:ring-blue-500">
+            <div
+              className="flex items-center rounded-xl border border-gray-300 bg-gray-200 
+            focus-within:ring-2 focus-within:ring-blue-500"
+            >
               <Award className="w-6 h-6 mx-2 text-gray-500" />
               <input
                 name="experience"
@@ -209,7 +230,10 @@ const DoctorSignup = () => {
           >
             Specialization
           </label>
-          <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200 focus-within:ring-2 focus-within:ring-blue-500">
+          <div
+            className="flex items-center rounded-xl border border-gray-300 bg-gray-200 
+          focus-within:ring-2 focus-within:ring-blue-500"
+          >
             <HeartPulse className="w-6 h-6 mx-2 text-gray-500" />
             <input
               name="specialization"
@@ -231,7 +255,10 @@ const DoctorSignup = () => {
             >
               City
             </label>
-            <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200 focus-within:ring-2 focus-within:ring-blue-500">
+            <div
+              className="flex items-center rounded-xl border border-gray-300 bg-gray-200 
+            focus-within:ring-2 focus-within:ring-blue-500"
+            >
               <Building className="w-6 h-6 mx-2 text-gray-500" />
               <input
                 name="city"
@@ -250,7 +277,10 @@ const DoctorSignup = () => {
             >
               State
             </label>
-            <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200 focus-within:ring-2 focus-within:ring-blue-500">
+            <div
+              className="flex items-center rounded-xl border border-gray-300 bg-gray-200 
+            focus-within:ring-2 focus-within:ring-blue-500"
+            >
               <MapPin className="w-6 h-6 mx-2 text-gray-500" />
               <input
                 name="state"
@@ -268,7 +298,8 @@ const DoctorSignup = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700 transition focus:ring-4 focus:ring-blue-300"
+          className="w-full rounded-xl bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700 
+          transition focus:ring-4 focus:ring-blue-300 cursor-pointer"
         >
           {loading ? "Registering..." : "Sign Up"}
         </button>

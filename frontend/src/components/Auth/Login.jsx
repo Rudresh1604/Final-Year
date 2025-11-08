@@ -13,7 +13,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    role: "",
+    role: "Patient",
   });
 
   const handleChange = (e) => {
@@ -22,10 +22,9 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     try {
       const res = await dispatch(loginUser(formData));
-      console.log(res);
       if (res.payload && res.payload.success) {
         navigate(formData.role === "Doctor" ? "/doctor" : "/patient");
       } else {
@@ -132,7 +131,7 @@ const Login = () => {
               type="submit"
               disabled={loading}
               className="w-full rounded-lg bg-blue-600 px-5 py-2.5 text-center text-white
-               hover:bg-blue-700 focus:ring-4 focus:ring-blue-300"
+               hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 cursor-pointer"
             >
               {loading ? "Logging in..." : "Login"}
             </button>

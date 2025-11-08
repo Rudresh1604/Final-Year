@@ -15,9 +15,11 @@ import {
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { registerPatient } from "../../redux/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const PatientSignUp = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
@@ -68,6 +70,7 @@ const PatientSignUp = () => {
 
       if (res.payload && res.payload.success) {
         alert("Patient registered successfully!");
+        navigate("/login");
       } else {
         alert(res.payload?.message || "Patient registration failed!");
         console.error("Registration failed:", res.payload);
@@ -309,7 +312,8 @@ const PatientSignUp = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700 transition focus:ring-4 focus:ring-blue-300"
+          className="w-full rounded-xl bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700 
+          transition focus:ring-4 focus:ring-blue-300 cursor-pointer"
         >
           {loading ? "Registering..." : "Sign Up"}
         </button>
