@@ -247,6 +247,7 @@ const AppointmentPicker = ({ doctorId }) => {
               selectedTime={selectedTime}
               selectedDay={selectedDay}
               doctorId={doctorId}
+              patientId={"68888dfb86635ac8bdd3e4a3"}
               onSuccess={() => {
                 setOpenModal(false);
                 setSelectedTime(null);
