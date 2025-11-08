@@ -52,3 +52,37 @@ export const events = [
     extendedProps: { patient: "Dr. Sarah Wilson" }, // ✅ same doctor → same color
   },
 ];
+
+// Backend should return this structure
+[
+  {
+    day: "Monday",
+    from: "10:00",
+    to: "18:00",
+    _id: "6891a54ca857406e8e1fde8a",
+  },
+  {
+    day: "Tuesday",
+    from: "10:00",
+    to: "18:00",
+    _id: "6891a42ea857406e8e1fde5f",
+  },
+  {
+    day: "Wednesday",
+    from: "10:00",
+    to: "18:00",
+    _id: "6891a534a857406e8e1fde81",
+  },
+  {
+    day: "Thursday",
+    from: "10:00",
+    to: "18:00",
+    _id: "6891a567a857406e8e1fde93",
+  },
+  {
+    day: "Friday",
+    from: "10:00",
+    to: "18:00",
+    _id: "6891a5a7a857406e8e1fdea5",
+  },
+];

@@ -28,6 +28,7 @@ const patientSchema = new mongoose.Schema(
       },
     ],
     appointments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Appointment" }],
+    reports: [{ type: mongoose.Schema.Types.ObjectId, ref: "Report" }],
     aiPredictions: [],
   },
   { timestamps: true }

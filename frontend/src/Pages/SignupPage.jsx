@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import DoctorImage from "/IntroImage.png";
 import DoctorSignup from "../components/Auth/DoctorSignUp";
 import PatientSignup from "../components/Auth/PatientSignUp";
+import { Link } from "react-router-dom";
 
 const SignupPage = () => {
   const [role, setRole] = useState("doctor");
@@ -36,6 +37,12 @@ const SignupPage = () => {
           </div>
 
           {role === "doctor" ? <DoctorSignup /> : <PatientSignup />}
+          <div className="flex items-center justify-center ">
+            <p>Already have an account?</p>
+            <Link to="/login" className="ml-2 text-blue-600 hover:underline">
+              Login
+            </Link>
+          </div>
         </div>
 
         {/* Right Section: Image */}
