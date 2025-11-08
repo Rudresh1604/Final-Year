@@ -16,6 +16,8 @@ import DiseaseManagement from "./Pages/DiseaseManagement";
 import MedicalAI from "./Pages/MedicalAI";
 import ReportFormPage from "./Pages/ReportFormPage";
 import RoleProtectRoute from "./components/ProtectedRoute/RoleProtectRoute";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   return (
@@ -53,6 +55,18 @@ function App() {
             </Routes>
           </div>
           <FooterComponent />
+          <ToastContainer
+            position="top-right"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+          />
         </div>
       </BrowserRouter>
     </Provider>

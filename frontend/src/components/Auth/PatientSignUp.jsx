@@ -12,15 +12,19 @@ import {
   Landmark,
   ListChecks,
   Mars,
+  Eye,
+  EyeOff,
 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { registerPatient } from "../../redux/authSlice";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const PatientSignUp = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.auth);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -53,6 +57,7 @@ const PatientSignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const payload = {
       ...formData,
@@ -69,15 +74,29 @@ const PatientSignUp = () => {
       const res = await dispatch(registerPatient(payload));
 
       if (res.payload && res.payload.success) {
-        alert("Patient registered successfully!");
+        toast.success("Patient registered successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
         navigate("/login");
       } else {
-        alert(res.payload?.message || "Patient registration failed!");
+        toast.error(res.payload?.message || "Patient registration failed!", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
         console.error("Registration failed:", res.payload);
       }
     } catch (error) {
       console.error("Error during registration:", error);
-      alert("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -132,7 +151,7 @@ const PatientSignUp = () => {
             <KeyRound className="w-5 h-5 text-gray-500 mx-2" />
             <input
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={formData.password}
               placeholder="At least 8 characters"
               minLength={8}
@@ -140,6 +159,13 @@ const PatientSignUp = () => {
               className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="mr-3 text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer"
+            >
+              {showPassword ? <EyeOff /> : <Eye />}
+            </button>
           </div>
         </div>
 
@@ -317,7 +343,6 @@ const PatientSignUp = () => {
         >
           {loading ? "Registering..." : "Sign Up"}
         </button>
-        {error && <p className="text-red-600 text-center">{error}</p>}
       </form>
     </div>
   );
