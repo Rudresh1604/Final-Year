@@ -9,15 +9,19 @@ import {
   Award,
   HeartPulse,
   CalendarDays,
+  Eye,
+  EyeOff,
 } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { registerDoctor } from "../../redux/authSlice";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const DoctorSignup = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.auth);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -37,6 +41,7 @@ const DoctorSignup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const payload = {
       ...formData,
@@ -47,15 +52,29 @@ const DoctorSignup = () => {
       const res = await dispatch(registerDoctor(payload));
 
       if (res.payload && res.payload.success) {
-        alert("Doctor registered successfully!");
+        toast.success("Doctor registered successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
         navigate("/login");
       } else {
-        alert(res.payload?.message || "Doctor registration failed!");
+        toast.error(res.payload?.message || "Doctor registration failed!", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
         console.error("Registration failed:", res.payload);
       }
     } catch (error) {
       console.error("Error during registration:", error);
-      alert("Something went wrong. Please try again.");
+      toast.error("Something went wrong. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -133,7 +152,7 @@ const DoctorSignup = () => {
             <input
               id="password"
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={formData.password}
               minLength={8}
               placeholder="At least 8 characters"
@@ -141,6 +160,13 @@ const DoctorSignup = () => {
               className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="mr-3 text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer"
+            >
+              {showPassword ? <EyeOff /> : <Eye />}
+            </button>
           </div>
         </div>
 
@@ -303,7 +329,6 @@ const DoctorSignup = () => {
         >
           {loading ? "Registering..." : "Sign Up"}
         </button>
-        {error && <p className="text-red-600 text-center">{error}</p>}
       </form>
     </div>
   );

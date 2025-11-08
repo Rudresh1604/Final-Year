@@ -8,6 +8,7 @@ import {
   NavbarToggle,
 } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const NavbarComponent = () => {
   const navigate = useNavigate();
@@ -16,6 +17,11 @@ const NavbarComponent = () => {
   // handle logout
   const handleLogout = () => {
     localStorage.removeItem("token");
+    toast.success("Logged out successfully!", {
+      position: "top-right",
+      autoClose: 3000,
+      theme: "colored",
+    });
     navigate("/login");
   };
   return (
