@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-const API_URL = "https://final-year-1-1ra8.onrender.com";
+const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 // LOGIN
 export const loginUser = createAsyncThunk(
