@@ -13,8 +13,15 @@ import {
   ListChecks,
   Mars,
 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { registerPatient } from "../../redux/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const PatientSignUp = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading, error } = useSelector((state) => state.auth);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -44,9 +51,34 @@ const PatientSignUp = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+
+    const payload = {
+      ...formData,
+      address: {
+        street: formData.address.street,
+        city: formData.address.city,
+        state: formData.address.state,
+        pincode: formData.address.pincode,
+        country: formData.address.country,
+      },
+    };
+
+    try {
+      const res = await dispatch(registerPatient(payload));
+
+      if (res.payload && res.payload.success) {
+        alert("Patient registered successfully!");
+        navigate("/login");
+      } else {
+        alert(res.payload?.message || "Patient registration failed!");
+        console.error("Registration failed:", res.payload);
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+      alert("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -65,10 +97,11 @@ const PatientSignUp = () => {
             <input
               name="name"
               type="text"
+              value={formData.name}
               placeholder="John Doe"
-              required
               onChange={handleChange}
               className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
+              required
             />
           </div>
         </div>
@@ -81,10 +114,11 @@ const PatientSignUp = () => {
             <input
               name="email"
               type="email"
+              value={formData.email}
               placeholder="name@example.com"
-              required
               onChange={handleChange}
               className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
+              required
             />
           </div>
         </div>
@@ -99,11 +133,12 @@ const PatientSignUp = () => {
             <input
               name="password"
               type="password"
+              value={formData.password}
               placeholder="At least 8 characters"
-              required
               minLength={8}
               onChange={handleChange}
               className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
+              required
             />
           </div>
         </div>
@@ -116,6 +151,7 @@ const PatientSignUp = () => {
             <input
               name="phone"
               type="tel"
+              value={formData.phone}
               placeholder="123-456-7890"
               onChange={handleChange}
               className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
@@ -133,12 +169,13 @@ const PatientSignUp = () => {
               <input
                 name="age"
                 type="number"
+                value={formData.age}
                 placeholder="25"
                 min={0}
                 max={120}
-                required
                 onChange={handleChange}
                 className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
+                required
               />
             </div>
           </div>
@@ -152,9 +189,10 @@ const PatientSignUp = () => {
               <Mars className="w-5 h-5 text-gray-500 mx-2" />
               <select
                 name="gender"
+                value={formData.gender}
                 onChange={handleChange}
-                required
                 className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl cursor-pointer"
+                required
               >
                 <option value="">Gender</option>
                 <option value="male">Male</option>
@@ -174,6 +212,7 @@ const PatientSignUp = () => {
             <input
               name="bloodGroup"
               type="text"
+              value={formData.bloodGroup}
               placeholder="O+, AB-"
               onChange={handleChange}
               className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
@@ -189,6 +228,7 @@ const PatientSignUp = () => {
             <input
               name="street"
               type="text"
+              value={formData.address.street}
               placeholder="123 Main Street"
               onChange={handleChange}
               className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
@@ -205,6 +245,7 @@ const PatientSignUp = () => {
               <input
                 name="city"
                 type="text"
+                value={formData.address.city}
                 placeholder="Pune"
                 onChange={handleChange}
                 className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
@@ -221,6 +262,7 @@ const PatientSignUp = () => {
               <input
                 name="state"
                 type="text"
+                value={formData.address.state}
                 placeholder="Maharashtra"
                 onChange={handleChange}
                 className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
@@ -240,6 +282,7 @@ const PatientSignUp = () => {
               <input
                 name="pincode"
                 type="text"
+                value={formData.address.pincode}
                 placeholder="411001"
                 onChange={handleChange}
                 className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
@@ -256,6 +299,7 @@ const PatientSignUp = () => {
               <input
                 name="country"
                 type="text"
+                value={formData.address.country}
                 placeholder="India"
                 onChange={handleChange}
                 className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
@@ -267,10 +311,13 @@ const PatientSignUp = () => {
         {/* Submit */}
         <button
           type="submit"
-          className="w-full rounded-xl bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700 transition focus:ring-4 focus:ring-blue-300"
+          disabled={loading}
+          className="w-full rounded-xl bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700 
+          transition focus:ring-4 focus:ring-blue-300 cursor-pointer"
         >
-          Sign Up
+          {loading ? "Registering..." : "Sign Up"}
         </button>
+        {error && <p className="text-red-600 text-center">{error}</p>}
       </form>
     </div>
   );
