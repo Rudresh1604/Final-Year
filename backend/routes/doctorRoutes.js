@@ -7,11 +7,17 @@ const {
   updateDoctor,
   deleteDoctor,
   updateDoctorSlot,
+  createUnavailability,
+  getDoctorUnavailabilities,
 } = require("../controllers/doctorController");
 const doctorRoutes = express.Router();
 
 // add Doctor
 doctorRoutes.post("/add", addDoctor);
+
+doctorRoutes.post("/unavailablity", createUnavailability);
+
+doctorRoutes.get("/unavailability/:doctorId", getDoctorUnavailabilities);
 
 // add slot
 doctorRoutes.post("/slots", addDoctorSlot);
