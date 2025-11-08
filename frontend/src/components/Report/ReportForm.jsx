@@ -45,7 +45,7 @@ const ReportForm = () => {
           <input
             type="text"
             placeholder="Asthma, Diabetes, etc."
-            className="w-full p-2 border border-gray-300 bg-gray-50 rounded-lg focus:ring-2 focus:ring-blue-400"
+            className="w-full p-2 border border-gray-300 bg-gray-50 rounded-lg  focus:outline-blue-500 focus:outline-2"
           />
         </div>
 
@@ -56,7 +56,7 @@ const ReportForm = () => {
           </label>
           <textarea
             placeholder="Enter your diagnosis here..."
-            className="w-full p-2 border border-gray-300 bg-gray-50 rounded-lg focus:ring-2 focus:ring-blue-400"
+            className="w-full p-2 border border-gray-300 bg-gray-50 rounded-lg  focus:outline-blue-500 focus:outline-2"
           />
         </div>
 
@@ -74,7 +74,30 @@ const ReportForm = () => {
           <input
             type="text"
             placeholder="e.g., Avoid oily food"
-            className="w-full p-2 border border-gray-300 bg-gray-50 rounded-lg focus:ring-2 focus:ring-blue-400"
+            className="w-full p-2 border border-gray-300 bg-gray-50 rounded-lg  focus:outline-blue-500 focus:outline-2"
+          />
+        </div>
+
+        {/* Note */}
+        <div>
+          <label className="text-sm font-medium text-gray-600">Note</label>
+          <input
+            type="text"
+            name="note"
+            placeholder="e.g., Patient should continue medication and follow breathing exercises."
+            className="w-full p-2 border border-gray-300 bg-gray-50 rounded-lg  focus:outline-blue-500 focus:outline-2"
+          />
+        </div>
+
+        {/* Next Visit */}
+        <div>
+          <label className="text-sm font-medium text-gray-600">
+            Next Visit
+          </label>
+          <input
+            type="date"
+            name="nextVisit"
+            className="w-full p-2 border border-gray-300 bg-gray-50 rounded-lg  focus:outline-blue-500 focus:outline-2"
           />
         </div>
 
