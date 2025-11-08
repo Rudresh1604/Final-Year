@@ -1,14 +1,34 @@
 const { mongoose } = require("mongoose");
 const Report = require("../model/reportSchema");
+const Appointment = require("../model/appointmentSchema");
+const Patient = require("../model/patientSchema");
+
 // Create a report
 const createReport = async (req, res) => {
   try {
-    const { appointmentId, patientId, doctorId, medicines, notes } = req.body;
+    const {
+      appointmentId,
+      patientId,
+      doctorId,
+      diseases,
+      description,
+      precautions,
+      medicines,
+      notes,
+      nextVisit,
+    } = req.body;
 
     if (!appointmentId || !patientId || !doctorId) {
       return res.status(400).json({
         success: false,
         message: "appointmentId, patientId, and doctorId are required.",
+      });
+    }
+
+    if(!diseases || !description){
+      return res.status(400).json({
+        success: false,
+        message: "diseases and description are required.",
       });
     }
 
@@ -33,9 +53,20 @@ const createReport = async (req, res) => {
       appointmentId,
       patientId,
       doctorId,
+      diseases,
+      description,
+      precautions,
       medicines,
       notes,
+      nextVisit,
     });
+
+    const patient=await Patient.findById(patientId);
+    const appointment=await Appointment.findById(appointmentId);
+    patient.reports.push(report._id);
+    appointment.report=report._id;
+    await patient.save();
+    await appointment.save();
 
     return res.status(201).json({ success: true, report });
   } catch (error) {
@@ -56,6 +87,14 @@ const deleteReport = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
     const report = await Report.findByIdAndDelete(id);
+
+    const patient=await Patient.findById(report.patientId);
+    const appointment=await Appointment.findById(report.appointmentId);
+    patient.reports.pull(report._id);
+    appointment.report=null;
+    await patient.save();
+    await appointment.save();
+
     if (!report) {
       return res
         .status(404)
@@ -99,7 +138,9 @@ const getReportById = async (req, res) => {
       .populate("appointmentId");
 
     if (!report) {
-      return res.status(404).json({ success: false, message: "Report not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Report not found" });
     }
 
     return res.status(200).json({ success: true, report });

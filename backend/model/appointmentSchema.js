@@ -9,8 +9,8 @@ const appointmentSchema = new mongoose.Schema(
     endTime: { type: Date }, // changed from String → Date
     status: { type: String, enum: ["Scheduled", "Completed", "Cancelled"] },
     reason: String,
-    medicine: [{ name: String, dosage: String, duration: String }],
-    prescription: String,
+
+    report: { type: mongoose.Schema.Types.ObjectId, ref: "Report" },
   },
   { timestamps: true }
 );
