@@ -14,6 +14,7 @@ export const loginUser = createAsyncThunk(
       });
       const token = response.data.token;
       localStorage.setItem("token", token);
+      localStorage.setItem("userRole", JSON.stringify(role));
       return { success: true, token, role };
     } catch (error) {
       return rejectWithValue(
@@ -56,7 +57,7 @@ export const registerPatient = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null,
+    user: JSON.parse(localStorage.getItem("userRole")) || null,
     token: localStorage.getItem("token") || null,
     loading: false,
     error: null,
@@ -66,6 +67,7 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       localStorage.removeItem("token");
+      localStorage.removeItem("userRole");
     },
   },
   extraReducers: (builder) => {
@@ -78,6 +80,7 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.token = action.payload.token;
+        state.user = action.payload.role;
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {
