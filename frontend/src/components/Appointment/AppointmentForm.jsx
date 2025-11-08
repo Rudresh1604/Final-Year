@@ -1,6 +1,8 @@
 import React from "react";
 
-const AppointmentForm = () => {
+const AppointmentForm = ({ selectedTime, selectedDay, doctorId }) => {
+  console.log(selectedDay, selectedTime);
+
   return (
     <form className="flex border border-gray-300 rounded-lg max-w-md flex-col mx-auto gap-4 px-4 py-2">
       <label
