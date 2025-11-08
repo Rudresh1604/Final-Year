@@ -22,7 +22,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    
     try {
       const res = await dispatch(loginUser(formData));
       console.log(res);
