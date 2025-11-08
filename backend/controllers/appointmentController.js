@@ -6,11 +6,30 @@ const moment = require("moment");
 
 const bookAppointment = async (req, res) => {
   try {
-    const { doctorId, patientId, time, reason } = req.body;
+    const { doctorId, patientId, day, time, reason } = req.body;
 
-    const appointmentDateTime = moment(time); // full ISO datetime
-    const endTime = appointmentDateTime.clone().add(30, "minutes");
-    const appointmentDateOnly = appointmentDateTime.clone().startOf("day");
+    console.log("Booking appointment with data:", {
+      doctorId,
+      patientId,
+      day,
+      time,
+      reason,
+    });
+
+    // Extract time from the time object
+    const startTime = time?.from; // "2025-08-04T10:30:00.000Z"
+    const endTime = time?.to; // "2025-08-04T11:00:00.000Z"
+
+    // Extract date from the day object
+    const appointmentDate = day?.from; // "2025-08-04T10:00:00Z"
+
+    if (!startTime || !endTime || !appointmentDate) {
+      return res.status(400).json({ message: "Invalid time or day data" });
+    }
+
+    const appointmentDateTime = moment(startTime);
+    const appointmentEndTime = moment(endTime);
+    const appointmentDateOnly = moment(appointmentDate).startOf("day");
 
     // Validate doctor & patient existence
     const doctor = await Doctor.findById(doctorId);
@@ -20,7 +39,7 @@ const bookAppointment = async (req, res) => {
     }
 
     // Check if doctor is available that day
-    const dayOfWeek = appointmentDateTime.format("dddd"); // "Tuesday"
+    const dayOfWeek = appointmentDateTime.format("dddd"); // "Monday"
     const availableSlot = doctor.availableSlots.find(
       (slot) => slot.day === dayOfWeek
     );
@@ -31,10 +50,15 @@ const bookAppointment = async (req, res) => {
         .json({ message: "Doctor not available on this day" });
     }
 
-    const slotFrom = moment(availableSlot.from); // ISO datetime
-    const slotTo = moment(availableSlot.to); // ISO datetime
+    // Convert doctor's slot times to moments for comparison
+    const slotFrom = moment(availableSlot.from);
+    const slotTo = moment(availableSlot.to);
 
-    if (appointmentDateTime.isBefore(slotFrom) || endTime.isAfter(slotTo)) {
+    // Check if requested time is within doctor's working hours
+    if (
+      appointmentDateTime.isBefore(slotFrom) ||
+      appointmentEndTime.isAfter(slotTo)
+    ) {
       return res.status(400).json({
         message: "Requested time is outside doctor's available hours",
       });
@@ -46,7 +70,7 @@ const bookAppointment = async (req, res) => {
       status: { $in: ["Scheduled"] },
       $or: [
         {
-          time: { $lt: endTime.toDate() },
+          time: { $lt: appointmentEndTime.toDate() },
           endTime: { $gt: appointmentDateTime.toDate() },
         },
       ],
@@ -60,13 +84,11 @@ const bookAppointment = async (req, res) => {
     const newAppointment = new Appointment({
       doctorId,
       patientId,
-      date: appointmentDateOnly.toDate(),
-      time: appointmentDateTime.toISOString(),
-      endTime: endTime.toISOString(),
+      date: appointmentDateOnly.toDate(), // Store just the date part
+      time: appointmentDateTime.toDate(), // Store as Date object
+      endTime: appointmentEndTime.toDate(), // Store as Date object
       status: "Scheduled",
       reason,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     });
 
     await newAppointment.save();
