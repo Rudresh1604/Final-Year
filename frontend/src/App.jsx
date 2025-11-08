@@ -18,6 +18,7 @@ import ReportFormPage from "./Pages/ReportFormPage";
 import RoleProtectRoute from "./components/ProtectedRoute/RoleProtectRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import MedicalHistorySummary from "./Pages/MedicalHistorySummary";
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
               <Route path="/report" element={<ReportPage />} />
               <Route path="/medical-ai" element={<MedicalAI />} />
               <Route path="/create-report" element={<ReportFormPage />} />
+              <Route path="medical-summary/:patientId" element={<MedicalHistorySummary />} />
             </Routes>
           </div>
           <FooterComponent />
