@@ -15,31 +15,46 @@ import ReportPage from "./Pages/ReportPage";
 import DiseaseManagement from "./Pages/DiseaseManagement";
 import MedicalAI from "./Pages/MedicalAI";
 import ReportFormPage from "./Pages/ReportFormPage";
+import RoleProtectRoute from "./components/ProtectedRoute/RoleProtectRoute";
 
 function App() {
   return (
     <Provider store={store}>
       <ThemeInit />
-      <div className="bg-gray-100">
-        <NavbarComponent />
-        <div className="px-4 pt-4 mt-15 md:px-6 md:py-9 ">
-          <BrowserRouter>
+      <BrowserRouter>
+        <div className="bg-gray-100">
+          <NavbarComponent />
+          <div className="px-4 pt-4 mt-15 md:px-6 md:py-9 ">
             <Routes>
               <Route path="/appointment" element={<Appointment />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
-              <Route path="/doctor" element={<DoctorDashboard />} />
-              <Route path="/patient" element={<PatientDashboard />} />
+              <Route
+                path="/doctor"
+                element={
+                  <RoleProtectRoute allowedRole="Doctor">
+                    <DoctorDashboard />
+                   </RoleProtectRoute> 
+                }
+              />
+              <Route
+                path="/patient"
+                element={
+                  <RoleProtectRoute allowedRole="Patient">
+                    <PatientDashboard />
+                    </RoleProtectRoute> 
+                }
+              />
               <Route path="/disease" element={<DiseaseManagement />} />
               <Route path="/" element={<HomePage />} />
               <Route path="/report" element={<ReportPage />} />
               <Route path="/medical-ai" element={<MedicalAI />} />
               <Route path="/create-report" element={<ReportFormPage />} />
             </Routes>
-          </BrowserRouter>
+          </div>
+          <FooterComponent />
         </div>
-        <FooterComponent />
-      </div>
+      </BrowserRouter>
     </Provider>
   );
 }

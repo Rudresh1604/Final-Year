@@ -25,7 +25,6 @@ const Login = () => {
     
     try {
       const res = await dispatch(loginUser(formData));
-      console.log(res);
       if (res.payload && res.payload.success) {
         navigate(formData.role === "Doctor" ? "/doctor" : "/patient");
       } else {
