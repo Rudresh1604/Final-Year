@@ -309,7 +309,8 @@ const PatientSignUp = () => {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-xl bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700 transition focus:ring-4 focus:ring-blue-300"
+          className="w-full rounded-xl bg-blue-600 px-5 py-2.5 text-white hover:bg-blue-700 
+          transition focus:ring-4 focus:ring-blue-300 cursor-pointer"
         >
           {loading ? "Registering..." : "Sign Up"}
         </button>
