@@ -78,12 +78,12 @@ const ReportForm = () => {
           />
         </div>
 
-        {/* Note */}
+        {/* Notes */}
         <div>
-          <label className="text-sm font-medium text-gray-600">Note</label>
+          <label className="text-sm font-medium text-gray-600">Notes</label>
           <input
             type="text"
-            name="note"
+            name="notes"
             placeholder="e.g., Patient should continue medication and follow breathing exercises."
             className="w-full p-2 border border-gray-300 bg-gray-50 rounded-lg  focus:outline-blue-500 focus:outline-2"
           />
