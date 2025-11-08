@@ -37,7 +37,7 @@ function App() {
                 element={
                   <RoleProtectRoute allowedRole="Doctor">
                     <DoctorDashboard />
-                   </RoleProtectRoute> 
+                  </RoleProtectRoute>
                 }
               />
               <Route
@@ -45,7 +45,7 @@ function App() {
                 element={
                   <RoleProtectRoute allowedRole="Patient">
                     <PatientDashboard />
-                    </RoleProtectRoute> 
+                  </RoleProtectRoute>
                 }
               />
               <Route path="/disease" element={<DiseaseManagement />} />
@@ -53,7 +53,10 @@ function App() {
               <Route path="/report" element={<ReportPage />} />
               <Route path="/medical-ai" element={<MedicalAI />} />
               <Route path="/create-report" element={<ReportFormPage />} />
-              <Route path="medical-summary/:patientId" element={<MedicalHistorySummary />} />
+              <Route
+                path="medical-summary/:patientId"
+                element={<MedicalHistorySummary />}
+              />
             </Routes>
           </div>
           <FooterComponent />
