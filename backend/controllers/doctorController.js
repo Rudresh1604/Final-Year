@@ -141,7 +141,9 @@ const getDoctorById = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Doctor not found" });
     }
-    return res.status(200).json({ success: true, doctor });
+    console.log(doctor);
+
+    return res.status(200).json(doctor);
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }
@@ -226,6 +228,78 @@ const deleteDoctor = async (req, res) => {
   }
 };
 
+// controllers/unavailabilityController.js
+const createUnavailability = async (req, res) => {
+  try {
+    const {
+      doctorId,
+      type,
+      title,
+      startTime,
+      endTime,
+      recurring,
+      recurringDays,
+      recurringEndDate,
+      reason,
+    } = req.body;
+
+    const unavailability = new Unavailability({
+      doctorId,
+      type,
+      title,
+      startTime: new Date(startTime),
+      endTime: new Date(endTime),
+      recurring: recurring || false,
+      recurringDays: recurring ? recurringDays : [],
+      recurringEndDate: recurringEndDate ? new Date(recurringEndDate) : null,
+      reason,
+      isActive: true,
+    });
+
+    await unavailability.save();
+
+    res.status(201).json({
+      message: "Unavailability created successfully",
+      unavailability,
+    });
+  } catch (error) {
+    console.error("Error creating unavailability:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getDoctorUnavailabilities = async (req, res) => {
+  try {
+    const { doctorId } = req.params;
+    const { startDate, endDate } = req.query;
+
+    let query = { doctorId, isActive: true };
+
+    if (startDate && endDate) {
+      query.$or = [
+        // Single events in date range
+        {
+          startTime: { $gte: new Date(startDate) },
+          endTime: { $lte: new Date(endDate) },
+        },
+        // Recurring events
+        { recurring: true },
+        // Events that overlap with date range
+        {
+          startTime: { $lte: new Date(endDate) },
+          endTime: { $gte: new Date(startDate) },
+        },
+      ];
+    }
+
+    const unavailabilities = await Unavailability.find(query);
+    res.status(200).json({ unavailabilities });
+  } catch (error) {
+    console.error("Error fetching unavailabilities:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   addDoctor,
   addDoctorSlot,
@@ -234,4 +308,6 @@ module.exports = {
   updateDoctor,
   deleteDoctor,
   updateDoctorSlot,
+  createUnavailability,
+  getDoctorUnavailabilities,
 };

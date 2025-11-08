@@ -1,6 +1,7 @@
 const Appointment = require("../model/appointmentSchema");
 const Doctor = require("../model/doctorSchema");
 const Patient = require("../model/patientSchema");
+const Unavailability = require("../model/unavailablitySchema");
 const moment = require("moment");
 
 const bookAppointment = async (req, res) => {
@@ -113,6 +114,174 @@ const cancelAppointment = async (req, res) => {
   }
 };
 
+const getAvailableSlots = async (req, res) => {
+  try {
+    const { doctorId, date } = req.query;
+
+    if (!doctorId || !date) {
+      return res
+        .status(400)
+        .json({ message: "Doctor ID and date are required" });
+    }
+
+    // 1. Validate doctor exists
+    const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
+
+    const requestedDate = moment(date);
+    const dayOfWeek = requestedDate.format("dddd");
+
+    // 2. Get doctor's working hours for that day
+    const availableSlot = doctor.availableSlots.find(
+      (slot) => slot.day === dayOfWeek
+    );
+
+    if (!availableSlot) {
+      return res.status(200).json({
+        date: requestedDate.format("YYYY-MM-DD"),
+        availableSlots: [],
+      });
+    }
+
+    // 3. Parse working hours
+    const slotStart = moment(availableSlot.from);
+    const slotEnd = moment(availableSlot.to);
+
+    const workDayStart = requestedDate
+      .clone()
+      .hour(slotStart.hour())
+      .minute(slotStart.minute())
+      .second(0);
+
+    const workDayEnd = requestedDate
+      .clone()
+      .hour(slotEnd.hour())
+      .minute(slotEnd.minute())
+      .second(0);
+
+    // 4. Get all unavailability for this doctor on this date
+    const startOfDay = requestedDate.clone().startOf("day").toDate();
+    const endOfDay = requestedDate.clone().endOf("day").toDate();
+
+    const unavailabilities = await Unavailability.find({
+      doctorId,
+      isActive: true,
+      $or: [
+        // Single day unavailability
+        {
+          startTime: { $gte: startOfDay, $lt: endOfDay },
+        },
+        // Multi-day unavailability that overlaps with requested day
+        {
+          startTime: { $lte: startOfDay },
+          endTime: { $gt: startOfDay },
+        },
+        // Recurring unavailability
+        {
+          recurring: true,
+          recurringDays: dayOfWeek,
+          $or: [
+            { recurringEndDate: { $gte: startOfDay } },
+            { recurringEndDate: null },
+          ],
+        },
+      ],
+    });
+
+    // 5. Get existing appointments
+    const existingAppointments = await Appointment.find({
+      doctorId,
+      status: "Scheduled",
+      time: { $gte: startOfDay, $lt: endOfDay },
+    }).select("time endTime");
+
+    // 6. Generate all possible slots
+    const allSlots = [];
+    const currentTime = workDayStart.clone();
+    const appointmentDuration = 30; // minutes
+
+    while (currentTime < workDayEnd) {
+      const slotEndTime = currentTime
+        .clone()
+        .add(appointmentDuration, "minutes");
+
+      if (slotEndTime <= workDayEnd) {
+        allSlots.push({
+          start: currentTime.toISOString(),
+          end: slotEndTime.toISOString(),
+          available: true,
+        });
+      }
+
+      currentTime.add(appointmentDuration, "minutes");
+    }
+
+    // 7. Apply unavailability filters
+    const filteredSlots = allSlots.map((slot) => {
+      const slotStart = moment(slot.start);
+      const slotEnd = moment(slot.end);
+
+      // Check if slot conflicts with any unavailability
+      const isUnavailable = unavailabilities.some((unavail) => {
+        let unavailStart, unavailEnd;
+
+        if (unavail.recurring) {
+          // For recurring, use time from the requested date
+          const timeStart = moment(unavail.startTime)
+            .format("HH:mm")
+            .split(":");
+          const timeEnd = moment(unavail.endTime).format("HH:mm").split(":");
+
+          unavailStart = requestedDate
+            .clone()
+            .hour(parseInt(timeStart[0]))
+            .minute(parseInt(timeStart[1]))
+            .second(0);
+
+          unavailEnd = requestedDate
+            .clone()
+            .hour(parseInt(timeEnd[0]))
+            .minute(parseInt(timeEnd[1]))
+            .second(0);
+        } else {
+          unavailStart = moment(unavail.startTime);
+          unavailEnd = moment(unavail.endTime);
+        }
+
+        return slotStart < unavailEnd && slotEnd > unavailStart;
+      });
+
+      // Check if slot conflicts with booked appointments
+      const isBooked = existingAppointments.some((appointment) => {
+        const appointmentStart = moment(appointment.time);
+        const appointmentEnd = moment(appointment.endTime);
+
+        return slotStart < appointmentEnd && slotEnd > appointmentStart;
+      });
+
+      return {
+        ...slot,
+        available: !isUnavailable && !isBooked,
+      };
+    });
+
+    res.status(200).json({
+      date: requestedDate.format("YYYY-MM-DD"),
+      dayOfWeek,
+      availableSlots: filteredSlots,
+      workDayStart: workDayStart.toISOString(),
+      workDayEnd: workDayEnd.toISOString(),
+      totalSlots: filteredSlots.length,
+      availableCount: filteredSlots.filter((slot) => slot.available).length,
+    });
+  } catch (error) {
+    console.error("Error fetching available slots:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 const getAppointmentById = async (req, res) => {
   try {
     const id = req.params.id;
@@ -138,4 +307,9 @@ const getAppointmentById = async (req, res) => {
   }
 };
 
-module.exports = { bookAppointment, cancelAppointment, getAppointmentById };
+module.exports = {
+  bookAppointment,
+  cancelAppointment,
+  getAppointmentById,
+  getAvailableSlots,
+};

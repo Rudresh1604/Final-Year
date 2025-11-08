@@ -6,7 +6,7 @@ const Appointment = () => {
   return (
     <div className="flex flex-col max-w-screen h-full">
       <DoctorIntro />
-      <AppointmentPicker />
+      <AppointmentPicker doctorId={"68888e0e7729dff42801add2"} />
     </div>
   );
 };

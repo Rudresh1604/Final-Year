@@ -1,64 +1,80 @@
-import React from "react";
+import moment from "moment";
 
 const AppointmentDateTimeCard = ({
-  selectedDate,
-  date,
-  setSelectedDate,
   isDate,
+  date,
   time,
-  setSelectedTime,
+  selectedDate,
   selectedTime,
+  setSelectedDate,
+  setSelectedTime,
   setOpenModal,
+  disabled = false,
+  displayText,
+  subText,
 }) => {
-  function toIST(isoString) {
-    const utcDate = new Date(isoString);
-    return new Date(utcDate.getTime() + 5.5 * 60 * 60 * 1000); // UTC + 5:30
-  }
-
-  function formatDateOnlyIST(isoDate) {
-    const istDate = toIST(isoDate);
-    return istDate.toLocaleDateString("en-IN", {
-      day: "2-digit", // e.g., "05"
-      month: "short", // e.g., "Aug"
-    }); // → "05 Aug"
-  }
-
-  function formatTime12HourIST(isoTime) {
-    const istDate = toIST(isoTime);
-    return istDate.toLocaleTimeString("en-IN", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: true,
-    }); // → "03:30 AM"
-  }
-
-  const handleSelected = (value) => {
-    console.log(value);
-    !isDate && setOpenModal(true);
-    isDate ? setSelectedDate(value) : setSelectedTime(value);
+  const handleDateClick = () => {
+    setSelectedDate(date);
   };
 
-  return (
-    <div>
+  const handleTimeClick = () => {
+    if (!disabled) {
+      setSelectedTime(time);
+      if (setOpenModal) {
+        setOpenModal(true);
+      }
+    }
+  };
+
+  if (isDate) {
+    const isSelected = selectedDate?.from === date.from;
+
+    return (
       <div
-        className={`border border-gray-300 text-center ${
-          isDate && date == selectedDate
-            ? "bg-selected-color text-white"
-            : "bg-gray-200"
-        } ${
-          !isDate && selectedTime == time
-            ? "bg-selected-color text-white"
-            : "bg-gray-200"
-        } p-2 px-4 font-bold rounded-lg cursor-pointer`}
-        onClick={() => handleSelected(isDate ? date : time)}
+        className={`flex flex-col items-center justify-center p-3 border-2 rounded-lg cursor-pointer transition-all ${
+          isSelected
+            ? "bg-blue-500 text-white border-blue-500 shadow-md"
+            : "bg-white border-gray-300 hover:border-blue-300 hover:shadow-sm"
+        }`}
+        onClick={handleDateClick}
       >
-        <h1>
-          {isDate
-            ? String(date?.day).slice(0, 3)
-            : formatTime12HourIST(time?.from)}{" "}
-        </h1>
-        <p>{isDate && formatDateOnlyIST(date?.from)}</p>
+        <span className="text-sm font-medium">
+          {displayText || moment(date.from).format("ddd")}
+        </span>
+        <span className="text-xs mt-1 opacity-80">
+          {subText || moment(date.from).format("MMM D")}
+        </span>
       </div>
+    );
+  }
+
+  const isSelected = selectedTime?.from === time.from;
+  const isAvailable = !disabled;
+
+  return (
+    <div
+      className={`flex flex-col items-center justify-center p-3 border-2 rounded-lg transition-all ${
+        !isAvailable
+          ? "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed"
+          : isSelected
+          ? "bg-blue-500 text-white border-blue-500 shadow-md cursor-pointer"
+          : "bg-white border-gray-300 hover:border-blue-300 hover:shadow-sm cursor-pointer"
+      }`}
+      onClick={handleTimeClick}
+      title={
+        !isAvailable
+          ? "This slot is not available"
+          : `Book at ${moment(time.from).format("hh:mm A")}`
+      }
+    >
+      <span
+        className={`text-sm font-medium ${
+          isAvailable && isSelected ? "text-white" : ""
+        }`}
+      >
+        {moment(time.from).format("hh:mm A")}
+      </span>
+      {!isAvailable && <span className="text-xs mt-1">Unavailable</span>}
     </div>
   );
 };
