@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import Doctor from "/IntroImage.png";
-import { useDispatch, useSelector } from "react-redux";
-import { KeyRound, Mail, User } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { KeyRound, Mail, User, Eye, EyeOff } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../redux/authSlice";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state) => state.auth);
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -22,19 +24,37 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+    setLoading(true);
+
     try {
       const res = await dispatch(loginUser(formData));
       if (res.payload && res.payload.success) {
+        toast.success("Login successful!", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
         navigate(formData.role === "Doctor" ? "/doctor" : "/patient");
       } else {
+        toast.error(res.payload?.message || " Invalid credentials", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
         console.error(
           "Login failed:",
           res.payload?.message || "Invalid credentials"
         );
       }
     } catch (error) {
+      toast.error("Something went wrong. Please try again.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
       console.error("Error during login:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -92,13 +112,20 @@ const Login = () => {
                 <KeyRound className="w-8 h-8 my-auto text-gray-500 ml-2" />
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
                   className="w-full p-2.5   focus:outline-none"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="mr-3 text-gray-500 hover:text-gray-700 focus:outline-none cursor-pointer"
+                >
+                  {showPassword ? <EyeOff /> : <Eye />}
+                </button>
               </div>
             </div>
 
@@ -136,9 +163,7 @@ const Login = () => {
               {loading ? "Logging in..." : "Login"}
             </button>
           </form>
-          {error && (
-            <p className="text-red-600 text-sm mt-3 text-center">{error}</p>
-          )}
+
           <div className="flex items-center justify-center mt-4">
             <p>Don't have an account?</p>
             <Link to="/signup" className="ml-2 text-blue-600 hover:underline">
