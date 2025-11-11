@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const MedicalHistorySummary = () => {
@@ -24,6 +25,11 @@ const MedicalHistorySummary = () => {
         if (patientRes.data.success) setPatient(patientRes.data.patient);
         if (diseaseRes.data.success) setDiseases(diseaseRes.data.diseases);
       } catch (error) {
+        toast.error("Error fetching data. Please try again later.", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
         console.error("Error fetching data:", error);
       }
     };
@@ -51,11 +57,24 @@ const MedicalHistorySummary = () => {
       if (res.data.success) {
         setPatient(res.data.patient);
         setIsEditingPatient(false);
-        alert("Patient details updated successfully!");
+        toast.success("Patient details updated successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
       } else {
-        alert("Failed to update patient details.");
+        toast.error("Failed to update patient details.", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
       }
     } catch (error) {
+      toast.error("Error updating patient details.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
       console.error("Error updating patient details:", error);
     }
   };
@@ -75,13 +94,22 @@ const MedicalHistorySummary = () => {
         setSelectedDisease(res.data.disease);
       }
     } catch (error) {
+      toast.error("Error fetching disease details.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
       console.error("Error fetching disease details:", error);
     }
   };
 
   const handleSubmit = async () => {
     if (!selectedDiseaseId) {
-      alert("Please select a disease before submitting.");
+      toast.warning("Please select a disease before submitting.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
       return;
     }
 
@@ -98,11 +126,24 @@ const MedicalHistorySummary = () => {
       );
 
       if (res.data.success) {
-        alert("Medical history updated successfully!");
+        toast.success("Medical history updated successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
       } else {
-        alert("Failed to update medical history.");
+        toast.error("Failed to update medical history.", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
       }
     } catch (error) {
+      toast.error("Error submitting medical history.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
       console.error("Error submitting medical history:", error);
     }
   };
