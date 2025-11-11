@@ -5,44 +5,110 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const MedicalHistorySummary = () => {
   const [isEditingPatient, setIsEditingPatient] = useState(false);
-  const [isEditingMedical, setIsEditingMedical] = useState(false);
   const { patientId } = useParams();
-  const [patient, setPatient] = useState(null);
-  const [medicalData, setMedicalData] = useState(null);
-  console.log(patientId);
 
-  // Fetch data
+  const [patient, setPatient] = useState(null);
+  const [diseases, setDiseases] = useState([]);
+  const [selectedDiseaseId, setSelectedDiseaseId] = useState("");
+  const [selectedDisease, setSelectedDisease] = useState(null);
+
+  // Fetch patient and disease list
   useEffect(() => {
-    const fetchPatient = async () => {
+    const fetchData = async () => {
       try {
-        const res = await axios.get(
-          `${API_URL}/api/patient/summary/${patientId}`
-        );
-        if (res.data.success) {
-          setPatient(res.data.patient);
-          console.log(res.data);
-          setMedicalData(res.data.patient.medicalHistory);
-        }
+        const [patientRes, diseaseRes] = await Promise.all([
+          axios.get(`${API_URL}/api/patient/summary/${patientId}`),
+          axios.get(`${API_URL}/api/disease/`),
+        ]);
+
+        if (patientRes.data.success) setPatient(patientRes.data.patient);
+        if (diseaseRes.data.success) setDiseases(diseaseRes.data.diseases);
       } catch (error) {
-        console.error("Error fetching patient summary:", error);
+        console.error("Error fetching data:", error);
       }
     };
 
-    if (patientId) fetchPatient();
+    if (patientId) fetchData();
   }, [patientId]);
-  console.log(medicalData);
-  if (!patient) return <p className="text-center text-gray-600">Loading...</p>;
 
-  // Handle edits
+  // patient input change
   const handlePatientChange = (e) => {
     const { name, value } = e.target;
     setPatient((prev) => ({ ...prev, [name]: value }));
   };
+  //  SAVE PATIENT DETAILS
+  const handleSavePatient = async () => {
+    try {
+      const res = await axios.put(
+        `${API_URL}/api/patient/update/${patientId}`,
+        {
+          name: patient.name,
+          age: patient.age,
+          phone: patient.phone,
+        }
+      );
 
-  const handleMedicalChange = (e) => {
-    const { name, value } = e.target;
-    setMedicalData((prev) => ({ ...prev, [name]: value }));
+      if (res.data.success) {
+        setPatient(res.data.patient);
+        setIsEditingPatient(false);
+        alert("Patient details updated successfully!");
+      } else {
+        alert("Failed to update patient details.");
+      }
+    } catch (error) {
+      console.error("Error updating patient details:", error);
+    }
   };
+  // fetch disease selected details
+  const handleDiseaseSelect = async (e) => {
+    const diseaseId = e.target.value;
+    setSelectedDiseaseId(diseaseId);
+
+    if (!diseaseId) {
+      setSelectedDisease(null);
+      return;
+    }
+
+    try {
+      const res = await axios.get(`${API_URL}/api/disease/${diseaseId}`);
+      if (res.data.success) {
+        setSelectedDisease(res.data.disease);
+      }
+    } catch (error) {
+      console.error("Error fetching disease details:", error);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!selectedDiseaseId) {
+      alert("Please select a disease before submitting.");
+      return;
+    }
+
+    try {
+      const res = await axios.put(
+        `${API_URL}/api/patient/update/${patientId}`,
+        {
+          medicalHistory: {
+            diseaseId: selectedDiseaseId,
+            diagnosedOn: new Date(),
+            notes: selectedDisease?.notes || "",
+          },
+        }
+      );
+
+      if (res.data.success) {
+        alert("Medical history updated successfully!");
+      } else {
+        alert("Failed to update medical history.");
+      }
+    } catch (error) {
+      console.error("Error submitting medical history:", error);
+    }
+  };
+
+  if (!patient)
+    return <p className="text-center text-gray-600">Loading patient data...</p>;
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-6 rounded-2xl shadow">
@@ -51,20 +117,20 @@ const MedicalHistorySummary = () => {
         Review and confirm your medical history information before submission.
       </p>
 
-      {/* PATIENT DEMOGRAPHICS */}
+      {/* PATIENT DEMOGRAPHICS  */}
       <div className="border-b border-gray-200 pb-4 mb-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-medium">Patient Demographics</h3>
           {isEditingPatient ? (
-            <div className="space-x-2">
+            <div className="space-x-2 cursor-pointer">
               <button
-                className="text-green-600 text-sm font-medium"
-                onClick={() => setIsEditingPatient(false)}
+                className="text-green-600 text-sm font-medium cursor-pointer"
+                onClick={handleSavePatient}
               >
                 Save
               </button>
               <button
-                className="text-gray-500 text-sm"
+                className="text-gray-500 text-sm cursor-pointer"
                 onClick={() => setIsEditingPatient(false)}
               >
                 Cancel
@@ -72,7 +138,7 @@ const MedicalHistorySummary = () => {
             </div>
           ) : (
             <button
-              className="text-blue-600 text-sm hover:underline"
+              className="text-blue-600 text-sm hover:underline cursor-pointer"
               onClick={() => setIsEditingPatient(true)}
             >
               ✏️ Edit
@@ -131,139 +197,96 @@ const MedicalHistorySummary = () => {
         </div>
       </div>
 
-      {/* MEDICAL INFORMATION */}
+      {/* MEDICAL HISTORY */}
       <div className="border-b border-gray-200 pb-4 mb-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-medium">Medical Information</h3>
-          {isEditingMedical ? (
-            <div className="space-x-2">
-              <button
-                className="text-green-600 text-sm font-medium"
-                onClick={() => setIsEditingMedical(false)}
-              >
-                Save
-              </button>
-              <button
-                className="text-gray-500 text-sm"
-                onClick={() => setIsEditingMedical(false)}
-              >
-                Cancel
-              </button>
+        <h3 className="text-lg font-medium mb-4">Medical Information</h3>
+
+        {/* Disease Selection */}
+        <div className="mb-4">
+          <label className="block text-gray-700 font-semibold mb-2">
+            Select Disease
+          </label>
+          <select
+            value={selectedDiseaseId}
+            onChange={handleDiseaseSelect}
+            className="border rounded-md p-2 w-full text-gray-700 cursor-pointer"
+          >
+            <option value="">-- Select Disease --</option>
+            {diseases.map((disease) => (
+              <option key={disease._id} value={disease._id}>
+                {disease.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Disease Details */}
+        {selectedDisease && (
+          <div className="space-y-4">
+            {/* Name */}
+            <div>
+              <p className="font-semibold text-gray-800 mb-1">Disease Name</p>
+              <p className="text-gray-700">{selectedDisease.name}</p>
             </div>
-          ) : (
-            <button
-              className="text-blue-600 text-sm hover:underline"
-              onClick={() => setIsEditingMedical(true)}
-            >
-              ✏️ Edit
-            </button>
-          )}
-        </div>
 
-        <div className="space-y-4">
-          {/* Disease Name */}
-          <div>
-            <p className="font-semibold text-gray-800 mb-1">Disease Name</p>
-            {isEditingMedical ? (
-              <input
-                type="text"
-                name="diseaseName"
-                value={medicalData?.diseaseName || ""}
-                onChange={handleMedicalChange}
-                className="border rounded-md p-2 w-full text-gray-700"
-              />
-            ) : (
-              <p className="text-gray-700">{medicalData?.diseaseName || "—"}</p>
-            )}
-          </div>
+            {/* Description */}
+            <div>
+              <p className="font-semibold text-gray-800 mb-1">Description</p>
+              <p className="text-gray-700">{selectedDisease.description}</p>
+            </div>
 
-          {/* Description */}
-          <div>
-            <p className="font-semibold text-gray-800 mb-1">Description</p>
-            {isEditingMedical ? (
-              <textarea
-                name="description"
-                value={medicalData?.description || ""}
-                onChange={handleMedicalChange}
-                className="border rounded-md p-2 w-full text-gray-700"
-                rows="2"
-              />
-            ) : (
-              <p className="text-gray-700">{medicalData?.description || "—"}</p>
-            )}
-          </div>
+            {/* Symptoms */}
+            <div>
+              <p className="font-semibold text-gray-800 mb-1">Symptoms</p>
+              <div className="flex flex-wrap gap-2">
+                {selectedDisease.symptoms?.length > 0 ? (
+                  selectedDisease.symptoms.map((symptom, index) => (
+                    <span
+                      key={index}
+                      className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm"
+                    >
+                      {symptom}
+                    </span>
+                  ))
+                ) : (
+                  <p className="text-gray-700">No symptoms listed.</p>
+                )}
+              </div>
+            </div>
 
-          {/* Precaution */}
-          <div>
-            <p className="font-semibold text-gray-800 mb-1">Precaution</p>
-            {isEditingMedical ? (
-              <textarea
-                name="precaution"
-                value={medicalData?.precaution || ""}
-                onChange={handleMedicalChange}
-                className="border rounded-md p-2 w-full text-gray-700"
-                rows="2"
-              />
-            ) : (
-              <p className="text-gray-700">{medicalData?.precaution || "—"}</p>
-            )}
-          </div>
+            {/* Precautions */}
+            <div>
+              <p className="font-semibold text-gray-800 mb-1">Precautions</p>
+              <p className="text-gray-700">{selectedDisease.precautions}</p>
+            </div>
 
-          {/* Medication */}
-          <div>
-            <p className="font-semibold text-gray-800 mb-1">Medication</p>
-            {isEditingMedical ? (
-              <textarea
-                name="medication"
-                value={medicalData?.medication || ""}
-                onChange={handleMedicalChange}
-                className="border rounded-md p-2 w-full text-gray-700"
-                rows="2"
-              />
-            ) : (
-              <p className="text-gray-700">{medicalData?.medication || "—"}</p>
-            )}
-          </div>
+            {/* Medication */}
+            <div>
+              <p className="font-semibold text-gray-800 mb-1">Medication</p>
+              <p className="text-gray-700">{selectedDisease.medication}</p>
+            </div>
 
-          {/* Workflow */}
-          <div>
-            <p className="font-semibold text-gray-800 mb-1">Workflow</p>
-            {isEditingMedical ? (
-              <textarea
-                name="workflow"
-                value={medicalData?.workflow || ""}
-                onChange={handleMedicalChange}
-                className="border rounded-md p-2 w-full text-gray-700"
-                rows="2"
-              />
-            ) : (
-              <p className="text-gray-700">{medicalData?.workflow || "—"}</p>
-            )}
-          </div>
+            {/* Workflow */}
+            <div>
+              <p className="font-semibold text-gray-800 mb-1">Workflow</p>
+              <p className="text-gray-700">{selectedDisease.workflow}</p>
+            </div>
 
-          {/* Notes */}
-          <div>
-            <p className="font-semibold text-gray-800 mb-1">Notes</p>
-            {isEditingMedical ? (
-              <textarea
-                name="notes"
-                value={medicalData?.notes || ""}
-                onChange={handleMedicalChange}
-                className="border rounded-md p-2 w-full text-gray-700"
-                rows="2"
-              />
-            ) : (
-              <p className="text-gray-700">{medicalData?.notes || "—"}</p>
-            )}
+            {/* Notes */}
+            <div>
+              <p className="font-semibold text-gray-800 mb-1">Notes</p>
+              <p className="text-gray-700">{selectedDisease.notes}</p>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* SUBMIT BUTTON  */}
+      {/* SUBMIT */}
       <div className="flex justify-end">
         <button
-          className="bg-green-600 hover:bg-green-700 text-white font-medium px-6 
-        py-2 rounded-md"
+          onClick={handleSubmit}
+          className="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2 
+          rounded-md cursor-pointer"
         >
           Confirm and Submit
         </button>
