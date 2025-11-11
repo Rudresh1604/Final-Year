@@ -3,6 +3,11 @@ const mongoose = require("mongoose");
 const diseaseSchema = new mongoose.Schema(
   {
     name: String,
+    description: String,
+    precautions: String,
+    medication: String,
+    workflow: String,
+    notes: String,
     symptoms: [String],
     spreadLevel: { type: String, enum: ["Low", "Moderate", "High"] },
     affectedRegions: [
