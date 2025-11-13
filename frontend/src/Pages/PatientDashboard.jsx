@@ -65,7 +65,7 @@ const PatientDashboard = () => {
           onClick={handleViewMedicalHistory}
           className="flex items-center justify-center gap-2 bg-green-500 text-white 
           px-4 py-2 rounded-lg font-medium text-sm sm:text-base w-full sm:w-auto
-          hover:bg-green-600 active:scale-95 transition-all duration-200"
+          hover:bg-green-600 active:scale-95 transition-all duration-200 cursor-pointer"
         >
           <Stethoscope size={18} />
           <span>Medical History</span>
