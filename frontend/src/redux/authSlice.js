@@ -12,10 +12,10 @@ export const loginUser = createAsyncThunk(
         password,
         role,
       });
-      const token = response.data.token;
-      localStorage.setItem("token", token);
-      localStorage.setItem("userRole", JSON.stringify(role));
-      return { success: true, token, role };
+      const { token, id, role: userRole } = response.data;
+      const userData = { token, id, role: userRole };
+      localStorage.setItem("userData", JSON.stringify(userData));
+      return { success: true, userData };
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Login failed. Please try again."
@@ -57,17 +57,14 @@ export const registerPatient = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: JSON.parse(localStorage.getItem("userRole")) || null,
-    token: localStorage.getItem("token") || null,
+    user: JSON.parse(localStorage.getItem("userData")) || null,
     loading: false,
     error: null,
   },
   reducers: {
     logout: (state) => {
       state.user = null;
-      state.token = null;
-      localStorage.removeItem("token");
-      localStorage.removeItem("userRole");
+      localStorage.removeItem("userData");
     },
   },
   extraReducers: (builder) => {
@@ -79,8 +76,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
-        state.token = action.payload.token;
-        state.user = action.payload.role;
+        state.user = action.payload;
         state.error = null;
       })
       .addCase(loginUser.rejected, (state, action) => {

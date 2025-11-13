@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const MedicalHistorySummary = () => {
   const [isEditingPatient, setIsEditingPatient] = useState(false);
-  const { patientId } = useParams();
+  const { patientId } = useParams(); 
 
   const [patient, setPatient] = useState(null);
   const [diseases, setDiseases] = useState([]);
@@ -323,7 +323,7 @@ const MedicalHistorySummary = () => {
       </div>
 
       {/* SUBMIT */}
-      <div className="flex justify-end">
+      <div className="flex justify-center">
         <button
           onClick={handleSubmit}
           className="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2 
