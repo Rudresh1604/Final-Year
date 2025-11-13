@@ -332,6 +332,7 @@ const getAppointmentById = async (req, res) => {
 const getAppointmentsforthatday = async (req, res) => {
   try {
     const { date } = req.query; // Expect: /thatDay?date=2025-02-18
+    const {id}=req.user;
 
     if (!date) {
       return res.status(400).json({ message: "Date is required" });
@@ -354,6 +355,7 @@ const getAppointmentsforthatday = async (req, res) => {
 
     const appointments = await Appointment.find({
       date: { $gte: start, $lte: end },
+      $or: [{ doctorId: id }, { patientId: id }],
     })
       .populate("patientId")
       .populate("doctorId");
