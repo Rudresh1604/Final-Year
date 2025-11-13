@@ -12,11 +12,11 @@ import { toast } from "react-toastify";
 
 const NavbarComponent = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("userData");
 
   // handle logout
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("userData");
     toast.success("Logged out successfully!", {
       position: "top-right",
       autoClose: 3000,
@@ -55,8 +55,10 @@ const NavbarComponent = () => {
               </Button>
             </>
           ) : (
-            <Button 
-  className="bg-red-400 hover:bg-red-700 text-white border-none cursor-pointer" onClick={handleLogout}>
+            <Button
+              className="bg-red-400 hover:bg-red-700 text-white border-none cursor-pointer"
+              onClick={handleLogout}
+            >
               Logout
             </Button>
           )}
