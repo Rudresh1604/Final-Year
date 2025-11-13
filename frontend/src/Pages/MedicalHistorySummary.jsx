@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const MedicalHistorySummary = () => {
   const [isEditingPatient, setIsEditingPatient] = useState(false);
-  const { patientId } = useParams();
+  const { patientId } = useParams(); 
 
   const [patient, setPatient] = useState(null);
   const [diseases, setDiseases] = useState([]);
