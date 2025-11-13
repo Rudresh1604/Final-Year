@@ -2,7 +2,17 @@ const { mongoose } = require("mongoose");
 const Disease = require("../model/diseaseSchema");
 
 const CreateDisease = async (req, res) => {
-  const { name, symptoms, spreadLevel, affectedRegions } = req.body;
+  const {
+    name,
+    description,
+    precautions,
+    medication,
+    workflow,
+    notes,
+    symptoms,
+    spreadLevel,
+    affectedRegions,
+  } = req.body;
 
   if (
     !name ||
@@ -31,6 +41,11 @@ const CreateDisease = async (req, res) => {
   try {
     const disease = await Disease.create({
       name,
+      description,
+      precautions,
+      medication,
+      workflow,
+      notes,
       symptoms,
       spreadLevel,
       affectedRegions,
@@ -96,4 +111,9 @@ const getDiseaseById = async (req, res) => {
     return res.status(500).json({ success: false, error: error.message });
   }
 };
-module.exports = { CreateDisease, getAllDiseases, deleteDisease ,getDiseaseById};
+module.exports = {
+  CreateDisease,
+  getAllDiseases,
+  deleteDisease,
+  getDiseaseById,
+};
