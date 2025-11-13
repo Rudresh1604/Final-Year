@@ -323,7 +323,7 @@ const MedicalHistorySummary = () => {
       </div>
 
       {/* SUBMIT */}
-      <div className="flex justify-end">
+      <div className="flex justify-center">
         <button
           onClick={handleSubmit}
           className="bg-green-600 hover:bg-green-700 text-white font-medium px-6 py-2 
