@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Doctor from "/IntroImage.png";
 import { useDispatch } from "react-redux";
 import { KeyRound, Mail, User, Eye, EyeOff } from "lucide-react";
@@ -18,6 +18,18 @@ const Login = () => {
     role: "Patient",
   });
 
+  // If already logged in, redirect to dashboard
+  useEffect(() => {
+    const userData = JSON.parse(localStorage.getItem("userData"));
+    if (userData) {
+      toast.info(`You are already logged in as ${userData.role}.`, {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      navigate(userData.role === "Doctor" ? "/doctor" : "/patient");
+    }
+  }, [navigate]);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
