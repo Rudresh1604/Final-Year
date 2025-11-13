@@ -52,7 +52,8 @@ const PatientDashboard = () => {
 
   return (
     <div className="flex flex-col md:px-3 lg:px-5 rounded-2xl">
-      <div className="my-2 mt-7 lg:my-5 mx-3 lg:mx-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="my-2 mt-7 lg:my-5 mx-3 lg:mx-5 flex flex-col sm:flex-row justify-between 
+      items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl lg:text-3xl font-semibold text-gray-600">
             Welcome, Patient
@@ -60,7 +61,6 @@ const PatientDashboard = () => {
           <p>Here's a summary of your health journey.</p>
         </div>
 
-        {/* 🌿 Responsive Medical History Button */}
         <button
           onClick={handleViewMedicalHistory}
           className="flex items-center justify-center gap-2 bg-green-500 text-white 
