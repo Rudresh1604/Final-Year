@@ -1,9 +1,16 @@
-import { HeartIcon, LocateIcon, MapPin, SearchIcon } from "lucide-react";
+import {
+  HeartIcon,
+  Loader2Icon,
+  LocateIcon,
+  MapPin,
+  SearchIcon,
+} from "lucide-react";
 import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import DoctorViewCard from "../Card/DoctorViewCard";
 
-const Search = ({ isPatientSearch }) => {
+const Search = ({ isPatientSearch = false }) => {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [searchResult, setSearchResult] = useState([]);
@@ -17,13 +24,23 @@ const Search = ({ isPatientSearch }) => {
         toast("All fields are required to search !");
       }
       setLoading(true);
-      const res = await axios.get(`${API_BASE_URL}/api/doctors`, {
-        params: {
-          query: query,
-          city: locationFilter,
-          specialization: specializationFilter,
-        },
-      });
+      let res;
+      if (isPatientSearch) {
+        res = await axios.get(`${API_BASE_URL}/api/patients`, {
+          params: {
+            query: query,
+            city: locationFilter,
+          },
+        });
+      } else {
+        res = await axios.get(`${API_BASE_URL}/api/doctors`, {
+          params: {
+            query: query,
+            city: locationFilter,
+            specialization: specializationFilter,
+          },
+        });
+      }
       if (res.data?.success) {
         setSearchResult(res.data?.data);
       } else {
@@ -76,16 +93,36 @@ const Search = ({ isPatientSearch }) => {
             value={specializationFilter}
             onChange={(e) => setLocationFilter(e.target.value)}
             className="w-full p-2 h-auto outline-none"
-            placeholder={"Enter specialization to search"}
+            placeholder={
+              isPatientSearch
+                ? "Enter disease to search"
+                : "Enter specialization to search"
+            }
           />
         </div>
       </div>
       <div className="flex flex-col gap-2 px-2 mt-3">
-        {searchResult?.map((item, index) => (
-          <div key={index}>
-            <h1>dkk</h1>
-          </div>
-        ))}
+        {loading ? (
+          <h1 className="flex items-center my-3 justify-center w-full">
+            {" "}
+            <Loader2Icon className="animate-spin" /> Searching...{" "}
+          </h1>
+        ) : (
+          searchResult?.map((item, index) => (
+            <div key={index}>
+              {isPatientSearch ? (
+                <div>PatientSearch </div>
+              ) : (
+                <DoctorViewCard
+                  doctor={item}
+                  onCompletion={() => {
+                    setSearchResult("");
+                  }}
+                />
+              )}
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
