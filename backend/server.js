@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(cors("*"));
 dbConnect();
 
-app.use("/api/appointment",auth, appointmentRoutes);
+app.use("/api/appointment", appointmentRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/patient", patientRoutes);
 app.use("/api/disease", diseaseRoutes);
