@@ -19,6 +19,7 @@ import RoleProtectRoute from "./components/ProtectedRoute/RoleProtectRoute";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MedicalHistorySummary from "./Pages/MedicalHistorySummary";
+import SearchPage from "./Pages/SearchPage";
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
                   </RoleProtectRoute>
                 }
               />
+              <Route path="/search" element={<SearchPage />} />
               <Route path="/disease" element={<DiseaseManagement />} />
               <Route path="/" element={<HomePage />} />
               <Route path="/report" element={<ReportPage />} />

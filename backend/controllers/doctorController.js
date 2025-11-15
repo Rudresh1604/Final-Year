@@ -152,6 +152,8 @@ const getDoctorById = async (req, res) => {
 // get all doctors
 const getDoctors = async (req, res) => {
   try {
+    console.log(req.query);
+
     const { specialization, experience, city, state } = req.query;
     const query = {};
     if (specialization) {
@@ -168,8 +170,10 @@ const getDoctors = async (req, res) => {
     }
 
     const doctors = await Doctor.find(query);
+    console.log("doctors", doctors);
+    console.log("dom");
 
-    return res.status(200).json({ success: true, doctors });
+    return res.status(200).json({ success: true, data: doctors });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }
