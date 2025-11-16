@@ -21,7 +21,7 @@ const faqs = [
 
 const FAQSection = () => {
   return (
-    <div className=" py-12 px-8 mx-auto">
+    <div className="w-full py-12 px-8 mx-auto">
       <h3 className="text-2xl font-bold mb-6 text-center">
         Frequently Asked Questions
       </h3>
