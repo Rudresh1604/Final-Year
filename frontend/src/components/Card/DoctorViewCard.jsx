@@ -8,12 +8,12 @@ const DoctorViewCard = ({ doctor, onCompletion }) => {
   const handleSelectedDoctor = (e) => {
     e.preventDefault();
     onCompletion();
-    navigate(`/doctor/${doctor?._id}`);
+    navigate(`/view/doctors/${doctor?._id}`);
   };
   return (
     <div
       onClick={handleSelectedDoctor}
-      className="px-4 py-2 border shadow-lg border-gray-200 flex rounded-lg justify-between items-center"
+      className="px-4 py-2 border cursor-pointer shadow-lg border-gray-200 flex rounded-lg justify-between items-center"
     >
       <div className="flex items-center w-auto justify-between md:justify-normal gap-3">
         {doctor?.profilePic ? (
@@ -37,7 +37,7 @@ const DoctorViewCard = ({ doctor, onCompletion }) => {
         </div>
       </div>
       <div className="max-sm:hidden flex flex-col gap-2">
-        <h1 className="flex gap-2 max-sm:text-lg text-xl">
+        <h1 className="flex gap-2 text-sm md:text-xl max-sm:text-lg">
           <PhoneCallIcon className="w-auto text-blue-500 h-auto" />{" "}
           {doctor?.phone}{" "}
         </h1>
