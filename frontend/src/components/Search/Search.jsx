@@ -125,7 +125,7 @@ const Search = ({ isPatientSearch = false }) => {
             {" "}
             <Loader2Icon className="animate-spin" /> Searching...{" "}
           </h1>
-        ) : (
+        ) : searchResult.length > 0 ? (
           searchResult?.map((item, index) => (
             <div key={index}>
               {isPatientSearch ? (
@@ -140,6 +140,12 @@ const Search = ({ isPatientSearch = false }) => {
               )}
             </div>
           ))
+        ) : (
+          query?.trim().length > 2 && (
+            <h1 className="text-center mt-2 font-medium text-lg md:text-xl">
+              No Results Found{" "}
+            </h1>
+          )
         )}
       </div>
     </div>
