@@ -20,6 +20,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MedicalHistorySummary from "./Pages/MedicalHistorySummary";
 import SearchPage from "./Pages/SearchPage";
+import View from "./Pages/View";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
                   </RoleProtectRoute>
                 }
               />
+              <Route path="/view/doctors/:doctorId" element={<View />} />
               <Route path="/search" element={<SearchPage />} />
               <Route path="/disease" element={<DiseaseManagement />} />
               <Route path="/" element={<HomePage />} />

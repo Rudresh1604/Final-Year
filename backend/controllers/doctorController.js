@@ -130,7 +130,9 @@ const updateDoctorSlot = async (req, res) => {
 // get Doctor by id
 const getDoctorById = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.params.doctorId;
+    console.log(id);
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
@@ -152,28 +154,36 @@ const getDoctorById = async (req, res) => {
 // get all doctors
 const getDoctors = async (req, res) => {
   try {
-    console.log(req.query);
+    const { query, specialization, experience, city, state } = req.query;
+    const filter = {};
 
-    const { specialization, experience, city, state } = req.query;
-    const query = {};
+    if (query && query.trim().length > 1) {
+      filter.name = { $regex: query.trim(), $options: "i" };
+    }
+
     if (specialization) {
-      query.specialization = { $in: [specialization.toUpperCase()] };
+      filter.specialization = { $in: [specialization.toUpperCase()] };
     }
+
     if (experience) {
-      query.experience = { $gte: Number(experience) };
+      filter.experience = { $gte: Number(experience) };
     }
+
     if (city) {
-      query["location.city"] = city;
+      filter["location.city"] = { $regex: city, $options: "i" };
     }
+
     if (state) {
-      query["location.state"] = state;
+      filter["location.state"] = { $regex: state, $options: "i" };
     }
 
-    const doctors = await Doctor.find(query);
-    console.log("doctors", doctors);
-    console.log("dom");
+    const doctors = await Doctor.find(filter);
 
-    return res.status(200).json({ success: true, data: doctors });
+    return res.status(200).json({
+      success: true,
+      count: doctors.length,
+      data: doctors,
+    });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }

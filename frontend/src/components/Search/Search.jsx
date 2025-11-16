@@ -5,7 +5,7 @@ import {
   MapPin,
   SearchIcon,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import DoctorViewCard from "../Card/DoctorViewCard";
@@ -17,11 +17,24 @@ const Search = ({ isPatientSearch = false }) => {
   const [locationFilter, setLocationFilter] = useState("");
   const [specializationFilter, setSpecializationFilter] = useState("");
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      console.log("called");
+
+      if (query?.trim()?.length > 2) {
+        searchHandler();
+      }
+    }, 1000);
+    return () => clearTimeout(delayDebounce);
+  }, [query, locationFilter]);
+
   const searchHandler = async () => {
     try {
-      if (query.length == 0) {
+      if (query.trim()?.length < 0) {
         // toa
-        toast("All fields are required to search !");
+        setSearchResult([]);
+        return;
       }
       setLoading(true);
       let res;
@@ -42,7 +55,11 @@ const Search = ({ isPatientSearch = false }) => {
         });
       }
       if (res.data?.success) {
-        setSearchResult(res.data?.data);
+        if (res.data?.count != 0) {
+          setSearchResult(res.data?.data);
+        } else {
+          setSearchResult([]);
+        }
       } else {
         toast("No results found !");
       }
@@ -69,8 +86,9 @@ const Search = ({ isPatientSearch = false }) => {
           />
         </div>
         <button
-          className="p-2 w-[25%] flex items-center gap-2 bg-blue-500 rounded-xl text-white"
+          className="p-2 w-[25%] cursor-pointer flex items-center gap-2 bg-blue-500 rounded-xl text-white"
           onClick={() => searchHandler()}
+          onKeyDown={() => searchHandler()}
         >
           <SearchIcon /> Search
         </button>
@@ -91,7 +109,7 @@ const Search = ({ isPatientSearch = false }) => {
           <input
             type="text"
             value={specializationFilter}
-            onChange={(e) => setLocationFilter(e.target.value)}
+            onChange={(e) => setSpecializationFilter(e.target.value)}
             className="w-full p-2 h-auto outline-none"
             placeholder={
               isPatientSearch

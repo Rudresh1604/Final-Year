@@ -26,7 +26,7 @@ doctorRoutes.post("/slots", addDoctorSlot);
 doctorRoutes.put("/slots", updateDoctorSlot);
 
 // get Doctor by id
-doctorRoutes.get("/:id", getDoctorById);
+doctorRoutes.get("/:doctorId", getDoctorById);
 
 // get Doctors
 doctorRoutes.get("/", getDoctors);
