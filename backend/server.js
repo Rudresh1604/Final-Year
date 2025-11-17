@@ -18,7 +18,7 @@ dbConnect();
 
 app.use("/api/appointment", appointmentRoutes);
 app.use("/api/doctors", doctorRoutes);
-app.use("/api/patient", patientRoutes);
+app.use("/api/patients", patientRoutes);
 app.use("/api/disease", diseaseRoutes);
 app.use("/api/login", loginRoutes);
 app.use("/api/reports", reportRoutes);
