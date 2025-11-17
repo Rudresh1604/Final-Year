@@ -1,3 +1,4 @@
+import axios from "axios";
 import { PencilIcon, Save } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
@@ -22,8 +23,21 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
     });
   };
 
-  const handleSave = () => {
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+  const handleSave = async () => {
     setPatientDetails(patientData);
+
+    try {
+      if (patient === patientData || !patient?._id) return;
+      const res = await axios.put(
+        `${API_BASE_URL}/api/patients/${patient?._id}`,
+        patientData
+      );
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const [isEditEnable, setEditEnable] = useState(false);
