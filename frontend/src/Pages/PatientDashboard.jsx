@@ -10,6 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import PatientViewCard from "../components/Card/PatientViewCard";
+import { toast } from 'react-toastify';
 
 const patientCards = [
   {
@@ -59,7 +60,7 @@ const PatientDashboard = () => {
       return;
     }
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/patients/${patientId}`);
+      const res = await axios.get(`${API_BASE_URL}/api/patient/${patientId}`);
       console.log(res.data);
       if (res.data?.success) {
         setPatientDetails(res.data?.patient);
@@ -84,6 +85,7 @@ const PatientDashboard = () => {
       items-start sm:items-center gap-4"
       >
         <div>
+          {console.log(patientDetails)}
           <h1 className="text-2xl lg:text-3xl font-semibold text-gray-600">
             Welcome, {patientDetails?.name}
           </h1>
