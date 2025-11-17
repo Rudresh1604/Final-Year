@@ -56,7 +56,7 @@ const NavbarComponent = () => {
             </>
           ) : (
             <Button
-              className="bg-red-400 hover:bg-red-700 text-white border-none cursor-pointer"
+              className="border border-black bg-red-400 hover:bg-red-700 cursor-pointer"
               onClick={handleLogout}
             >
               Logout
