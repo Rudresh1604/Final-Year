@@ -31,7 +31,6 @@ function App() {
           <NavbarComponent />
           <div className="px-4 pt-4 mt-15 md:px-6 md:py-9 ">
             <Routes>
-              <Route path="/appointment" element={<Appointment />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route
