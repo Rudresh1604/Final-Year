@@ -43,7 +43,7 @@ const NavbarComponent = () => {
             HealthScan AI
           </span>
         </NavbarBrand>
-        <div className="max-sm:hidden flex md:order-2 gap-3">
+        <div className="max-md:hidden flex md:order-2 gap-3">
           {!token ? (
             <>
               <Button
