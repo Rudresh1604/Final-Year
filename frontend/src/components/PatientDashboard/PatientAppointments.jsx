@@ -25,6 +25,9 @@ import AppointmentCards from "./AppointmentCards";
 // ];
 
 const PatientAppointments = ({ appointments }) => {
+  if (!appointments || appointments?.lenght) {
+    return <h1>No Appointments found ! </h1>;
+  }
   return (
     <section className="bg-white p-3 rounded-lg space-y-3 w-full">
       <h2 className="text-xl font-bold text-gray-600">Latest Appointments</h2>
