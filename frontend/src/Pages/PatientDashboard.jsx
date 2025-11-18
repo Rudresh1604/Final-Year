@@ -107,13 +107,7 @@ const PatientDashboard = () => {
       </div>
 
       <HeaderCard cards={patientCards} className={"lg:ml-1"} />
-      {patientDetails && (
-        <PatientViewCard
-          patient={patientDetails}
-          setPatientDetails={setPatientDetails}
-          accessedBy={"patient"}
-        />
-      )}
+
       <div className="flex flex-col items-center w-full">
         <PatientAppointments />
       </div>

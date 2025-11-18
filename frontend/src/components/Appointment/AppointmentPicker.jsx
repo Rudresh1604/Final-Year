@@ -9,7 +9,7 @@ import axios from "axios";
 import moment from "moment";
 import { Loader } from "lucide-react";
 
-const AppointmentPicker = ({ doctorId }) => {
+const AppointmentPicker = ({ doctorId, patientId }) => {
   const [openModal, setOpenModal] = useState(false);
   const { user } = useSelector(selectAuth);
 
@@ -247,7 +247,7 @@ const AppointmentPicker = ({ doctorId }) => {
               selectedTime={selectedTime}
               selectedDay={selectedDay}
               doctorId={doctorId}
-              patientId={"68888dfb86635ac8bdd3e4a3"}
+              patientId={patientId}
               onSuccess={() => {
                 setOpenModal(false);
                 setSelectedTime(null);

@@ -45,7 +45,17 @@ const getPatientById = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
 
-    const patient = await Patient.findById(id).populate("appointments");
+    const patient = await Patient.findById(id)
+      .select("-password")
+
+      .populate({
+        path: "appointments",
+        populate: {
+          path: "doctorId",
+          select: "name email specialization _id",
+        },
+      });
+
     if (!patient) {
       return res
         .status(404)
@@ -85,33 +95,39 @@ const updatePatient = async (req, res) => {
   try {
     const id = req.params.id;
     const { medicalHistory, ...otherData } = req.body;
+
     if (!id || !req.body) {
       return res
         .status(400)
         .json({ success: false, message: "All fields are required" });
     }
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
-    let updateQuery = { ...otherData };
 
-    // if medicalHistory provided, push instead of replacing
+    // Build update query
+    let updateQuery = { $set: { ...otherData } };
+
     if (medicalHistory) {
-      updateQuery = { $push: { medicalHistory } };
+      updateQuery.$push = { medicalHistory };
     }
+
     const patient = await Patient.findByIdAndUpdate(id, updateQuery, {
       new: true,
-    }).populate("medicalHistory.diseaseId");
+    })
+      .select("-password")
+      .populate("medicalHistory.diseaseId");
 
     if (!patient) {
       return res
         .status(404)
         .json({ success: false, message: "Patient not found" });
     }
+
     return res.status(200).json({ success: true, patient });
   } catch (error) {
     console.log(error);
-
     return res.status(500).json({ success: false, error: error.message });
   }
 };
