@@ -21,6 +21,7 @@ import "react-toastify/dist/ReactToastify.css";
 import MedicalHistorySummary from "./Pages/MedicalHistorySummary";
 import SearchPage from "./Pages/SearchPage";
 import View from "./Pages/View";
+import Profile from "./Pages/Profile";
 
 function App() {
   return (
@@ -46,6 +47,14 @@ function App() {
                 element={
                   <RoleProtectRoute allowedRole="Patient">
                     <PatientDashboard />
+                  </RoleProtectRoute>
+                }
+              />
+              <Route
+                path="/profile/patient"
+                element={
+                  <RoleProtectRoute allowedRole="Patient">
+                    <Profile />
                   </RoleProtectRoute>
                 }
               />

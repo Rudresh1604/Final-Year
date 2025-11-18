@@ -5,6 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import AppointmentPicker from "../components/Appointment/AppointmentPicker";
 import { Loader } from "lucide-react";
+import { useSelector } from "react-redux";
+import { rootSlice } from "../redux/rootSlice";
 
 const View = () => {
   const { doctorId } = useParams();
@@ -13,6 +15,12 @@ const View = () => {
   const userData = JSON.parse(localStorage.getItem("userData"));
   const patientId = userData?._id || userData?.id;
   const navigate = useNavigate();
+  // User from root slice
+  const user = useSelector((state) => state.root.auth.user);
+
+  // Token
+  const token = useSelector((state) => state.root.auth.token);
+  console.log("user", user);
 
   useEffect(() => {
     if (!patientId) {
@@ -25,7 +33,7 @@ const View = () => {
     try {
       setLoading(true);
       const res = await axios.get(`${API_BASE_URL}/api/doctors/${doctorId}`);
-      console.log(res.data);
+      // console.log(res.data);
       if (res.data) {
         setDoctorDetails(res.data);
       } else {
@@ -38,7 +46,7 @@ const View = () => {
       setLoading(false);
     }
   };
-  console.log(doctorDetails);
+  // console.log(doctorDetails);
 
   useEffect(() => {
     fetchDoctorDetails();
@@ -54,7 +62,7 @@ const View = () => {
   return (
     <div>
       <DoctorIntro doctor={doctorDetails} />
-      <AppointmentPicker doctorId={doctorDetails?._id} />
+      <AppointmentPicker doctorId={doctorDetails?._id} patientId={patientId} />
     </div>
   );
 };
