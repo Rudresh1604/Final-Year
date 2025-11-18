@@ -356,7 +356,7 @@ const getAppointmentsforthatday = async (req, res) => {
     );
 
     const appointments = await Appointment.find({
-      date: { $gte: start, $lte: end },
+      time: { $gte: start, $lte: end },
       $or: [{ doctorId: id }, { patientId: id }],
     })
       .populate("patientId", "name")
