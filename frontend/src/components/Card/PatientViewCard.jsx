@@ -1,9 +1,14 @@
 import axios from "axios";
-import { PencilIcon, Save } from "lucide-react";
+import { PencilIcon, Save, XCircle } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
   const [patientData, setPatientData] = useState(null);
+  const [backupData, setBackupData] = useState(null);
+  const [isEditEnable, setEditEnable] = useState(false);
+
   useEffect(() => {
     setPatientData(patient);
   }, []);
@@ -23,56 +28,99 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
     });
   };
 
-  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-
   const handleSave = async () => {
     setPatientDetails(patientData);
 
     try {
-      if (patient === patientData || !patient?._id) return;
+      if (patient === patientData || !patient?._id) {
+        toast.info("No changes to update!", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+        return;
+      }
       const res = await axios.put(
         `${API_BASE_URL}/api/patients/${patient?._id}`,
         patientData
       );
       console.log(res);
+      toast.success("Profile updated successfully!", {
+        position: "top-right",
+        autoClose: 2500,
+        theme: "colored",
+      });
+
+      setEditEnable(false);
     } catch (error) {
       console.log(error);
+      toast.error("Failed to update profile!", {
+        position: "top-right",
+        autoClose: 2500,
+        theme: "colored",
+      });
     }
   };
 
-  const [isEditEnable, setEditEnable] = useState(false);
+  const handleCancel = async () => {
+    setPatientData(backupData);
+    setEditEnable(false);
+    toast.info("Changes discarded.", {
+      position: "top-right",
+      autoClose: 2500,
+      theme: "colored",
+    });
+  };
+  if (!patientData) return null;
   return (
-    <div className="flex flex-col py-3 px-4 mt-2 mb-4 rounded-lg shadow bg-white border border-gray-200">
+    <div
+      className="flex flex-col py-3 px-4 mt-2 mb-4 rounded-lg shadow bg-white border
+     border-gray-200"
+    >
       <div className="flex flex-row justify-between py-2 px-2">
         <h1 className="text-2xl max-sm:text-lg font-semibold">My Profile </h1>
-        <div className="flex flex-row gap-3">
-          <div className="flex items-center gap-1">
-            <div
+        <div className="flex flex-row gap-4 items-center">
+          {!isEditEnable ? (
+            <button
               onClick={() => {
-                setEditEnable((prev) => {
-                  return !prev;
-                });
+                setBackupData(patientData);
+                setEditEnable(true);
               }}
-              className="p-2 bg-blue-200 cursor-pointer rounded-full"
+              className="flex items-center gap-2 px-3 py-1 bg-blue-100 hover:bg-blue-200 
+                   rounded-full cursor-pointer transition"
             >
               <PencilIcon className="w-6 h-6 text-blue-500" />
-            </div>
-            Edit
-          </div>
-          <div className="flex items-center gap-1">
-            <button
-              disabled={!isEditEnable}
-              onClick={() => handleSave()}
-              className="p-2 rounded-full cursor-pointer disabled:bg-gray-300 disabled:cursor-not-allowed bg-green-200"
-            >
-              <Save className="w-6 h-6 text-green-500" />
+              <span className="text-blue-700 font-medium">Edit</span>
             </button>
-            Save{" "}
-          </div>
+          ) : (
+            <>
+              <button
+                onClick={handleSave}
+                className="flex items-center gap-2 px-3 py-1 bg-green-100 hover:bg-green-300 
+                     rounded-full cursor-pointer transition"
+              >
+                <Save className="w-6 h-6 text-green-500" />
+                <span className="text-green-700 font-medium">Save</span>
+              </button>
+
+              {/* CANCEL BUTTON */}
+              <button
+                onClick={handleCancel}
+                className="flex items-center gap-2 px-3 py-1 bg-red-100 hover:bg-red-300 
+                     rounded-full cursor-pointer transition"
+              >
+                <XCircle className="w-6 h-6 text-red-500" />
+                <span className="text-red-700 font-medium">Cancel</span>
+              </button>
+            </>
+          )}
         </div>
       </div>
       <div className="grid grid-cols-2 max-sm:grid-cols-1 mx-4 p-3 gap-2 my-3">
-        <div className="flex flex-col bg-gray-100 text-lg border rounded-lg py-2 px-8 border-gray-300 font-sans justify-center gap-4">
+        <div
+          className="flex flex-col bg-gray-100 text-lg border rounded-lg py-2 px-8
+         border-gray-300 font-sans justify-center gap-4"
+        >
           <div className="w-full flex justify-center">
             <img
               className="h-24 w-28 max-sm:h-16 max-sm:w-16 border-4 border-blue-500 rounded-full"
@@ -81,7 +129,7 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
                 "https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvczc3LW1ja2luc2V5LTc2MTEtcG9tXzMuanBn.jpg"
               }
               alt=""
-              srcset=""
+              srcSet=""
             />
           </div>
           <div className="flex items-center gap-2">
@@ -132,7 +180,7 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
             {isEditEnable ? (
               <select
                 className="w-auto py-1 px-2 border rounded-lg border-blue-300
-             focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+             focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
                 onChange={(e) => changeHandler(e.target.value, "gender")}
                 value={patientData?.gender || ""}
               >
@@ -144,7 +192,7 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
                 <option value="other">Other</option>
               </select>
             ) : (
-              <h1>{patientData?.age}</h1>
+              <h1>{patientData?.gender}</h1>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -166,7 +214,7 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
             {isEditEnable ? (
               <select
                 className="w-auto py-1 px-2 border rounded-lg border-blue-300
-             focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+             focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
                 onChange={(e) => changeHandler(e.target.value, "bloodGroup")}
                 value={patientData?.bloodGroup || ""}
               >
@@ -184,11 +232,14 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
                 <option value="O-">O-ve</option>
               </select>
             ) : (
-              <h1>{patientData?.age}</h1>
+              <h1>{patientData?.bloodGroup}</h1>
             )}
           </div>
         </div>
-        <div className="flex flex-col bg-gray-100 text-lg border rounded-lg border-gray-300 py-2 px-4 font-sans justify-center max-sm:mt-2  gap-4">
+        <div
+          className="flex flex-col bg-gray-100 text-lg border rounded-lg border-gray-300 py-2 
+        px-4 font-sans justify-center max-sm:mt-2  gap-4"
+        >
           <h1 className="text-xl font-semibold">Address </h1>
           <div className="flex items-center gap-2">
             <h1>Street :</h1>
