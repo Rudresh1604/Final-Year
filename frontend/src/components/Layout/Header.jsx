@@ -6,13 +6,19 @@ import {
   NavbarCollapse,
   NavbarLink,
   NavbarToggle,
+  Dropdown,
+  DropdownItem,
+  DropdownDivider,
 } from "flowbite-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { UserCircle, User, LogOut } from "lucide-react";
 
 const NavbarComponent = () => {
   const navigate = useNavigate();
-  const token = localStorage.getItem("userData");
+  const storedData = localStorage.getItem("userData");
+  const userData = storedData ? JSON.parse(storedData) : null;
+  const token = userData?.token ?? null;
 
   // handle logout
   const handleLogout = () => {
@@ -55,12 +61,32 @@ const NavbarComponent = () => {
               </Button>
             </>
           ) : (
-            <Button
-              className="border border-black bg-red-400 hover:bg-red-700 cursor-pointer"
-              onClick={handleLogout}
+            <Dropdown
+              arrowIcon={false}
+              inline
+              label={
+                <UserCircle className="w-9 h-9 text-gray-700 cursor-pointer hover:text-black transition" />
+              }
+              className="shadow-lg rounded-xl bg-white backdrop-blur-md min-w-[200px] py-2"
             >
-              Logout
-            </Button>
+              <DropdownItem
+                onClick={() => navigate("/profile")}
+                className="py-3 px-8 text-gray-700 hover:bg-gray-100 transition rounded-lg text-lg flex items-center gap-3"
+              >
+                <User className="w-5 h-5" />
+                Profile
+              </DropdownItem>
+
+              <DropdownDivider className="my-2" />
+
+              <DropdownItem
+                onClick={handleLogout}
+                className="py-3 px-8 text-red-600 hover:bg-red-100 transition rounded-lg text-lg flex items-center gap-3"
+              >
+                <LogOut className="w-5 h-5" />
+                Logout
+              </DropdownItem>
+            </Dropdown>
           )}
         </div>
         <NavbarToggle />
@@ -82,13 +108,25 @@ const NavbarComponent = () => {
               </NavbarLink>
             </>
           ) : (
-            <NavbarLink
-              href="/login"
-              className="md:hidden text-red-600"
-              onClick={handleLogout}
-            >
-              Logout
-            </NavbarLink>
+            // <NavbarLink
+            //   href="/login"
+            //   className="md:hidden text-red-600"
+            //   onClick={handleLogout}
+            // >
+            //   Logout
+            // </NavbarLink>
+            <>
+              <NavbarLink href="/profile" className="md:hidden">
+                Profile
+              </NavbarLink>
+              <NavbarLink
+                href="/login"
+                className="md:hidden text-red-600"
+                onClick={handleLogout}
+              >
+                Logout
+              </NavbarLink>
+            </>
           )}
         </NavbarCollapse>
       </Navbar>
