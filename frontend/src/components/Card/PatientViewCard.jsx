@@ -72,7 +72,18 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
         </div>
       </div>
       <div className="grid grid-cols-2 max-sm:grid-cols-1 mx-4 p-3 gap-2 my-3">
-        <div className="flex flex-col text-lg font-sans justify-center gap-4">
+        <div className="flex flex-col bg-gray-100 text-lg border rounded-lg py-2 px-8 border-gray-300 font-sans justify-center gap-4">
+          <div className="w-full flex justify-center">
+            <img
+              className="h-24 w-28 max-sm:h-16 max-sm:w-16 border-4 border-blue-500 rounded-full"
+              src={
+                patient?.profilePicture ||
+                "https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvczc3LW1ja2luc2V5LTc2MTEtcG9tXzMuanBn.jpg"
+              }
+              alt=""
+              srcset=""
+            />
+          </div>
           <div className="flex items-center gap-2">
             <h1 className="">Name :</h1>
             {isEditEnable ? (
@@ -177,7 +188,7 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
             )}
           </div>
         </div>
-        <div className="flex flex-col text-lg pl-2 font-sans justify-center max-sm:mt-2  gap-4">
+        <div className="flex flex-col bg-gray-100 text-lg border rounded-lg border-gray-300 py-2 px-4 font-sans justify-center max-sm:mt-2  gap-4">
           <h1 className="text-xl font-semibold">Address </h1>
           <div className="flex items-center gap-2">
             <h1>Street :</h1>
