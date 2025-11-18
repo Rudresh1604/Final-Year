@@ -10,7 +10,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import PatientViewCard from "../components/Card/PatientViewCard";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const patientCards = [
   {
@@ -60,7 +60,7 @@ const PatientDashboard = () => {
       return;
     }
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/patient/${patientId}`);
+      const res = await axios.get(`${API_BASE_URL}/api/patients/${patientId}`);
       console.log(res.data);
       if (res.data?.success) {
         setPatientDetails(res.data?.patient);
