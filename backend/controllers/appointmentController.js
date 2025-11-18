@@ -355,11 +355,41 @@ const getAppointmentsforthatday = async (req, res) => {
     );
 
     const appointments = await Appointment.find({
-      date: { $gte: start, $lte: end },
+      time: { $gte: start, $lte: end },
       $or: [{ doctorId: id }, { patientId: id }],
     })
-      .populate("patientId")
-      .populate("doctorId");
+      .populate("patientId", "name")
+      .populate("doctorId", "name specialization");
+
+    return res.status(200).json({
+      success: true,
+      count: appointments.length,
+      appointments,
+      message: "Appointments fetched successfully",
+    });
+  } catch (error) {
+    console.error("Error fetching appointments for date:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getAppointments = async (req, res) => {
+  try {
+    const { id } = req.user;
+
+    if (!id) {
+      return res.status(500).json({ message: "Invalid Appointment" });
+    }
+
+    const appointments = await Appointment.find({
+      $or: [{ doctorId: id }, { patientId: id }],
+    })
+      .populate("patientId", "name ")
+      .populate("doctorId", "name specialization");
+
+    if (!appointments) {
+      return res.status(404).json({ message: "Appointments not available" });
+    }
 
     return res.status(200).json({
       success: true,
@@ -379,4 +409,5 @@ module.exports = {
   getAppointmentById,
   getAvailableSlots,
   getAppointmentsforthatday,
+  getAppointments,
 };
