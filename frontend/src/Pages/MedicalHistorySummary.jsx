@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const MedicalHistorySummary = () => {
   const [isEditingPatient, setIsEditingPatient] = useState(false);
-  const { patientId } = useParams(); 
+  const { patientId } = useParams();
+  const navigate = useNavigate();
 
   const [patient, setPatient] = useState(null);
   const [diseases, setDiseases] = useState([]);
@@ -18,7 +19,7 @@ const MedicalHistorySummary = () => {
     const fetchData = async () => {
       try {
         const [patientRes, diseaseRes] = await Promise.all([
-          axios.get(`${API_URL}/api/patient/summary/${patientId}`),
+          axios.get(`${API_URL}/api/patients/summary/${patientId}`),
           axios.get(`${API_URL}/api/disease/`),
         ]);
 
@@ -45,14 +46,11 @@ const MedicalHistorySummary = () => {
   //  SAVE PATIENT DETAILS
   const handleSavePatient = async () => {
     try {
-      const res = await axios.put(
-        `${API_URL}/api/patient/update/${patientId}`,
-        {
-          name: patient.name,
-          age: patient.age,
-          phone: patient.phone,
-        }
-      );
+      const res = await axios.put(`${API_URL}/api/patients/${patientId}`, {
+        name: patient.name,
+        age: patient.age,
+        phone: patient.phone,
+      });
 
       if (res.data.success) {
         setPatient(res.data.patient);
@@ -114,16 +112,13 @@ const MedicalHistorySummary = () => {
     }
 
     try {
-      const res = await axios.put(
-        `${API_URL}/api/patient/update/${patientId}`,
-        {
-          medicalHistory: {
-            diseaseId: selectedDiseaseId,
-            diagnosedOn: new Date(),
-            notes: selectedDisease?.notes || "",
-          },
-        }
-      );
+      const res = await axios.put(`${API_URL}/api/patients/${patientId}`, {
+        medicalHistory: {
+          diseaseId: selectedDiseaseId,
+          diagnosedOn: new Date(),
+          notes: selectedDisease?.notes || "",
+        },
+      });
 
       if (res.data.success) {
         toast.success("Medical history updated successfully!", {
@@ -131,6 +126,7 @@ const MedicalHistorySummary = () => {
           autoClose: 3000,
           theme: "colored",
         });
+        navigate(`/patient`);
       } else {
         toast.error("Failed to update medical history.", {
           position: "top-right",

@@ -2,6 +2,8 @@ import React from "react";
 import AppointmentPicker from "../components/Appointment/AppointmentPicker";
 import DoctorIntro from "../components/Appointment/DoctorIntro";
 import { ToastContainer } from "react-toastify";
+import { useSelector } from "react-redux";
+import { rootSlice } from "../redux/rootSlice";
 
 const Appointment = () => {
   return (

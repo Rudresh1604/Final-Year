@@ -96,10 +96,9 @@ const bookAppointment = async (req, res) => {
     // Update doctor & patient
     doctor.appointments.push(newAppointment._id);
     doctor.patients.addToSet(patientId);
-
+    await doctor.save();
     patient.appointments.push(newAppointment._id);
 
-    await doctor.save();
     await patient.save();
 
     return res.status(201).json({
