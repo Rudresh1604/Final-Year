@@ -1,7 +1,35 @@
-import React from "react";
-import { allAppointment } from "../../../Constants/Doctor";
+import React, { useEffect } from "react";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { useState } from "react";
 
 const AllAppointment = () => {
+  const [appointments, setAppointments] = useState([]);
+  const selector = useSelector((state) => state.auth);
+  // console.log(selector.user);
+
+  const fetchAppointments = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/appointment/all`,
+        {
+          headers: {
+            Authorization: `Bearer ${selector.user.token}`,
+          },
+        }
+      );
+      // console.log(response.data);
+      setAppointments(response.data.appointments || []);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
+
   return (
     <div className="flex flex-col items-center px-5 bg-white border border-gray-300 rounded-2xl mt-3 lg:mx-4">
       <h1 className="text-gray-700 text-2xl my-2 font-semibold">
@@ -20,11 +48,11 @@ const AllAppointment = () => {
             </tr>
           </thead>
           <tbody>
-            {allAppointment.length == 0 && (
+            {appointments.length == 0 && (
               <h1>Sorry No Appointments available</h1>
             )}
-            {allAppointment.length > 0 &&
-              allAppointment?.map((item, index) => (
+            {appointments.length > 0 &&
+              appointments?.map((item, index) => (
                 <tr key={index} className="bg-white border-b border-gray-300">
                   <td className=" px-3 py-2 font-medium text-gray-900 flex items-center gap-2">
                     <img
@@ -34,15 +62,15 @@ const AllAppointment = () => {
                     />
                     <div className="flex flex-col">
                       <p className=" text-gray-600">
-                        {item?.patientName.split(" ")[0]}{" "}
+                        {item?.patientId.name.split(" ")[0]}{" "}
                       </p>
                       <p className=" text-gray-600">
-                        {item?.patientName.split(" ")[1]}{" "}
+                        {item?.patientId.name.split(" ")[1]}{" "}
                       </p>
                     </div>
                   </td>
                   <td className=" px-2 py-2">
-                    {new Date(item?.dateTime)
+                    {new Date(item?.time)
                       .toString()
                       .split(" ")
                       .slice(0, 5)

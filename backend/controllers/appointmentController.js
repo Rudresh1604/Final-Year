@@ -332,7 +332,7 @@ const getAppointmentById = async (req, res) => {
 const getAppointmentsforthatday = async (req, res) => {
   try {
     const { date } = req.query; // Expect: /thatDay?date=2025-02-18
-    const {id}=req.user;
+    const { id } = req.user;
 
     if (!date) {
       return res.status(400).json({ message: "Date is required" });
@@ -340,25 +340,27 @@ const getAppointmentsforthatday = async (req, res) => {
 
     const d = new Date(date); // Convert input → Date object
 
-    const start = new Date(Date.UTC(
-      d.getUTCFullYear(),
-      d.getUTCMonth(),
-      d.getUTCDate(),
-      0, 0, 0
-    ));
-    const end = new Date(Date.UTC(
-      d.getUTCFullYear(),
-      d.getUTCMonth(),
-      d.getUTCDate(),
-      23, 59, 59, 999
-    ));
+    const start = new Date(
+      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0)
+    );
+    const end = new Date(
+      Date.UTC(
+        d.getUTCFullYear(),
+        d.getUTCMonth(),
+        d.getUTCDate(),
+        23,
+        59,
+        59,
+        999
+      )
+    );
 
     const appointments = await Appointment.find({
       date: { $gte: start, $lte: end },
       $or: [{ doctorId: id }, { patientId: id }],
     })
-      .populate("patientId")
-      .populate("doctorId");
+      .populate("patientId", "name")
+      .populate("doctorId", "name specialization");
 
     return res.status(200).json({
       success: true,
@@ -366,18 +368,47 @@ const getAppointmentsforthatday = async (req, res) => {
       appointments,
       message: "Appointments fetched successfully",
     });
-
   } catch (error) {
     console.error("Error fetching appointments for date:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
 
+const getAppointments = async (req, res) => {
+  try {
+    const { id } = req.user;
+
+    if (!id) {
+      return res.status(500).json({ message: "Invalid Appointment" });
+    }
+
+    const appointments = await Appointment.find({
+      $or: [{ doctorId: id }, { patientId: id }],
+    })
+      .populate("patientId", "name ")
+      .populate("doctorId", "name specialization");
+
+    if (!appointments) {
+      return res.status(404).json({ message: "Appointments not available" });
+    }
+
+    return res.status(200).json({
+      success: true,
+      count: appointments.length,
+      appointments,
+      message: "Appointments fetched successfully",
+    });
+  } catch (error) {
+    console.error("Error fetching appointments for date:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 module.exports = {
   bookAppointment,
   cancelAppointment,
   getAppointmentById,
   getAvailableSlots,
-  getAppointmentsforthatday
+  getAppointmentsforthatday,
+  getAppointments,
 };
