@@ -1,13 +1,40 @@
 const { mongoose } = require("mongoose");
 const Patient = require("../model/patientSchema");
 const bcrypt = require("bcryptjs");
+const { uploadToCloudinary } = require("../utils/cloudinaryUpload");
 
 const createPatient = async (req, res) => {
-  const { name, email, phone, gender, password, bloodGroup, age, address } =
-    req.body;
-  console.log(req.body);
-
   try {
+    const { name, email, phone, gender, password, bloodGroup, age, address } =
+      req.body;
+
+    if (
+      !name ||
+      !email ||
+      !phone ||
+      !gender ||
+      !password ||
+      !bloodGroup ||
+      !age ||
+      !address
+    ) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
+    }
+
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Image is required" });
+    }
+    // console.log(req.body);
+
+    const uploadResult = await uploadToCloudinary(
+      req.file.buffer,
+      "healthScan/patients"
+    );
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const patient = await Patient.create({
@@ -19,6 +46,8 @@ const createPatient = async (req, res) => {
       address: address,
       gender: gender,
       age: age,
+      profilePicture: uploadResult.secure_url,
+      public_id: uploadResult.public_id,
     });
     if (!patient) {
       return res.json(
@@ -26,7 +55,7 @@ const createPatient = async (req, res) => {
         { status: 500 }
       );
     }
-    console.log(patient);
+    // console.log(patient);
 
     return res.json(
       { success: true, message: "Created Successfully", id: patient._id },

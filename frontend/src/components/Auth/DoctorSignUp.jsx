@@ -78,9 +78,9 @@ const DoctorSignup = () => {
         fd.append("profile", file);
       }
 
-      fd.forEach((value, key) => {
-        console.log(key, value);
-      });
+      // fd.forEach((value, key) => {
+      //   console.log(key, value);
+      // });
       // return;
 
       const res = await dispatch(registerDoctor(fd));

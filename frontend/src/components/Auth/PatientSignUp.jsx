@@ -25,6 +25,7 @@ const PatientSignUp = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [preview, setPreview] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -42,6 +43,7 @@ const PatientSignUp = () => {
       country: "",
     },
   });
+  const [file, setFile] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -55,23 +57,43 @@ const PatientSignUp = () => {
     }
   };
 
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+    if (e.target.files[0]) {
+      setPreview(URL.createObjectURL(e.target.files[0]));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const payload = {
-      ...formData,
-      address: {
-        street: formData.address.street,
-        city: formData.address.city,
-        state: formData.address.state,
-        pincode: formData.address.pincode,
-        country: formData.address.country,
-      },
-    };
-
     try {
-      const res = await dispatch(registerPatient(payload));
+      const fd = new FormData();
+
+      fd.append("name", formData.name);
+      fd.append("email", formData.email);
+      fd.append("password", formData.password);
+      fd.append("phone", formData.phone);
+      fd.append("age", formData.age);
+      fd.append("gender", formData.gender);
+      fd.append("bloodGroup", formData.bloodGroup);
+
+      fd.append(
+        "address",
+        JSON.stringify({
+          street: formData.address.street,
+          city: formData.address.city,
+          state: formData.address.state,
+          pincode: formData.address.pincode,
+          country: formData.address.country,
+        })
+      );
+
+      if (file) {
+        fd.append("profile", file);
+      }
+      const res = await dispatch(registerPatient(fd));
 
       if (res.payload && res.payload.success) {
         toast.success("Patient registered successfully!", {
@@ -106,6 +128,43 @@ const PatientSignUp = () => {
         Patient Sign Up
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4 text-lg">
+        {/* Profile */}
+        <div>
+          <label
+            htmlFor="profile"
+            className="mb-1 block font-medium text-gray-700"
+          >
+            Profile Picture
+          </label>
+          <div className="flex justify-center">
+            <label
+              htmlFor="profile"
+              className="relative w-36 h-36 rounded-full overflow-hidden cursor-pointer border-2 bg-gray-200 border-gray-300 hover:border-blue-500 transition"
+            >
+              {preview ? (
+                <img
+                  src={preview}
+                  alt="preview"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex  flex-col items-center justify-center text-gray-500">
+                  <span className="text-center px-4">Click to upload</span>
+                </div>
+              )}
+              <input
+                id="profile"
+                name="profile"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+                required
+              />
+            </label>
+          </div>
+        </div>
+
         {/* Full Name */}
         <div>
           <label className="block mb-1 font-medium text-gray-700">
@@ -114,6 +173,7 @@ const PatientSignUp = () => {
           <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
             <User className="w-5 h-5 text-gray-500 mx-2" />
             <input
+              id="name"
               name="name"
               type="text"
               value={formData.name}
@@ -131,6 +191,7 @@ const PatientSignUp = () => {
           <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
             <Mail className="w-5 h-5 text-gray-500 mx-2" />
             <input
+              id="email"
               name="email"
               type="email"
               value={formData.email}
@@ -150,6 +211,7 @@ const PatientSignUp = () => {
           <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
             <KeyRound className="w-5 h-5 text-gray-500 mx-2" />
             <input
+              id="password"
               name="password"
               type={showPassword ? "text" : "password"}
               value={formData.password}
@@ -175,6 +237,7 @@ const PatientSignUp = () => {
           <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
             <Phone className="w-5 h-5 text-gray-500 mx-2" />
             <input
+              id="phone"
               name="phone"
               type="tel"
               value={formData.phone}
@@ -193,6 +256,7 @@ const PatientSignUp = () => {
             <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
               <CalendarDays className="w-5 h-5 text-gray-500 mx-2" />
               <input
+                id="age"
                 name="age"
                 type="number"
                 value={formData.age}
@@ -214,15 +278,19 @@ const PatientSignUp = () => {
             <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
               <Mars className="w-5 h-5 text-gray-500 mx-2" />
               <select
+                id="gender"
                 name="gender"
                 value={formData.gender}
                 onChange={handleChange}
-                className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl cursor-pointer"
+                className={`w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl ${
+                  formData.gender ? "text-black" : "text-gray-500"
+                }`}
                 required
               >
                 <option value="">Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Others">Others</option>
               </select>
             </div>
           </div>
@@ -236,6 +304,7 @@ const PatientSignUp = () => {
           <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
             <Droplet className="w-5 h-5 text-gray-500 mx-2" />
             <input
+              id="bloodGroup"
               name="bloodGroup"
               type="text"
               value={formData.bloodGroup}
@@ -252,6 +321,7 @@ const PatientSignUp = () => {
           <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
             <Home className="w-5 h-5 text-gray-500 mx-2" />
             <input
+              id="street"
               name="street"
               type="text"
               value={formData.address.street}
@@ -269,6 +339,7 @@ const PatientSignUp = () => {
             <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
               <Landmark className="w-5 h-5 text-gray-500 mx-2" />
               <input
+                id="city"
                 name="city"
                 type="text"
                 value={formData.address.city}
@@ -286,6 +357,7 @@ const PatientSignUp = () => {
             <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
               <MapPin className="w-5 h-5 text-gray-500 mx-2" />
               <input
+                id="state"
                 name="state"
                 type="text"
                 value={formData.address.state}
@@ -306,6 +378,7 @@ const PatientSignUp = () => {
             <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
               <ListChecks className="w-5 h-5 text-gray-500 mx-2" />
               <input
+                id="pincode"
                 name="pincode"
                 type="text"
                 value={formData.address.pincode}
@@ -323,6 +396,7 @@ const PatientSignUp = () => {
             <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
               <Globe className="w-5 h-5 text-gray-500 mx-2" />
               <input
+                id="country"
                 name="country"
                 type="text"
                 value={formData.address.country}
