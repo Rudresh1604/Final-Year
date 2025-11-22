@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Doctor = require("../model/doctorSchema");
 const bcrypt = require("bcryptjs");
+const { uploadToCloudinary } = require("../utils/cloudinaryUpload");
 
 // add Doctor
 const addDoctor = async (req, res) => {
@@ -10,11 +11,18 @@ const addDoctor = async (req, res) => {
       email,
       phone,
       age,
+      gender,
       specialization,
       experience,
       password,
       location,
     } = req.body;
+
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Image is required" });
+    }
 
     if (
       !name ||
@@ -24,12 +32,24 @@ const addDoctor = async (req, res) => {
       !specialization ||
       !experience ||
       !password ||
-      !location
+      !location ||
+      !gender
     ) {
       return res
         .status(400)
         .json({ success: false, message: "All fields are required" });
     }
+
+    if (gender !== "Male" && gender !== "Female" && gender !== "Others") {
+      return res
+        .status(400)
+        .json({ success: false, message: "Gender is invalid" });
+    }
+
+    const uploadResult = await uploadToCloudinary(
+      req.file.buffer,
+      "healthScan/doctors"
+    );
 
     const existingDoctor = await Doctor.findOne({ email });
     if (existingDoctor) {
@@ -46,13 +66,17 @@ const addDoctor = async (req, res) => {
       email,
       phone,
       age,
+      gender,
       specialization,
       experience,
       password: hashedPassword,
       location,
+      profilePicture: uploadResult.secure_url,
+      public_id: uploadResult.public_id,
     });
     return res.status(201).json({ success: true, doctor });
   } catch (error) {
+    // console.log(error);
     return res.status(500).json({ success: false, error: error.message });
   }
 };

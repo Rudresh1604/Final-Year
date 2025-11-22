@@ -10,10 +10,12 @@ const {
   createUnavailability,
   getDoctorUnavailabilities,
 } = require("../controllers/doctorController");
+const { upload } = require("../middleware/uploads");
+
 const doctorRoutes = express.Router();
 
 // add Doctor
-doctorRoutes.post("/add", addDoctor);
+doctorRoutes.post("/add", upload.single("profile"), addDoctor);
 
 doctorRoutes.post("/unavailablity", createUnavailability);
 

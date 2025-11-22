@@ -7,7 +7,7 @@ const doctorSchema = new mongoose.Schema(
     password: { type: String, required: true, minLength: 8 },
     phone: String,
     age: { type: Number, required: true, min: 18, max: 100 },
-    specialization: [String],
+    specialization: [{ type: String, uppercase: true }],
     experience: { type: Number, min: 0, max: 100 },
     gender: { type: String, enum: ["Male", "Female", "Others"] },
     address: {
@@ -22,6 +22,7 @@ const doctorSchema = new mongoose.Schema(
       },
     },
     profilePicture: String,
+    public_id: String,
     availableSlots: [
       {
         day: String,
