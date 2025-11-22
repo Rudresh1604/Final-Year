@@ -9,14 +9,19 @@ const doctorSchema = new mongoose.Schema(
     age: { type: Number, required: true, min: 18, max: 100 },
     specialization: [String],
     experience: { type: Number, min: 0, max: 100 },
-    location: {
+    gender: { type: String, enum: ["Male", "Female", "Others"] },
+    address: {
+      street: String,
       city: String,
       state: String,
+      pincode: String,
+      country: String,
       coordinates: {
         lat: Number,
         long: Number,
       },
     },
+    profilePicture: String,
     availableSlots: [
       {
         day: String,
