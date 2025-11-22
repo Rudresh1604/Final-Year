@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
+const PatientProfileCard = ({ patient, accessedBy, setPatientDetails }) => {
   const [patientData, setPatientData] = useState(null);
   const [backupData, setBackupData] = useState(null);
   const [isEditEnable, setEditEnable] = useState(false);
@@ -324,4 +324,4 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
   );
 };
 
-export default PatientViewCard;
+export default PatientProfileCard;

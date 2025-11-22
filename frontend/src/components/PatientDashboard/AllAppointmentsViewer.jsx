@@ -29,7 +29,7 @@ const AllAppointmentsViewer = ({ appointments, isPatientView }) => {
     return <h1>No Appointments found ! </h1>;
   }
   return (
-    <section className="bg-white p-3 rounded-lg space-y-3 w-full">
+    <div className="bg-white border border-gray-200 py-2 px-4 rounded-lg space-y-3 w-full">
       <h2 className="text-xl font-bold text-gray-600">Latest Appointments</h2>
       <div className="flex flex-col gap-2 mx-1 my-1">
         {appointments.map((appointment, index) => (
@@ -43,7 +43,7 @@ const AllAppointmentsViewer = ({ appointments, isPatientView }) => {
           />
         ))}
       </div>
-    </section>
+    </div>
   );
 };
 

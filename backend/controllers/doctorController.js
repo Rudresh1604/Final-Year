@@ -147,7 +147,7 @@ const getDoctorById = async (req, res) => {
       })
       .populate({
         path: "patients",
-        select: "name profilePicture gender age _id",
+        select: "name profilePicture gender phone location age _id",
       })
       .select("-password");
     if (!doctor) {
