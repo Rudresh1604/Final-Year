@@ -13,7 +13,7 @@ const router = express.Router();
 router.post("/add", upload.single("profile"), createPatient);
 
 // Update patient
-router.put("/:id", updatePatient);
+router.put("/:id", upload.single("profile"), updatePatient);
 
 // Delete patient
 router.delete("/:id", deletePatient);

@@ -34,7 +34,7 @@ doctorRoutes.get("/:doctorId", getDoctorById);
 doctorRoutes.get("/", getDoctors);
 
 // update Doctor
-doctorRoutes.put("/:id", updateDoctor);
+doctorRoutes.put("/:id", upload.single("profile"), updateDoctor);
 
 // delete Doctor
 doctorRoutes.delete("/delete/:id", deleteDoctor);

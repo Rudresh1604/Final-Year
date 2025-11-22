@@ -70,13 +70,12 @@ const createPatient = async (req, res) => {
 const getPatientById = async (req, res) => {
   try {
     const id = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
 
     const patient = await Patient.findById(id)
-      .select("-password")
-
+      .select("-password -public_id ")
       .populate({
         path: "appointments",
         populate: {
@@ -98,9 +97,16 @@ const getPatientById = async (req, res) => {
 
 const deletePatient = async (req, res) => {
   const _id = req.params.id;
-  console.log(req.body);
+  // console.log(req.body);
   try {
+    if (!mongoose.isValidObjectId(_id)) {
+      return res.status(400).json({ success: false, message: "Invalid ID" });
+    }
+
     const patient = await Patient.findByIdAndDelete(_id);
+
+    await cloudinary.uploader.destroy(patient.public_id);
+
     if (!patient) {
       return res.json(
         { success: false, message: "Failed, Try again later!" },
@@ -112,7 +118,7 @@ const deletePatient = async (req, res) => {
       { status: 200 }
     );
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     return res.json(
       { success: false, message: error.message },
       { status: 500 }
@@ -123,7 +129,6 @@ const deletePatient = async (req, res) => {
 const updatePatient = async (req, res) => {
   try {
     const id = req.params.id;
-    const { medicalHistory, ...otherData } = req.body;
 
     if (!id || !req.body) {
       return res
@@ -131,10 +136,11 @@ const updatePatient = async (req, res) => {
         .json({ success: false, message: "All fields are required" });
     }
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
 
+    const { medicalHistory, ...otherData } = req.body;
     // Build update query
     let updateQuery = { $set: { ...otherData } };
 
@@ -142,10 +148,26 @@ const updatePatient = async (req, res) => {
       updateQuery.$push = { medicalHistory };
     }
 
+    const existingPatient = await Patient.findById(id);
+
+    if (req.file) {
+      if (existingPatient.public_id) {
+        await cloudinary.uploader.destroy(existingPatient.public_id);
+      }
+
+      const uploadResult = await uploadToCloudinary(
+        req.file.buffer,
+        "healthScan/patients"
+      );
+
+      updateQuery.$set.profilePicture = uploadResult.secure_url;
+      updateQuery.$set.public_id = uploadResult.public_id;
+    }
+
     const patient = await Patient.findByIdAndUpdate(id, updateQuery, {
       new: true,
     })
-      .select("-password")
+      .select("-password -public_id ")
       .populate("medicalHistory.diseaseId");
 
     if (!patient) {
@@ -164,14 +186,14 @@ const updatePatient = async (req, res) => {
 const getPatientFullSummary = async (req, res) => {
   try {
     const id = req.params.id;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
 
     const patient = await Patient.findById(id).populate({
       path: "medicalHistory.diseaseId",
       select: "name description precautions medication workflow notes symptoms",
-    });
+    }).select("-password -public_id");
 
     if (!patient) {
       return res

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Doctor = require("../model/doctorSchema");
 const bcrypt = require("bcryptjs");
 const { uploadToCloudinary } = require("../utils/cloudinaryUpload");
+const { cloudinary } = require("../config/cloudinary");
 
 // add Doctor
 const addDoctor = async (req, res) => {
@@ -74,7 +75,9 @@ const addDoctor = async (req, res) => {
       profilePicture: uploadResult.secure_url,
       public_id: uploadResult.public_id,
     });
-    return res.status(201).json({ success: true, doctor });
+    return res
+      .status(201)
+      .json({ success: true, message: "Doctor Added Successfully" });
   } catch (error) {
     // console.log(error);
     return res.status(500).json({ success: false, error: error.message });
@@ -155,9 +158,9 @@ const updateDoctorSlot = async (req, res) => {
 const getDoctorById = async (req, res) => {
   try {
     const id = req.params.doctorId;
-    console.log(id);
+    // console.log(id);
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
 
@@ -173,13 +176,13 @@ const getDoctorById = async (req, res) => {
         path: "patients",
         select: "name profilePicture gender phone location age _id",
       })
-      .select("-password");
+      .select("-password -public_id");
     if (!doctor) {
       return res
         .status(404)
         .json({ success: false, message: "Doctor not found" });
     }
-    console.log(doctor);
+    // console.log(doctor);
 
     return res.status(200).json({ success: true, doctor: doctor });
   } catch (error) {
@@ -213,7 +216,7 @@ const getDoctors = async (req, res) => {
       filter["location.state"] = { $regex: state, $options: "i" };
     }
 
-    const doctors = await Doctor.find(filter);
+    const doctors = await Doctor.find(filter).select("-password -public_id");
 
     return res.status(200).json({
       success: true,
@@ -229,18 +232,46 @@ const getDoctors = async (req, res) => {
 const updateDoctor = async (req, res) => {
   try {
     const id = req.params.id;
-    const updatedData = req.body;
     if (!id || !updatedData) {
       return res
         .status(400)
         .json({ success: false, message: "All fields are required" });
     }
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+
+    if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
+
+    const existingDoctor = await Doctor.findById(id);
+    if (!existingDoctor) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Doctor not found" });
+    }
+
+    let updatedData = req.body;
+
+    // If a new file is uploaded
+    if (req.file) {
+      // If old image exists, delete it
+      if (existingDoctor.public_id) {
+        await cloudinary.uploader.destroy(existingDoctor.public_id);
+      }
+
+      // Upload new image
+      const uploadResult = await uploadToCloudinary(
+        req.file.buffer,
+        "healthScan/doctors"
+      );
+
+      updatedData.profilePicture = uploadResult.secure_url;
+      updatedData.public_id = uploadResult.public_id;
+    }
+
+    // Update database
     const doctor = await Doctor.findByIdAndUpdate(id, updatedData, {
       new: true,
-    });
+    }).select("-password -public_id -appointments -patients");
     if (!doctor) {
       return res
         .status(404)
@@ -261,10 +292,13 @@ const deleteDoctor = async (req, res) => {
         .status(400)
         .json({ success: false, message: "All fields are required" });
     }
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.isValidObjectId(id)) {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
     const doctor = await Doctor.findByIdAndDelete(id);
+
+    await cloudinary.uploader.destroy(doctor.public_id);
+
     if (!doctor) {
       return res
         .status(404)
