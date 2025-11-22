@@ -2,9 +2,9 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PatientViewCard from "../components/Card/PatientViewCard";
-import PatientAppointments from "../components/PatientDashboard/PatientAppointments";
 import { toast } from "react-toastify";
 import DoctorProfileCard from "../components/DoctorDashboard/DoctorProfileCard";
+import AllAppointmentsViewer from "../components/PatientDashboard/PatientAppointments";
 
 const Profile = () => {
   const [userDetails, setUserDetails] = useState(null);
@@ -51,7 +51,10 @@ const Profile = () => {
           />
         )}
         <div className="flex flex-col items-center w-full">
-          <PatientAppointments appointments={userDetails?.appointments} />
+          <AllAppointmentsViewer
+            isPatientView={true}
+            appointments={userDetails?.appointments}
+          />
         </div>
       </div>
     );
@@ -65,9 +68,12 @@ const Profile = () => {
           setDoctorDetails={setUserDetails}
         />
       )}
-      {/* <div className="flex flex-col items-center w-full">
-        <PatientAppointments appointments={patientDetails?.appointments} />
-      </div> */}
+      <div className="flex flex-col items-center w-full">
+        <AllAppointmentsViewer
+          isPatientView={false}
+          appointments={userDetails?.appointments}
+        />
+      </div>
     </div>
   );
 };

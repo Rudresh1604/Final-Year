@@ -8,6 +8,7 @@ const DoctorProfileCard = ({ doctor, accessedBy, setDoctorDetails }) => {
   const [doctorData, setDoctorData] = useState(null);
   const [backupData, setBackupData] = useState(null);
   const [isEditEnable, setEditEnable] = useState(false);
+  console.log(doctor);
 
   useEffect(() => {
     setDoctorData(doctor);
@@ -29,10 +30,10 @@ const DoctorProfileCard = ({ doctor, accessedBy, setDoctorDetails }) => {
   };
 
   const handleSave = async () => {
-    setPatientDetails(patientData);
+    setDoctorDetails(doctorData);
 
     try {
-      if (patient === patientData || !patient?._id) {
+      if (doctor === doctorData || !doctor?._id) {
         toast.info("No changes to update!", {
           position: "top-right",
           autoClose: 3000,
@@ -41,8 +42,8 @@ const DoctorProfileCard = ({ doctor, accessedBy, setDoctorDetails }) => {
         return;
       }
       const res = await axios.put(
-        `${API_BASE_URL}/api/patients/${patient?._id}`,
-        patientData
+        `${API_BASE_URL}/api/doctors/${doctor?._id}`,
+        doctorData
       );
       console.log(res);
       toast.success("Profile updated successfully!", {
@@ -187,9 +188,9 @@ const DoctorProfileCard = ({ doctor, accessedBy, setDoctorDetails }) => {
                 <option value="" disabled>
                   Select Gender
                 </option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Others">Other</option>
               </select>
             ) : (
               <h1>{doctorData?.gender}</h1>
@@ -309,7 +310,7 @@ const DoctorProfileCard = ({ doctor, accessedBy, setDoctorDetails }) => {
                 className="w-[70%] h-5 p-4 border rounded-lg border-blue-300 
              focus:outline-none focus:ring-1 focus:ring-blue-500"
                 onChange={(e) => {
-                  changeHandler(e.target.value, "address.pincode");
+                  changeHandler(e.target.value, "address.country");
                 }}
                 type="text"
                 value={doctorData?.address?.country}

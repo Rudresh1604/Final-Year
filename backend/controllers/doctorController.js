@@ -138,7 +138,17 @@ const getDoctorById = async (req, res) => {
     }
 
     const doctor = await Doctor.findById(id)
-      .populate("appointments")
+      .populate({
+        path: "appointments",
+        populate: {
+          path: "patientId",
+          select: "name profilePicture gender age _id",
+        },
+      })
+      .populate({
+        path: "patients",
+        select: "name profilePicture gender age _id",
+      })
       .select("-password");
     if (!doctor) {
       return res

@@ -24,8 +24,8 @@ import AppointmentCards from "./AppointmentCards";
 //   },
 // ];
 
-const PatientAppointments = ({ appointments }) => {
-  if (!appointments || appointments?.lenght) {
+const AllAppointmentsViewer = ({ appointments, isPatientView }) => {
+  if (!appointments || !appointments?.length) {
     return <h1>No Appointments found ! </h1>;
   }
   return (
@@ -39,6 +39,7 @@ const PatientAppointments = ({ appointments }) => {
             speciality={appointment.doctorId?.specialization}
             dateTime={appointment.dateTime}
             appointment={appointment}
+            isPatientView={isPatientView}
           />
         ))}
       </div>
@@ -46,4 +47,4 @@ const PatientAppointments = ({ appointments }) => {
   );
 };
 
-export default PatientAppointments;
+export default AllAppointmentsViewer;
