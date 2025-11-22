@@ -137,7 +137,19 @@ const getDoctorById = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
 
-    const doctor = await Doctor.findById(id).populate("appointments");
+    const doctor = await Doctor.findById(id)
+      .populate({
+        path: "appointments",
+        populate: {
+          path: "patientId",
+          select: "name profilePicture gender age _id",
+        },
+      })
+      .populate({
+        path: "patients",
+        select: "name profilePicture gender phone location age _id",
+      })
+      .select("-password");
     if (!doctor) {
       return res
         .status(404)
@@ -145,7 +157,7 @@ const getDoctorById = async (req, res) => {
     }
     console.log(doctor);
 
-    return res.status(200).json(doctor);
+    return res.status(200).json({ success: true, doctor: doctor });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }

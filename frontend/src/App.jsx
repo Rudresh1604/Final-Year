@@ -50,14 +50,7 @@ function App() {
                   </RoleProtectRoute>
                 }
               />
-              <Route
-                path="/profile/patient"
-                element={
-                  <RoleProtectRoute allowedRole="Patient">
-                    <Profile />
-                  </RoleProtectRoute>
-                }
-              />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/view/doctors/:doctorId" element={<View />} />
 
               <Route path="/disease" element={<DiseaseManagement />} />

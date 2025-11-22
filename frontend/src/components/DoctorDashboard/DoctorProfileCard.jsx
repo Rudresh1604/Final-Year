@@ -4,16 +4,17 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
-  const [patientData, setPatientData] = useState(null);
+const DoctorProfileCard = ({ doctor, accessedBy, setDoctorDetails }) => {
+  const [doctorData, setDoctorData] = useState(null);
   const [backupData, setBackupData] = useState(null);
   const [isEditEnable, setEditEnable] = useState(false);
+  console.log(doctor);
 
   useEffect(() => {
-    setPatientData(patient);
+    setDoctorData(doctor);
   }, []);
   const changeHandler = (value, updateKey) => {
-    setPatientData((prev) => {
+    setDoctorData((prev) => {
       const newObj = { ...prev };
       const keys = updateKey.split(".");
       let obj = newObj;
@@ -29,10 +30,10 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
   };
 
   const handleSave = async () => {
-    setPatientDetails(patientData);
+    setDoctorDetails(doctorData);
 
     try {
-      if (patient === patientData || !patient?._id) {
+      if (doctor === doctorData || !doctor?._id) {
         toast.info("No changes to update!", {
           position: "top-right",
           autoClose: 3000,
@@ -41,8 +42,8 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
         return;
       }
       const res = await axios.put(
-        `${API_BASE_URL}/api/patients/${patient?._id}`,
-        patientData
+        `${API_BASE_URL}/api/doctors/${doctor?._id}`,
+        doctorData
       );
       console.log(res);
       toast.success("Profile updated successfully!", {
@@ -63,7 +64,7 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
   };
 
   const handleCancel = async () => {
-    setPatientData(backupData);
+    setDoctorData(backupData);
     setEditEnable(false);
     toast.info("Changes discarded.", {
       position: "top-right",
@@ -71,7 +72,7 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
       theme: "colored",
     });
   };
-  if (!patientData) return null;
+  if (!doctorData) return null;
   return (
     <div
       className="flex flex-col py-3 px-4 mt-2 mb-4 rounded-lg shadow bg-white border
@@ -83,7 +84,7 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
           {!isEditEnable ? (
             <button
               onClick={() => {
-                setBackupData(patientData);
+                setBackupData(doctorData);
                 setEditEnable(true);
               }}
               className="flex items-center gap-2 px-3 py-1 bg-blue-100 hover:bg-blue-200 
@@ -125,7 +126,7 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
             <img
               className="h-24 w-28 max-sm:h-16 max-sm:w-16 border-4 border-blue-500 rounded-full"
               src={
-                patient?.profilePicture ||
+                doctorData?.profilePicture ||
                 "https://images.rawpixel.com/image_800/czNmcy1wcml2YXRlL3Jhd3BpeGVsX2ltYWdlcy93ZWJzaXRlX2NvbnRlbnQvbHIvczc3LW1ja2luc2V5LTc2MTEtcG9tXzMuanBn.jpg"
               }
               alt=""
@@ -139,10 +140,10 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
                 className="w-[70%] h-5 p-4 border rounded-lg border-blue-300 
              focus:outline-none focus:ring-1 focus:ring-blue-500"
                 onChange={(e) => changeHandler(e.target.value, "name")}
-                value={patientData?.name || ""}
+                value={doctorData?.name || ""}
               />
             ) : (
-              <h1>{patientData?.name}</h1>
+              <h1>{doctorData?.name}</h1>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -154,10 +155,10 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
                 onChange={(e) => {
                   changeHandler(e.target.value, "age");
                 }}
-                value={patientData?.age}
+                value={doctorData?.age}
               ></input>
             ) : (
-              <h1>{patientData?.age}</h1>
+              <h1>{doctorData?.age}</h1>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -169,10 +170,10 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
                 onChange={(e) => {
                   changeHandler(e.target.value, "email");
                 }}
-                value={patientData?.email}
+                value={doctorData?.email}
               ></input>
             ) : (
-              <h1>{patientData?.email}</h1>
+              <h1>{doctorData?.email}</h1>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -182,17 +183,17 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
                 className="w-auto py-1 px-2 border rounded-lg border-blue-300
              focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
                 onChange={(e) => changeHandler(e.target.value, "gender")}
-                value={patientData?.gender || ""}
+                value={doctorData?.gender || ""}
               >
                 <option value="" disabled>
                   Select Gender
                 </option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Others">Other</option>
               </select>
             ) : (
-              <h1>{patientData?.gender}</h1>
+              <h1>{doctorData?.gender}</h1>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -203,10 +204,10 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
              focus:outline-none focus:ring-1 focus:ring-blue-500"
                 onChange={(e) => changeHandler(e.target.value, "phone")}
                 type="number"
-                value={patientData?.phone || ""}
+                value={doctorData?.phone || ""}
               />
             ) : (
-              <h1>{patientData?.phone}</h1>
+              <h1>{doctorData?.phone}</h1>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -216,7 +217,7 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
                 className="w-auto py-1 px-2 border rounded-lg border-blue-300
              focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 cursor-pointer"
                 onChange={(e) => changeHandler(e.target.value, "bloodGroup")}
-                value={patientData?.bloodGroup || ""}
+                value={doctorData?.bloodGroup || ""}
               >
                 <option value="" disabled>
                   Select Blood Group
@@ -232,7 +233,7 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
                 <option value="O-">O-ve</option>
               </select>
             ) : (
-              <h1>{patientData?.bloodGroup}</h1>
+              <h1>{doctorData?.bloodGroup}</h1>
             )}
           </div>
         </div>
@@ -250,10 +251,10 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
                 onChange={(e) => {
                   changeHandler(e.target.value, "address.street");
                 }}
-                value={patientData?.address?.street}
+                value={doctorData?.address?.street}
               ></input>
             ) : (
-              <h1>{patientData?.address?.street}</h1>
+              <h1>{doctorData?.address?.street}</h1>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -265,10 +266,10 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
                 onChange={(e) => {
                   changeHandler(e.target.value, "address.city");
                 }}
-                value={patientData?.address?.city}
+                value={doctorData?.address?.city}
               ></input>
             ) : (
-              <h1>{patientData?.address?.city}</h1>
+              <h1>{doctorData?.address?.city}</h1>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -280,10 +281,10 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
                 onChange={(e) => {
                   changeHandler(e.target.value, "address.state");
                 }}
-                value={patientData?.address?.state}
+                value={doctorData?.address?.state}
               ></input>
             ) : (
-              <h1>{patientData?.address?.state}</h1>
+              <h1>{doctorData?.address?.state}</h1>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -296,10 +297,10 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
                   changeHandler(e.target.value, "address.pincode");
                 }}
                 type="number"
-                value={patientData?.address?.pincode}
+                value={doctorData?.address?.pincode}
               ></input>
             ) : (
-              <h1>{patientData?.address?.pincode}</h1>
+              <h1>{doctorData?.address?.pincode}</h1>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -309,13 +310,13 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
                 className="w-[70%] h-5 p-4 border rounded-lg border-blue-300 
              focus:outline-none focus:ring-1 focus:ring-blue-500"
                 onChange={(e) => {
-                  changeHandler(e.target.value, "address.pincode");
+                  changeHandler(e.target.value, "address.country");
                 }}
                 type="text"
-                value={patientData?.address?.country}
+                value={doctorData?.address?.country}
               ></input>
             ) : (
-              <h1>{patientData?.address?.country}</h1>
+              <h1>{doctorData?.address?.country}</h1>
             )}
           </div>
         </div>
@@ -324,4 +325,4 @@ const PatientViewCard = ({ patient, accessedBy, setPatientDetails }) => {
   );
 };
 
-export default PatientViewCard;
+export default DoctorProfileCard;
