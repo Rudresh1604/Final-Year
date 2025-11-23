@@ -19,6 +19,9 @@ const NavbarComponent = () => {
   const storedData = localStorage.getItem("userData");
   const userData = storedData ? JSON.parse(storedData) : null;
   const token = userData?.token ?? null;
+  let isPatient = userData?.role == "Patient" ? 1 : 0;
+
+  // console.log("role ", userData?.role);
 
   // handle logout
   const handleLogout = () => {

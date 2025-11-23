@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import PatientAppointments from "../components/PatientDashboard/PatientAppointments";
+import PatientAppointments from "../components/PatientDashboard/AllAppointmentsViewer";
 import HeaderCard from "../components/DoctorDashboard/HeaderCard";
 import {
   Calendar,
@@ -9,7 +9,7 @@ import {
 } from "lucide-react/dist/cjs/lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import PatientViewCard from "../components/Card/PatientViewCard";
+import PatientViewCard from "../components/Card/PatientProfileCard";
 import { toast } from "react-toastify";
 
 const patientCards = [

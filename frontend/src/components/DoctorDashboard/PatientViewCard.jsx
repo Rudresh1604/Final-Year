@@ -1,53 +1,44 @@
 import { MapPin, PhoneCallIcon } from "lucide-react";
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
-const DoctorViewCard = ({ doctor, onCompletion }) => {
-  const navigate = useNavigate();
+const PatientViewCard = ({ patient }) => {
+  console.log(patient);
 
-  const handleSelectedDoctor = (e) => {
-    e.preventDefault();
-    onCompletion();
-    navigate(`/view/doctors/${doctor?._id}`);
-  };
   return (
-    <div
-      onClick={handleSelectedDoctor}
-      className="px-4 py-2 border cursor-pointer shadow-lg border-gray-200 flex rounded-lg justify-between items-center"
-    >
+    <div className="px-4 py-2 border cursor-pointer shadow-lg border-gray-200 flex rounded-lg justify-between items-center">
       <div className="flex items-center w-auto justify-between md:justify-normal gap-3">
-        {doctor?.profilePic ? (
+        {patient?.profilePic ? (
           <img
-            src={doctor.profilePic}
+            src={patient.profilePic}
             className="w-15 h-15 max-sm:w-9 max-sm:h-9  rounded-full"
           ></img>
         ) : (
           <div className="p-4 bg-green-300 rounded-full text-white text-2xl font-bold">
-            {doctor?.name[0]}{" "}
+            {patient?.name[0]}{" "}
           </div>
         )}
         <div className="flex flex-col ">
           <h1 className="max-sm:text-lg text-xl font-medium">
-            Dr. {doctor?.name}{" "}
+            Dr. {patient?.name}{" "}
           </h1>
-          <p className="max-sm:text-sm">
-            Experience : {doctor?.experience} Yrs
+          {/* <p className="max-sm:text-sm">
+            Experience : {patient?.experience} Yrs
           </p>
-          <p> Specialization : {doctor?.specialization} </p>
+          <p> Specialization : {patient?.specialization} </p> */}
         </div>
       </div>
       <div className="max-sm:hidden flex flex-col gap-2">
         <h1 className="flex gap-2 text-sm md:text-xl max-sm:text-lg">
           <PhoneCallIcon className="w-auto text-blue-500 h-auto" />{" "}
-          {doctor?.phone}{" "}
+          {patient?.phone}{" "}
         </h1>
         <h1 className="flex gap-2">
           <MapPin className="w-auto text-yellow-500 h-auto" />{" "}
-          {doctor?.address?.city}{" "}
+          {patient?.address?.city}{" "}
         </h1>
       </div>
     </div>
   );
 };
 
-export default DoctorViewCard;
+export default PatientViewCard;

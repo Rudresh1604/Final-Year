@@ -8,6 +8,7 @@ const AppointmentCards = ({
   speciality,
   dateTime = "",
   isAppointment,
+  isPatientView,
   appointment,
 }) => {
   return (
@@ -16,20 +17,26 @@ const AppointmentCards = ({
         <img
           className="rounded-full w-14 h-15 ml-1.5"
           src={
-            appointment?.doctorId.profileImg ||
-            "https://cdn.pixabay.com/photo/2023/02/12/13/16/dog-7785066_1280.jpg"
+            isPatientView
+              ? appointment?.doctorId.profilePicture ||
+                "https://cdn.pixabay.com/photo/2023/02/12/13/16/dog-7785066_1280.jpg"
+              : appointment?.patientId.profilePicture
           }
-          alt="doctor profile"
+          alt={isPatientView ? "doctor profile" : "patient profile"}
         />
         <div className="flex flex-col w-[45%] md:flex-row md:justify-between ml-2 gap-2">
           <div>
             <h2 className="font-semibold text-lg">
-              Dr. {appointment?.doctorId?.name}
+              {isPatientView
+                ? `Dr. ${appointment?.doctorId?.name}`
+                : `${appointment?.patientId?.name}`}
             </h2>
-            <p className="text-xs text-gray-600">
-              {" "}
-              {appointment?.doctorId?.specialization}
-            </p>
+            {isPatientView && (
+              <p className="text-xs text-gray-600">
+                {" "}
+                {appointment?.doctorId?.specialization}
+              </p>
+            )}
           </div>
           <div className="flex flex-col gap-2">
             <h1 className="flex items-center gap-2 text-gray-600">
