@@ -16,8 +16,9 @@ import {
   Search,
 } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
+import { toast } from "react-toastify";
 
-const API_URL = "http://localhost:5000";
+const FLASK_API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const MedicalAI = () => {
   // Form states
@@ -36,7 +37,6 @@ const MedicalAI = () => {
   // Result states
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
 
   // Active tab for results
   const [activeTab, setActiveTab] = useState("description");
@@ -48,9 +48,9 @@ const MedicalAI = () => {
   const inputRef = useRef(null);
   const suggestionsRef = useRef(null);
 
-  // Fetch symptoms from Flask API on mount
+  // Fetch symptoms from Flask API
   useEffect(() => {
-    fetch(`${API_URL}/api/symptoms`)
+    fetch(`${FLASK_API_URL}/api/symptoms`)
       .then((res) => res.json())
       .then((data) => {
         if (data.symptoms) {
@@ -107,22 +107,6 @@ const MedicalAI = () => {
       });
   }, []);
 
-  // Close suggestions when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(e.target) &&
-        inputRef.current &&
-        !inputRef.current.contains(e.target)
-      ) {
-        setShowSuggestions(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   // Format symptom for display
   const formatSymptom = (name) => {
     return name.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -164,9 +148,10 @@ const MedicalAI = () => {
   // Remove symptom
   const removeSymptom = (name) => {
     setSelectedSymptoms((prev) => prev.filter((s) => s !== name));
+    toast.info(`Removed: ${formatSymptom(name)}`);
   };
 
-  // Speech Recognition - FIXED
+  // Speech Recognition
   const startSpeechRecognition = () => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -264,7 +249,7 @@ const MedicalAI = () => {
         "audio-capture": "❌ No microphone found.",
         "not-allowed": "❌ Microphone access denied.",
       };
-      setSpeechStatus(errors[event.error] || `❌ Error: ${event.error}`);
+      toast.error(errors[event.error] || `Speech recognition error`);
     };
 
     recognition.start();
@@ -273,16 +258,16 @@ const MedicalAI = () => {
   // Submit prediction
   const handlePredict = async () => {
     if (selectedSymptoms.length === 0) {
-      setError("Please select at least one symptom");
+      toast.error("Please select at least one symptom");
       return;
     }
 
     setLoading(true);
-    setError("");
     setResult(null);
 
     try {
-      const response = await fetch(`${API_URL}/api/predict`, {
+      toast.info("Predicting disease...");
+      const response = await fetch(`${FLASK_API_URL}/api/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -295,22 +280,16 @@ const MedicalAI = () => {
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         throw new Error(data.error || "Prediction failed");
       }
 
       setResult(data);
-      // In handlePredict, after setting result
-console.log("Medications:", result.medications);
-console.log("Diet:", result.diet);
-console.log("Type:", typeof result.medications, typeof result.diet);
+      toast.success("Prediction successful!");
       setActiveTab("description");
     } catch (err) {
-      setError(
-        err.message ||
-          "Failed to connect to server. Make sure Flask is running."
-      );
+      toast.error(err.message || "Server error. Try again.");
     } finally {
       setLoading(false);
     }
@@ -516,7 +495,6 @@ console.log("Type:", typeof result.medications, typeof result.diet);
                 )}
               </div>
 
-              {/* Speech Status */}
               {speechStatus && (
                 <p className="text-sm mt-2 text-gray-600">{speechStatus}</p>
               )}
@@ -540,13 +518,6 @@ console.log("Type:", typeof result.medications, typeof result.diet);
                 </div>
               )}
             </div>
-
-            {/* Error */}
-            {error && (
-              <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm border border-red-200">
-                ❌ {error}
-              </div>
-            )}
 
             {/* Predict Button */}
             <button
@@ -602,11 +573,13 @@ console.log("Type:", typeof result.medications, typeof result.diet);
                     </p>
                   </div>
                   <div className="mt-2 p-2 bg-yellow-50 rounded border border-yellow-200">
-    <p className="text-xs text-yellow-800">
-      ⚠️ <strong>Disclaimer:</strong> This is an AI prediction for informational purposes only. 
-      Please consult a qualified healthcare professional for accurate diagnosis and treatment.
-    </p>
-  </div>
+                    <p className="text-xs text-yellow-800">
+                      ⚠️ <strong>Disclaimer:</strong> This is an AI prediction
+                      for informational purposes only. Please consult a
+                      qualified healthcare professional for accurate diagnosis
+                      and treatment.
+                    </p>
+                  </div>
                 </div>
 
                 {/* Tab Buttons */}
