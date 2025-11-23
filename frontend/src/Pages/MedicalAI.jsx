@@ -295,12 +295,16 @@ const MedicalAI = () => {
       });
 
       const data = await response.json();
-
+      
       if (!response.ok) {
         throw new Error(data.error || "Prediction failed");
       }
 
       setResult(data);
+      // In handlePredict, after setting result
+console.log("Medications:", result.medications);
+console.log("Diet:", result.diet);
+console.log("Type:", typeof result.medications, typeof result.diet);
       setActiveTab("description");
     } catch (err) {
       setError(
@@ -597,10 +601,16 @@ const MedicalAI = () => {
                       </span>
                     </p>
                   </div>
+                  <div className="mt-2 p-2 bg-yellow-50 rounded border border-yellow-200">
+    <p className="text-xs text-yellow-800">
+      ⚠️ <strong>Disclaimer:</strong> This is an AI prediction for informational purposes only. 
+      Please consult a qualified healthcare professional for accurate diagnosis and treatment.
+    </p>
+  </div>
                 </div>
 
                 {/* Tab Buttons */}
-                <div className="grid grid-cols-5 gap-2 mb-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
                   {tabs.map(({ key, label, icon: Icon, color }) => (
                     <button
                       key={key}
