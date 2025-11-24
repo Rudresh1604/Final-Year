@@ -18,7 +18,7 @@ import {
 import React, { useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
 
-const FLASK_API_URL = "https://medical-recommendation-system-6y50.onrender.com";
+const FLASK_API_URL = import.meta.env.VITE_FLASK_URL;
 
 const MedicalAI = () => {
   // Form states
