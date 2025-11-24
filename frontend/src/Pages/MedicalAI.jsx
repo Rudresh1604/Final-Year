@@ -18,7 +18,7 @@ import {
 import React, { useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
 
-const FLASK_API_URL = import.meta.env.VITE_BACKEND_URL;
+const FLASK_API_URL = "https://medical-recommendation-system-6y50.onrender.com";
 
 const MedicalAI = () => {
   // Form states
@@ -368,177 +368,173 @@ const MedicalAI = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left: Form */}
-          <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-200">
-            <h2 className="text-lg font-semibold mb-4 text-gray-700">
-              Patient Information
-            </h2>
+          <div className="bg-gradient-to-r from-green-50 via-blue-50 to-purple-50 rounded-xl shadow-lg border border-gray-200">
+            <div className="bg-white rounded-xl p-6 shadow-inner border border-gray-100 overflow-hidden">
+              <h2 className="text-lg font-semibold mb-4 text-green-700">
+                🧍 Patient Information
+              </h2>
 
-            {/* Name */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Full Name
-              </label>
-              <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                <User className="w-5 h-5 text-gray-400 mx-3" />
-                <input
-                  type="text"
-                  placeholder="Enter your name"
-                  value={patientName}
-                  onChange={(e) => setPatientName(e.target.value)}
-                  className="flex-1 p-3 outline-none rounded-r-lg"
-                />
-              </div>
-            </div>
-
-            {/* Age & Duration */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
+              {/* Name */}
+              <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-600 mb-1">
-                  Age
+                  Full Name
                 </label>
                 <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                  <Activity className="w-5 h-5 text-gray-400 mx-3" />
+                  <User className="w-5 h-5 text-gray-400 mx-3" />
                   <input
-                    type="number"
-                    placeholder="Age"
-                    value={patientAge}
-                    onChange={(e) => setPatientAge(e.target.value)}
+                    type="text"
+                    placeholder="Enter your name"
+                    value={patientName}
+                    onChange={(e) => setPatientName(e.target.value)}
                     className="flex-1 p-3 outline-none rounded-r-lg "
                   />
                 </div>
               </div>
-              <div>
+
+              {/* Age & Duration */}
+              <div className="grid grid-cols-2 gap-4 max-sm:grid-cols-1 mb-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">
+                    Age
+                  </label>
+                  <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                    <Activity className="w-5 h-5 text-gray-400 mx-3" />
+                    <input
+                      type="number"
+                      placeholder="Age"
+                      value={patientAge}
+                      onChange={(e) => setPatientAge(e.target.value)}
+                      className="flex-1 p-3 outline-none rounded-r-lg "
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-600 mb-1">
+                    Duration (days)
+                  </label>
+                  <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                    <Clock className="w-5 h-5 text-gray-400 mx-3" />
+                    <input
+                      type="number"
+                      placeholder="Days"
+                      value={diseaseDuration}
+                      onChange={(e) => setDiseaseDuration(e.target.value)}
+                      className="flex-1 p-3 outline-none rounded-r-lg"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Location */}
+              <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-600 mb-1">
-                  Duration (days)
+                  Location
                 </label>
                 <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                  <Clock className="w-5 h-5 text-gray-400 mx-3" />
+                  <MapPin className="w-5 h-5 text-gray-400 mx-3" />
                   <input
-                    type="number"
-                    placeholder="Days"
-                    value={diseaseDuration}
-                    onChange={(e) => setDiseaseDuration(e.target.value)}
+                    type="text"
+                    placeholder="Enter location"
+                    value={patientLocation}
+                    onChange={(e) => setPatientLocation(e.target.value)}
                     className="flex-1 p-3 outline-none rounded-r-lg"
                   />
                 </div>
               </div>
-            </div>
 
-            {/* Location */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Location
-              </label>
-              <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                <MapPin className="w-5 h-5 text-gray-400 mx-3" />
-                <input
-                  type="text"
-                  placeholder="Enter location"
-                  value={patientLocation}
-                  onChange={(e) => setPatientLocation(e.target.value)}
-                  className="flex-1 p-3 outline-none rounded-r-lg"
-                />
-              </div>
-            </div>
+              {/* Symptoms Search */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-600 mb-1">
+                  Search & Select Symptoms
+                </label>
+                <div className="relative">
+                  <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+                    <Search className="w-5 h-5 text-gray-400 mx-3" />
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      placeholder="Type to search (e.g., headache, fever, itching)"
+                      value={searchInput}
+                      onChange={(e) => handleSearchInput(e.target.value)}
+                      onFocus={() => searchInput && setShowSuggestions(true)}
+                      className="flex-1 p-3 outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={startSpeechRecognition}
+                      className={`p-3 transition-colors ${
+                        isListening
+                          ? "bg-red-500 text-white animate-pulse"
+                          : "text-gray-500 hover:bg-gray-100"
+                      }`}
+                      title="Click to speak symptoms"
+                    >
+                      <Mic className="w-5 h-5" />
+                    </button>
+                  </div>
 
-            {/* Symptoms Search */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Search & Select Symptoms
-              </label>
-              <div className="relative">
-                <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden">
-                  <Search className="w-5 h-5 text-gray-400 mx-3" />
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    placeholder="Type to search (e.g., headache, fever, itching)"
-                    value={searchInput}
-                    onChange={(e) => handleSearchInput(e.target.value)}
-                    onFocus={() => searchInput && setShowSuggestions(true)}
-                    className="flex-1 p-3 outline-none"
-                  />
-                  <button
-                    type="button"
-                    onClick={startSpeechRecognition}
-                    className={`p-3 transition-colors ${
-                      isListening
-                        ? "bg-red-500 text-white animate-pulse"
-                        : "text-gray-500 hover:bg-gray-100"
-                    }`}
-                    title="Click to speak symptoms"
-                  >
-                    <Mic className="w-5 h-5" />
-                  </button>
+                  {/* Suggestions */}
+                  {showSuggestions && suggestions.length > 0 && (
+                    <div className="absolute z-20 w-full bg-white border border-gray-300 rounded-lg mt-1 shadow-2xl max-h-60 overflow-y-auto">
+                      {suggestions.map((symptom, i) => (
+                        <div
+                          key={i}
+                          onClick={() => addSymptom(symptom)}
+                          className="p-3 hover:bg-green-50 cursor-pointer border-b last:border-b-0"
+                        >
+                          <span className="font-medium text-gray-800">
+                            {formatSymptom(symptom)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {/* Suggestions Dropdown */}
-                {showSuggestions && suggestions.length > 0 && (
-                  <div
-                    ref={suggestionsRef}
-                    className="absolute z-20 w-full bg-white border border-gray-300 rounded-lg mt-1 
-                    shadow-xl max-h-60 overflow-y-auto"
-                  >
-                    {suggestions.map((symptom, i) => (
-                      <div
+                {speechStatus && (
+                  <p className="text-sm mt-2 text-gray-600">{speechStatus}</p>
+                )}
+
+                {/* Selected Symptoms */}
+                {selectedSymptoms.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {selectedSymptoms.map((name, i) => (
+                      <span
                         key={i}
-                        onClick={() => addSymptom(symptom)}
-                        className="p-3 hover:bg-green-50 cursor-pointer border-b last:border-b-0 
-                        transition-colors"
+                        className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium 
+              flex items-center gap-2 hover:bg-green-200"
                       >
-                        <span className="font-medium text-gray-800">
-                          {formatSymptom(symptom)}
-                        </span>
-                      </div>
+                        {formatSymptom(name)}
+                        <X
+                          className="w-4 h-4 cursor-pointer hover:text-red-500"
+                          onClick={() => removeSymptom(name)}
+                        />
+                      </span>
                     ))}
                   </div>
                 )}
               </div>
 
-              {speechStatus && (
-                <p className="text-sm mt-2 text-gray-600">{speechStatus}</p>
-              )}
-
-              {/* Selected Symptoms Tags */}
-              {selectedSymptoms.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {selectedSymptoms.map((name, i) => (
-                    <span
-                      key={i}
-                      className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium 
-                      flex items-center gap-2 transition-all hover:bg-green-200"
-                    >
-                      {formatSymptom(name)}
-                      <X
-                        className="w-4 h-4 cursor-pointer hover:text-red-500"
-                        onClick={() => removeSymptom(name)}
-                      />
-                    </span>
-                  ))}
-                </div>
-              )}
+              {/* Predict Button */}
+              <button
+                onClick={handlePredict}
+                disabled={loading || selectedSymptoms.length === 0}
+                className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed 
+      text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Predicting...
+                  </>
+                ) : (
+                  <>
+                    Predict Disease
+                    <ArrowBigRight className="w-5 h-5" />
+                  </>
+                )}
+              </button>
             </div>
-
-            {/* Predict Button */}
-            <button
-              onClick={handlePredict}
-              disabled={loading || selectedSymptoms.length === 0}
-              className="w-full bg-green-500 hover:bg-green-600 cursor-pointer disabled:bg-gray-300 
-              disabled:cursor-not-allowed text-white font-semibold py-3 rounded-lg flex items-center 
-              justify-center gap-2 transition-colors"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Predicting...
-                </>
-              ) : (
-                <>
-                  Predict Disease
-                  <ArrowBigRight className="w-5 h-5" />
-                </>
-              )}
-            </button>
           </div>
 
           {/* Right: Results */}
