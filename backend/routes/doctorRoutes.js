@@ -10,10 +10,12 @@ const {
   createUnavailability,
   getDoctorUnavailabilities,
 } = require("../controllers/doctorController");
+const { upload } = require("../middleware/uploads");
+
 const doctorRoutes = express.Router();
 
 // add Doctor
-doctorRoutes.post("/add", addDoctor);
+doctorRoutes.post("/add", upload.single("profile"), addDoctor);
 
 doctorRoutes.post("/unavailablity", createUnavailability);
 
@@ -32,7 +34,7 @@ doctorRoutes.get("/:doctorId", getDoctorById);
 doctorRoutes.get("/", getDoctors);
 
 // update Doctor
-doctorRoutes.put("/:id", updateDoctor);
+doctorRoutes.put("/:id", upload.single("profile"), updateDoctor);
 
 // delete Doctor
 doctorRoutes.delete("/delete/:id", deleteDoctor);

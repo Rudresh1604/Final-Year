@@ -6,12 +6,22 @@ const {
   getPatientById,
   getPatientFullSummary,
 } = require("../controllers/patientController");
+const { upload } = require("../middleware/uploads");
 const router = express.Router();
 
-router.route("/add").post(createPatient);
-router.route("/:id").delete(deletePatient);
-router.route("/:id").put(updatePatient);
-router.route("/:id").get(getPatientById);
+// Create patient
+router.post("/add", upload.single("profile"), createPatient);
+
+// Update patient
+router.put("/:id", upload.single("profile"), updatePatient);
+
+// Delete patient
+router.delete("/:id", deletePatient);
+
+// Get one patient
+router.get("/:id", getPatientById);
+
+// Extra summary
 router.get("/summary/:id", getPatientFullSummary);
 
 module.exports = router;

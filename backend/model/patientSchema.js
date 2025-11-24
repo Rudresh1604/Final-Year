@@ -7,6 +7,7 @@ const patientSchema = new mongoose.Schema(
     phone: String,
     gender: { type: String, enum: ["Male", "Female", "Others"] },
     profilePicture: String,
+    public_id: String,
     password: String,
     bloodGroup: String,
     age: Number,

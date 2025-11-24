@@ -44,7 +44,7 @@ export const registerPatient = createAsyncThunk(
   "auth/registerPatient",
   async (formData, { rejectWithValue }) => {
     try {
-      const res = await axios.post(`${API_URL}/api/patient/add`, formData);
+      const res = await axios.post(`${API_URL}/api/patients/add`, formData);
       return { success: true, data: res.data };
     } catch (err) {
       return rejectWithValue(

@@ -22,6 +22,7 @@ const DoctorSignup = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [preview, setPreview] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -29,27 +30,60 @@ const DoctorSignup = () => {
     password: "",
     phone: "",
     age: "",
+    gender: "",
     specialization: "",
     experience: "",
     city: "",
     state: "",
   });
+  const [file, setFile] = useState(null);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+    if (e.target.files[0]) {
+      setPreview(URL.createObjectURL(e.target.files[0]));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
-    const payload = {
-      ...formData,
-      location: { city: formData.city, state: formData.state },
-    };
-
     try {
-      const res = await dispatch(registerDoctor(payload));
+      const fd = new FormData();
+
+      fd.append("name", formData.name);
+      fd.append("email", formData.email);
+      fd.append("password", formData.password);
+      fd.append("phone", formData.phone);
+      fd.append("age", formData.age);
+      fd.append("experience", formData.experience);
+      fd.append("gender", formData.gender);
+
+      fd.append("specialization", formData.specialization);
+
+      fd.append(
+        "location",
+        JSON.stringify({
+          city: formData.city,
+          state: formData.state,
+        })
+      );
+
+      if (file) {
+        fd.append("profile", file);
+      }
+
+      // fd.forEach((value, key) => {
+      //   console.log(key, value);
+      // });
+      // return;
+
+      const res = await dispatch(registerDoctor(fd));
 
       if (res.payload && res.payload.success) {
         toast.success("Doctor registered successfully!", {
@@ -84,6 +118,43 @@ const DoctorSignup = () => {
         Doctor Sign Up
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4 text-lg">
+        {/* Profile */}
+        <div>
+          <label
+            htmlFor="profile"
+            className="mb-1 block font-medium text-gray-700"
+          >
+            Profile Picture
+          </label>
+          <div className="flex justify-center">
+            <label
+              htmlFor="profile"
+              className="relative w-36 h-36 rounded-full overflow-hidden cursor-pointer border-2 bg-gray-200 border-gray-300 hover:border-blue-500 transition"
+            >
+              {preview ? (
+                <img
+                  src={preview}
+                  alt="preview"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex  flex-col items-center justify-center text-gray-500">
+                  <span className="text-center px-4">Click to upload</span>
+                </div>
+              )}
+              <input
+                id="profile"
+                name="profile"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+                required
+              />
+            </label>
+          </div>
+        </div>
+
         {/* Name */}
         <div>
           <label
@@ -107,6 +178,41 @@ const DoctorSignup = () => {
               className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
               required
             />
+          </div>
+        </div>
+
+        {/* Gender */}
+        <div>
+          <label
+            htmlFor="Gender"
+            className="mb-1 block font-medium text-gray-700"
+          >
+            Gender
+          </label>
+          <div
+            className="flex items-center rounded-xl border border-gray-300 bg-gray-200 
+          focus-within:ring-2 focus-within:ring-blue-500"
+          >
+            <User className="w-6 h-6 mx-2 text-gray-500" />
+            <select
+              id="gender"
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              className={`w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl ${
+                formData.gender ? "text-black" : "text-gray-500"
+              }`}
+              required
+            >
+              <option value="" className="">
+                Select Gender
+              </option>
+              <option value="Male" className="active:text-black">
+                Male
+              </option>
+              <option value="Female">Female</option>
+              <option value="Others">Other</option>
+            </select>
           </div>
         </div>
 
@@ -210,6 +316,7 @@ const DoctorSignup = () => {
             >
               <CalendarDays className="w-6 h-6 mx-2 text-gray-500" />
               <input
+                id="age"
                 name="age"
                 type="number"
                 min={18}
@@ -235,6 +342,7 @@ const DoctorSignup = () => {
             >
               <Award className="w-6 h-6 mx-2 text-gray-500" />
               <input
+                id="experience"
                 name="experience"
                 type="number"
                 min={0}
@@ -262,6 +370,7 @@ const DoctorSignup = () => {
           >
             <HeartPulse className="w-6 h-6 mx-2 text-gray-500" />
             <input
+              id="specialization"
               name="specialization"
               type="text"
               value={formData.specialization}
@@ -287,6 +396,7 @@ const DoctorSignup = () => {
             >
               <Building className="w-6 h-6 mx-2 text-gray-500" />
               <input
+                id="city"
                 name="city"
                 type="text"
                 value={formData.city}
@@ -309,6 +419,7 @@ const DoctorSignup = () => {
             >
               <MapPin className="w-6 h-6 mx-2 text-gray-500" />
               <input
+                id="state"
                 name="state"
                 type="text"
                 value={formData.state}
