@@ -17,8 +17,10 @@ import {
 } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 const FLASK_API_URL = import.meta.env.VITE_FLASK_URL;
+const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const MedicalAI = () => {
   // Form states
@@ -46,19 +48,16 @@ const MedicalAI = () => {
   const [speechStatus, setSpeechStatus] = useState("");
 
   const inputRef = useRef(null);
-  const suggestionsRef = useRef(null);
 
   // Fetch symptoms from Flask API
   useEffect(() => {
-    fetch(`${FLASK_API_URL}/api/symptoms`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.symptoms) {
-          setAllSymptoms(data.symptoms);
+    const fetchSymptoms = async () => {
+      try {
+        const res = await axios.get(`${FLASK_API_URL}/api/symptoms`);
+        if (res.data.symptoms) {
+          setAllSymptoms(res.data.symptoms);
         }
-      })
-      .catch(() => {
-        // Fallback symptoms if API fails
+      } catch (error) {
         setAllSymptoms([
           "itching",
           "skin_rash",
@@ -104,7 +103,9 @@ const MedicalAI = () => {
           "swelling_joints",
           "blurred_and_distorted_vision",
         ]);
-      });
+      }
+    };
+    fetchSymptoms();
   }, []);
 
   // Format symptom for display
@@ -264,28 +265,49 @@ const MedicalAI = () => {
 
     setLoading(true);
     setResult(null);
+    //     await fetch(`${API_URL}/api/reports/add`, {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({
+    //     appointmentId,
+    //     patientId,
+    //     doctorId,
+
+    //     diseases: [data.predicted_disease],
+    //     description: data.description,
+    //     precautions: data.precautions,
+    //     medicines: data.medications?.map((m) => ({
+    //       name: m,
+    //       dosage: "N/A",
+    //       duration: "N/A"
+    //     })),
+
+    //     diet: data.diet,
+    //     workout: data.workout,
+    //     notes: "AI generated report",
+    //     nextVisit: null,
+    //   }),
+    // });
 
     try {
       toast.info("Predicting disease...");
-      const response = await fetch(`${FLASK_API_URL}/api/predict`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const response = await axios.post(
+        `${FLASK_API_URL}/api/predict`,
+        {
           name: patientName,
           age: patientAge,
           location: patientLocation,
           duration: diseaseDuration,
           symptoms: selectedSymptoms.join(", "),
-        }),
-      });
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Prediction failed");
-      }
-
-      setResult(data);
+      setResult(response.data);
       toast.success("Prediction successful!");
       setActiveTab("description");
     } catch (err) {
@@ -520,7 +542,7 @@ const MedicalAI = () => {
                 onClick={handlePredict}
                 disabled={loading || selectedSymptoms.length === 0}
                 className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed 
-      text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition"
+      text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -586,7 +608,7 @@ const MedicalAI = () => {
                       onClick={() => setActiveTab(key)}
                       className={`p-2 rounded-lg text-[10px] sm:text-xs font-medium flex flex-col 
                         items-center gap-1 
-                        transition-all ${
+                        transition-all cursor-pointer ${
                           activeTab === key
                             ? `bg-${color}-500 text-white shadow-md`
                             : "bg-gray-100 hover:bg-gray-200"
@@ -612,7 +634,7 @@ const MedicalAI = () => {
                 <button
                   onClick={() => window.print()}
                   className="w-full mt-4 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 
-                  rounded-lg transition-colors"
+                  rounded-lg transition-colors cursor-pointer"
                 >
                   🖨️ Print Report
                 </button>
