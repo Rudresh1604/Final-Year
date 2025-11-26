@@ -8,7 +8,7 @@ const reportSchema = new mongoose.Schema(
 
     diseases: { type: String, required: true },
     description: { type: String, required: true },
-    precautions: { type: String},
+    precautions: { type: String },
 
     medicines: [
       {
@@ -17,7 +17,8 @@ const reportSchema = new mongoose.Schema(
         duration: String,
       },
     ],
-
+    diet: [String],
+    workout: [String],
     notes: String,
     nextVisit: Date,
   },
