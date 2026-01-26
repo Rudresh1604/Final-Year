@@ -290,6 +290,34 @@ const MedicalAI = () => {
 
   // Submit prediction
   const handlePredict = async () => {
+    if (!patientName || patientName.trim().length < 2) {
+      toast.error("Please enter a valid patient name");
+      return;
+    }
+
+    if (
+      !patientAge ||
+      isNaN(patientAge) ||
+      patientAge <= 0 ||
+      patientAge > 120
+    ) {
+      toast.error("Please enter a valid age (1 - 120)");
+      return;
+    }
+
+    if (!patientLocation || patientLocation.trim().length < 2) {
+      toast.error("Please enter your location");
+      return;
+    }
+    if (
+      !diseaseDuration ||
+      isNaN(diseaseDuration) ||
+      diseaseDuration <= 0 ||
+      diseaseDuration > 365
+    ) {
+      toast.error("Please enter valid disease duration (1 - 365 days)");
+      return;
+    }
     if (selectedSymptoms.length === 0) {
       toast.error("Please select at least one symptom");
       return;
@@ -572,7 +600,14 @@ const MedicalAI = () => {
               {/* Predict Button */}
               <button
                 onClick={handlePredict}
-                disabled={loading || selectedSymptoms.length === 0}
+                disabled={
+                  loading ||
+                  selectedSymptoms.length === 0 ||
+                  !patientName ||
+                  !patientAge ||
+                  !patientLocation ||
+                  !diseaseDuration
+                }
                 className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed 
       text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition cursor-pointer"
               >
