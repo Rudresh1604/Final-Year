@@ -18,6 +18,7 @@ import {
 import React, { useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const FLASK_API_URL = import.meta.env.VITE_FLASK_URL;
 const API_URL = import.meta.env.VITE_BACKEND_URL;
@@ -48,6 +49,7 @@ const MedicalAI = () => {
   const [speechStatus, setSpeechStatus] = useState("");
 
   const inputRef = useRef(null);
+  const navigate = useNavigate();
 
   // Fetch symptoms from Flask API
   useEffect(() => {
@@ -107,6 +109,36 @@ const MedicalAI = () => {
     };
     fetchSymptoms();
   }, []);
+
+  const handleGenerateReport = () => {
+    if (!result) return;
+
+    const reportData = {
+      patient: {
+        name: patientName || "N/A",
+        age: patientAge || "N/A",
+        gender: "N/A",
+        dateOfCheckup: new Date().toLocaleDateString(),
+      },
+      medical: {
+        disease: result.predicted_disease,
+        description: result.description,
+        precautions: (result.precautions || []).join(", "),
+        diet: (result.diet || []).join(", "),
+        workout: (result.workout || []).join(", "),
+      },
+      prescriptions: (result.medications || []).map((m) => ({
+        medicine: m,
+        time: "As prescribed",
+        amount: "N/A",
+      })),
+      doctorName: "AI Medical System",
+      nextSession: "N/A",
+      notes: "AI generated report. Please consult a doctor.",
+    };
+
+    navigate("/report", { state: reportData });
+  };
 
   // Format symptom for display
   const formatSymptom = (name) => {
@@ -216,7 +248,7 @@ const MedicalAI = () => {
         setSpeechStatus(
           `✅ Added: ${addedSymptoms
             .map((s) => formatSymptom(s))
-            .join(", ")} (${confidence}%)`
+            .join(", ")} (${confidence}%)`,
         );
       } else {
         // Try direct match for the whole phrase
@@ -231,7 +263,7 @@ const MedicalAI = () => {
         if (directMatch && !selectedSymptoms.includes(directMatch)) {
           setSelectedSymptoms((prev) => [...prev, directMatch]);
           setSpeechStatus(
-            `✅ Added: ${formatSymptom(directMatch)} (${confidence}%)`
+            `✅ Added: ${formatSymptom(directMatch)} (${confidence}%)`,
           );
         } else {
           setSpeechStatus(`🔍 Heard: "${transcript}" - Try typing to search`);
@@ -304,7 +336,7 @@ const MedicalAI = () => {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       setResult(response.data);
@@ -632,11 +664,11 @@ const MedicalAI = () => {
 
                 {/* Print Button */}
                 <button
-                  onClick={() => window.print()}
+                  onClick={handleGenerateReport}
                   className="w-full mt-4 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 
                   rounded-lg transition-colors cursor-pointer"
                 >
-                  🖨️ Print Report
+                  🖨️ Generate Medical Report
                 </button>
               </>
             ) : (
