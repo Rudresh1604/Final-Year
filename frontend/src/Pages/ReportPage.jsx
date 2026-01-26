@@ -1,8 +1,9 @@
 import React, { useRef } from "react";
 import InfoRow from "../components/Report/InfoRow";
-import html2pdf from 'html2pdf.js'
+import html2pdf from "html2pdf.js";
 import InfoBlock from "../components/Report/InfoBlock";
 import PrescriptionTable from "../components/Report/PrescriptionTable";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const reportData = {
   patient: {
@@ -29,6 +30,25 @@ const reportData = {
 
 const ReportPage = () => {
   const reportRef = useRef();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const reportData = location.state;
+
+  //no data found in report
+  if (!reportData) {
+    return (
+      <div className="p-10 text-center">
+        <h2 className="text-xl font-semibold">No report data found</h2>
+        <button
+          onClick={() => navigate("/")}
+          className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
+        >
+          Go Back
+        </button>
+      </div>
+    );
+  }
 
   const handleDownloadPdf = () => {
     const element = reportRef.current;
@@ -48,13 +68,19 @@ const ReportPage = () => {
       {/* Header */}
       <section className="mb-6 flex justify-between items-center">
         <h1 className="text-3xl font-bold text-gray-800">🩺 Medical Report</h1>
-        <button className="bg-green-600 hover:bg-green-700 transition-colors text-white rounded-lg py-2 px-5 shadow-md cursor-pointer" onClick={handleDownloadPdf}>
+        <button
+          className="bg-green-600 hover:bg-green-700 transition-colors text-white rounded-lg py-2 px-5 shadow-md cursor-pointer"
+          onClick={handleDownloadPdf}
+        >
           Download PDF
         </button>
       </section>
 
       {/* Report Body */}
-      <section ref={reportRef} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+      <section
+        ref={reportRef}
+        className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100"
+      >
         {/* Patient Details */}
         <h2 className="text-xl font-semibold border-b pb-2 text-gray-700 mb-4">
           Patient Details
@@ -83,6 +109,16 @@ const ReportPage = () => {
           <InfoBlock
             label="Precautions"
             value={reportData.medical.precautions}
+          />
+          <InfoBlock
+            label="Recommended Diet"
+            value={reportData.medical.diet || "No specific diet recommended"}
+          />
+          <InfoBlock
+            label="Recommended Workout"
+            value={
+              reportData.medical.workout || "No specific workout recommended"
+            }
           />
         </div>
 

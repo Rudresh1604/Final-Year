@@ -17,8 +17,11 @@ import {
 } from "lucide-react";
 import React, { useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const FLASK_API_URL = import.meta.env.VITE_FLASK_URL;
+const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const MedicalAI = () => {
   // Form states
@@ -46,19 +49,17 @@ const MedicalAI = () => {
   const [speechStatus, setSpeechStatus] = useState("");
 
   const inputRef = useRef(null);
-  const suggestionsRef = useRef(null);
+  const navigate = useNavigate();
 
   // Fetch symptoms from Flask API
   useEffect(() => {
-    fetch(`${FLASK_API_URL}/api/symptoms`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.symptoms) {
-          setAllSymptoms(data.symptoms);
+    const fetchSymptoms = async () => {
+      try {
+        const res = await axios.get(`${FLASK_API_URL}/api/symptoms`);
+        if (res.data.symptoms) {
+          setAllSymptoms(res.data.symptoms);
         }
-      })
-      .catch(() => {
-        // Fallback symptoms if API fails
+      } catch (error) {
         setAllSymptoms([
           "itching",
           "skin_rash",
@@ -104,8 +105,40 @@ const MedicalAI = () => {
           "swelling_joints",
           "blurred_and_distorted_vision",
         ]);
-      });
+      }
+    };
+    fetchSymptoms();
   }, []);
+
+  const handleGenerateReport = () => {
+    if (!result) return;
+
+    const reportData = {
+      patient: {
+        name: patientName || "N/A",
+        age: patientAge || "N/A",
+        gender: "N/A",
+        dateOfCheckup: new Date().toLocaleDateString(),
+      },
+      medical: {
+        disease: result.predicted_disease,
+        description: result.description,
+        precautions: (result.precautions || []).join(", "),
+        diet: (result.diet || []).join(", "),
+        workout: (result.workout || []).join(", "),
+      },
+      prescriptions: (result.medications || []).map((m) => ({
+        medicine: m,
+        time: "As prescribed",
+        amount: "N/A",
+      })),
+      doctorName: "AI Medical System",
+      nextSession: "N/A",
+      notes: "AI generated report. Please consult a doctor.",
+    };
+
+    navigate("/report", { state: reportData });
+  };
 
   // Format symptom for display
   const formatSymptom = (name) => {
@@ -215,7 +248,7 @@ const MedicalAI = () => {
         setSpeechStatus(
           `✅ Added: ${addedSymptoms
             .map((s) => formatSymptom(s))
-            .join(", ")} (${confidence}%)`
+            .join(", ")} (${confidence}%)`,
         );
       } else {
         // Try direct match for the whole phrase
@@ -230,7 +263,7 @@ const MedicalAI = () => {
         if (directMatch && !selectedSymptoms.includes(directMatch)) {
           setSelectedSymptoms((prev) => [...prev, directMatch]);
           setSpeechStatus(
-            `✅ Added: ${formatSymptom(directMatch)} (${confidence}%)`
+            `✅ Added: ${formatSymptom(directMatch)} (${confidence}%)`,
           );
         } else {
           setSpeechStatus(`🔍 Heard: "${transcript}" - Try typing to search`);
@@ -257,6 +290,34 @@ const MedicalAI = () => {
 
   // Submit prediction
   const handlePredict = async () => {
+    if (!patientName || patientName.trim().length < 2) {
+      toast.error("Please enter a valid patient name");
+      return;
+    }
+
+    if (
+      !patientAge ||
+      isNaN(patientAge) ||
+      patientAge <= 0 ||
+      patientAge > 120
+    ) {
+      toast.error("Please enter a valid age (1 - 120)");
+      return;
+    }
+
+    if (!patientLocation || patientLocation.trim().length < 2) {
+      toast.error("Please enter your location");
+      return;
+    }
+    if (
+      !diseaseDuration ||
+      isNaN(diseaseDuration) ||
+      diseaseDuration <= 0 ||
+      diseaseDuration > 365
+    ) {
+      toast.error("Please enter valid disease duration (1 - 365 days)");
+      return;
+    }
     if (selectedSymptoms.length === 0) {
       toast.error("Please select at least one symptom");
       return;
@@ -264,28 +325,49 @@ const MedicalAI = () => {
 
     setLoading(true);
     setResult(null);
+    //     await fetch(`${API_URL}/api/reports/add`, {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({
+    //     appointmentId,
+    //     patientId,
+    //     doctorId,
+
+    //     diseases: [data.predicted_disease],
+    //     description: data.description,
+    //     precautions: data.precautions,
+    //     medicines: data.medications?.map((m) => ({
+    //       name: m,
+    //       dosage: "N/A",
+    //       duration: "N/A"
+    //     })),
+
+    //     diet: data.diet,
+    //     workout: data.workout,
+    //     notes: "AI generated report",
+    //     nextVisit: null,
+    //   }),
+    // });
 
     try {
       toast.info("Predicting disease...");
-      const response = await fetch(`${FLASK_API_URL}/api/predict`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const response = await axios.post(
+        `${FLASK_API_URL}/api/predict`,
+        {
           name: patientName,
           age: patientAge,
           location: patientLocation,
           duration: diseaseDuration,
           symptoms: selectedSymptoms.join(", "),
-        }),
-      });
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Prediction failed");
-      }
-
-      setResult(data);
+      setResult(response.data);
       toast.success("Prediction successful!");
       setActiveTab("description");
     } catch (err) {
@@ -518,9 +600,16 @@ const MedicalAI = () => {
               {/* Predict Button */}
               <button
                 onClick={handlePredict}
-                disabled={loading || selectedSymptoms.length === 0}
+                disabled={
+                  loading ||
+                  selectedSymptoms.length === 0 ||
+                  !patientName ||
+                  !patientAge ||
+                  !patientLocation ||
+                  !diseaseDuration
+                }
                 className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed 
-      text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition"
+      text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -586,7 +675,7 @@ const MedicalAI = () => {
                       onClick={() => setActiveTab(key)}
                       className={`p-2 rounded-lg text-[10px] sm:text-xs font-medium flex flex-col 
                         items-center gap-1 
-                        transition-all ${
+                        transition-all cursor-pointer ${
                           activeTab === key
                             ? `bg-${color}-500 text-white shadow-md`
                             : "bg-gray-100 hover:bg-gray-200"
@@ -610,11 +699,11 @@ const MedicalAI = () => {
 
                 {/* Print Button */}
                 <button
-                  onClick={() => window.print()}
+                  onClick={handleGenerateReport}
                   className="w-full mt-4 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 
-                  rounded-lg transition-colors"
+                  rounded-lg transition-colors cursor-pointer"
                 >
-                  🖨️ Print Report
+                  🖨️ Generate Medical Report
                 </button>
               </>
             ) : (

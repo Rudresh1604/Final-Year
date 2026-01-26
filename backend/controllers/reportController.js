@@ -14,6 +14,8 @@ const createReport = async (req, res) => {
       description,
       precautions,
       medicines,
+      diet,
+      workout,
       notes,
       nextVisit,
     } = req.body;
@@ -25,7 +27,7 @@ const createReport = async (req, res) => {
       });
     }
 
-    if(!diseases || !description){
+    if (!diseases || !description) {
       return res.status(400).json({
         success: false,
         message: "diseases and description are required.",
@@ -57,14 +59,16 @@ const createReport = async (req, res) => {
       description,
       precautions,
       medicines,
+      diet,
+      workout,
       notes,
       nextVisit,
     });
 
-    const patient=await Patient.findById(patientId);
-    const appointment=await Appointment.findById(appointmentId);
+    const patient = await Patient.findById(patientId);
+    const appointment = await Appointment.findById(appointmentId);
     patient.reports.push(report._id);
-    appointment.report=report._id;
+    appointment.report = report._id;
     await patient.save();
     await appointment.save();
 
@@ -88,10 +92,10 @@ const deleteReport = async (req, res) => {
     }
     const report = await Report.findByIdAndDelete(id);
 
-    const patient=await Patient.findById(report.patientId);
-    const appointment=await Appointment.findById(report.appointmentId);
+    const patient = await Patient.findById(report.patientId);
+    const appointment = await Appointment.findById(report.appointmentId);
     patient.reports.pull(report._id);
-    appointment.report=null;
+    appointment.report = null;
     await patient.save();
     await appointment.save();
 
