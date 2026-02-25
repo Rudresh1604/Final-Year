@@ -34,7 +34,7 @@ const CreateDisease = async (req, res) => {
     return res.status(400).json({
       success: false,
       message: `Invalid spreadLevel. Allowed values are: ${allowedSpreadLevels.join(
-        ", "
+        ", ",
       )}`,
     });
   }
@@ -59,7 +59,13 @@ const CreateDisease = async (req, res) => {
 //Get all disease
 const getAllDiseases = async (req, res) => {
   try {
-    const diseases = await Disease.find();
+    const { search } = req.query;
+    let query = {};
+    if (search) {
+      query.name = { $regex: search, $options: "i" }; // case insensitive
+    }
+
+    const diseases = await Disease.find(query);
     return res.status(200).json({ success: true, diseases });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
