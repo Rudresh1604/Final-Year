@@ -12,17 +12,18 @@ const reportSchema = new mongoose.Schema(
 
     medicines: [
       {
-        name: String,
-        dosage: String,
-        duration: String,
+        medicine: String,
+        amount: String,
+        time: String,
+        days:Number,
       },
     ],
-    diet: [String],
-    workout: [String],
+    diet: String,
+    workout: String,
     notes: String,
     nextVisit: Date,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Report = mongoose.model("Report", reportSchema);

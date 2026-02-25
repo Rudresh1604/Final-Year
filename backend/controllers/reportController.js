@@ -20,6 +20,8 @@ const createReport = async (req, res) => {
       nextVisit,
     } = req.body;
 
+    console.log(req.body);
+
     if (!appointmentId || !patientId || !doctorId) {
       return res.status(400).json({
         success: false,
@@ -43,10 +45,10 @@ const createReport = async (req, res) => {
     }
 
     for (let med of medicines) {
-      if (!med.name || !med.dosage || !med.duration) {
+      if (!med.medicine || !med.time || !med.amount || med.days < 1) {
         return res.status(400).json({
           success: false,
-          message: "Each medicine must include name, dosage, and duration.",
+          message: "Each medicine must include medicine name, time, amount and days.",
         });
       }
     }

@@ -20,7 +20,8 @@ const EditablePrescriptionTable = ({ prescriptions, setPrescriptions }) => {
       lastItem &&
       (lastItem.medicine === "" ||
         lastItem.time === "" ||
-        lastItem.amount === "")
+        lastItem.amount === ""||
+        lastItem.days < 1 )
     ) {
       setErrorIndex(prescriptions.length - 1);
       return;
@@ -29,7 +30,7 @@ const EditablePrescriptionTable = ({ prescriptions, setPrescriptions }) => {
     setErrorIndex;
     setPrescriptions([
       ...prescriptions,
-      { medicine: "", time: "", amount: "" },
+      { medicine: "", time: "", amount: "", days: 0 },
     ]);
   };
 
@@ -44,6 +45,7 @@ const EditablePrescriptionTable = ({ prescriptions, setPrescriptions }) => {
               <th className="px-4 py-3 text-left">Medicine</th>
               <th className="px-4 py-3 text-left">Time</th>
               <th className="px-4 py-3 text-left">Amount</th>
+              <th className="px-4 py-3 text-left">Days</th>
               <th className="px-4 py-3 text-left"></th>
             </tr>
           </thead>
@@ -99,6 +101,23 @@ const EditablePrescriptionTable = ({ prescriptions, setPrescriptions }) => {
                         : "border border-gray-300 focus:ring-blue-400"
                     }`}
                     placeholder="1 Tablet"
+                  />
+                </td>
+
+                <td className="px-4 py-2">
+                  <input
+                    value={item.days}
+                    type="number"
+                    name="days"
+                    onChange={(e) =>
+                      handleChange(index, "days", Number(e.target.value))
+                    }
+                    className={`w-full bg-transparent px-2 py-1 outline-none rounded ${
+                      errorIndex === index && item.days < 1
+                        ? "border border-red-500 ring-1 ring-red-300"
+                        : "border border-gray-300 focus:ring-blue-400"
+                    }`}
+                    placeholder="3"
                   />
                 </td>
 

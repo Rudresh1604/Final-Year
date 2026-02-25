@@ -8,6 +8,7 @@ const PrescriptionTable = ({ prescriptions }) => (
             <th className="px-4 py-3 text-left">Medicine</th>
             <th className="px-4 py-3 text-left">Time</th>
             <th className="px-4 py-3 text-left">Amount</th>
+            <th className="px-4 py-3 text-left">Days</th>
           </tr>
         </thead>
         <tbody>
@@ -21,6 +22,7 @@ const PrescriptionTable = ({ prescriptions }) => (
               <td className="px-4 py-2">{item.medicine}</td>
               <td className="px-4 py-2">{item.time}</td>
               <td className="px-4 py-2">{item.amount}</td>
+              <td className="px-4 py-2">{item.days}</td>
             </tr>
           ))}
         </tbody>
