@@ -35,7 +35,7 @@ const View = () => {
       const res = await axios.get(`${API_BASE_URL}/api/doctors/${doctorId}`);
       // console.log(res.data);
       if (res.data) {
-        setDoctorDetails(res.data);
+        setDoctorDetails(res.data.doctor);
       } else {
         toast(res.data?.message || "Something went wrong try again !");
       }
