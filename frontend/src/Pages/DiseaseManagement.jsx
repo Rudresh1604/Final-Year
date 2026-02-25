@@ -3,39 +3,51 @@ import SearchDisease from "../components/Disease/Search";
 import { PlusIcon, Trash } from "lucide-react";
 import PatientTimeline from "../components/Disease/PatientTimeline";
 import axios from "axios";
+import { toast } from "react-toastify";
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const DiseaseManagement = () => {
-  // const diseaseList = [
-  //   { name: "Diaheria", symptions: "Fatigue" },
-  //   { name: "Diaheria", symptions: "Fatigue" },
-  //   { name: "Diaheria", symptions: "Fatigue" },
-  //   { name: "Diaheria", symptions: "Fatigue" },
-  //   { name: "Diaheria", symptions: "Fatigue" },
-  // ];
   const [diseaseList, setDiseaseList] = useState([]);
   useEffect(() => {
-  const fetchDiseases = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/api/disease`);
-      
-      if (res.data.success) {
-        setDiseaseList(res.data.diseases);
-      }
-    } catch (error) {
-      console.error("Error fetching diseases:", error);
-    }
-  };
+    const fetchAllDiseases = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/api/disease`);
 
-  fetchDiseases();
-}, []);
+        if (res.data.success) {
+          setDiseaseList(res.data.diseases);
+          if (res.data.diseases.length === 0) {
+            toast.info("No diseases available.", {
+              position: "top-right",
+              autoClose: 2000,
+              theme: "colored",
+            });
+          }
+        } else {
+          toast.error("Failed to fetch diseases. Please try again later.", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+          });
+        }
+      } catch (error) {
+        toast.error("Error fetching diseases. Please try again later.", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+        console.error("Error fetching diseases:", error);
+      }
+    };
+
+    fetchAllDiseases();
+  }, []);
 
   return (
     <div className="bg-white h-full py-2 px-4">
       <h1 className="text-2xl">Disease Management</h1>
       <div className="w-full flex flex-col md:flex-row">
         <div className="mt-3 lg:mt-7 mx-2 border w-full lg:w-[70%] rounded-lg p-2 border-gray-200">
-          <SearchDisease  />
+          <SearchDisease setDiseaseList={setDiseaseList} />
           <div className="flex flex-col my-4 mx-3">
             <h1 className="text-xl text-gray-700">Current Diagnosis</h1>
             <div className="w-full flex flex-col gap-2 my-2 lg:my-4">
