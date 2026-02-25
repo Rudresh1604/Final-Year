@@ -15,13 +15,6 @@ const DiseaseManagement = () => {
 
         if (res.data.success) {
           setDiseaseList(res.data.diseases);
-          if (res.data.diseases.length === 0) {
-            toast.info("No diseases available.", {
-              position: "top-right",
-              autoClose: 2000,
-              theme: "colored",
-            });
-          }
         } else {
           toast.error("Failed to fetch diseases. Please try again later.", {
             position: "top-right",
