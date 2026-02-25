@@ -1,8 +1,42 @@
+import axios from "axios";
 import { Search } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+const API_URL = import.meta.env.VITE_BACKEND_URL;
 
-const SearchDisease = () => {
-  const [searchQuery, setSearchQuery] = useState(null);
+const SearchDisease = ({ setDiseaseList }) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  useEffect(() => {
+    if (!searchQuery) {
+      setDiseaseList([]);
+      return;
+    }
+    const fetchDiseases = async () => {
+      try {
+        const res = await axios.get(
+          `${API_URL}/api/disease?search=${searchQuery}`,
+        );
+
+        if (res.data.success) {
+          setDiseaseList(res.data.diseases);
+        } else {
+          toast.error("Failed to search diseases. Please try again later.", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+          });
+        }
+      } catch (error) {
+        toast.error("Error searching diseases. Please try again later.", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+        console.error("Search error:", error);
+      }
+    };
+    fetchDiseases();
+  }, [searchQuery]);
   return (
     <div className="flex max-sm:flex-col flex-row items-center justify-between">
       <label className="mb-2 block text-xl text-gray-700">
@@ -15,7 +49,7 @@ const SearchDisease = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search Disease"
           value={searchQuery}
-          className="w-full p-1   focus:outline-none"
+          className="w-full p-1 focus:outline-none"
         />
       </div>
     </div>

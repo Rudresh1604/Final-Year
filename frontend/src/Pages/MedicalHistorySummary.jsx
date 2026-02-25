@@ -14,6 +14,9 @@ const MedicalHistorySummary = () => {
   const [selectedDiseaseId, setSelectedDiseaseId] = useState("");
   const [selectedDisease, setSelectedDisease] = useState(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+
   // Fetch patient and disease list
   useEffect(() => {
     const fetchData = async () => {
@@ -77,11 +80,12 @@ const MedicalHistorySummary = () => {
     }
   };
   // fetch disease selected details
-  const handleDiseaseSelect = async (e) => {
-    const diseaseId = e.target.value;
-    setSelectedDiseaseId(diseaseId);
+  const filteredDiseases = diseases.filter((disease) =>
+    disease.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
-    if (!diseaseId) {
+  const handleDiseaseSelect = async (diseaseId) => {
+    if (!diseaseId || diseaseId.trim() === "") {
       setSelectedDisease(null);
       return;
     }
@@ -243,18 +247,50 @@ const MedicalHistorySummary = () => {
           <label className="block text-gray-700 font-semibold mb-2">
             Select Disease
           </label>
-          <select
-            value={selectedDiseaseId}
-            onChange={handleDiseaseSelect}
-            className="border rounded-md p-2 w-full text-gray-700 cursor-pointer"
-          >
-            <option value="">-- Select Disease --</option>
-            {diseases.map((disease) => (
-              <option key={disease._id} value={disease._id}>
-                {disease.name}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search disease..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setShowDropdown(true);
+              }}
+              onFocus={() => setShowDropdown(true)}
+              className="border rounded-md p-2 w-full text-gray-700"
+            />
+
+            {showDropdown && searchTerm && (
+              <div
+                className="absolute z-10 bg-white border w-full mt-1 max-h-60 overflow-y-auto 
+              rounded-md shadow-md"
+              >
+                {filteredDiseases.length > 0 ? (
+                  filteredDiseases.map((disease) => (
+                    <div
+                      key={disease._id}
+                      onClick={() => {
+                        setSelectedDiseaseId(disease._id);
+                        setSearchTerm(disease.name);
+                        setShowDropdown(false);
+                        handleDiseaseSelect(disease._id);
+                      }}
+                      className={`p-2 m-1 rounded-lg border transition-all duration-200 cursor-pointer
+                        ${
+                          selectedDiseaseId === disease._id
+                            ? "bg-blue-100 border-blue-500"
+                            : "border-gray-200 hover:bg-blue-50 hover:border-blue-400"
+                        }`}
+                    >
+                      {disease.name}
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-2 text-gray-500">No diseases found</div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Disease Details */}
