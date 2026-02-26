@@ -8,6 +8,8 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const DiseaseManagement = () => {
   const [diseaseList, setDiseaseList] = useState([]);
+  const [symptomResults, setSymptomResults] = useState([]); // Symptom checker 
+  const [symptomQuery, setSymptomQuery] = useState("");
   useEffect(() => {
     const fetchAllDiseases = async () => {
       try {
@@ -31,10 +33,42 @@ const DiseaseManagement = () => {
         console.error("Error fetching diseases:", error);
       }
     };
-
     fetchAllDiseases();
   }, []);
 
+  useEffect(() => {
+    if (!symptomQuery.trim()) {
+      setSymptomResults([]);
+      return;
+    }
+
+    const fetchBySymptom = async () => {
+      try {
+        const res = await axios.get(
+          `${API_URL}/api/disease?symptom=${symptomQuery}`,
+        );
+
+        if (res.data.success) {
+          setSymptomResults(res.data.diseases);
+        } else {
+          toast.error("Failed to fetch diseases. Please try again later.", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+          });
+        }
+      } catch (error) {
+        toast.error("Error searching by symptom. Please try again later.", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+        console.error("Error searching by symptom:", error);
+      }
+    };
+
+    fetchBySymptom();
+  }, [symptomQuery]);
   return (
     <div className="bg-white h-full py-2 px-4">
       <h1 className="text-2xl">Disease Management</h1>
@@ -85,21 +119,26 @@ const DiseaseManagement = () => {
             <div className="flex items-center w-full rounded-lg border p-1 border-gray-300 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500">
               <input
                 type="text"
-                placeholder="Search Disease"
-                className="w-full p-1   focus:outline-none"
+                placeholder="Search Symptom (e.g. fever)"
+                value={symptomQuery}
+                onChange={(e) => setSymptomQuery(e.target.value)}
+                className="w-full p-1 focus:outline-none"
               />
             </div>
           </div>
           <span className="ml-2">Potential Diseases</span>
           <div className="mt-3 mx-3 flex flex-col gap-2">
-            {diseaseList?.map((item, index) => (
+            {symptomQuery && symptomResults.length === 0 && (
+              <p className="text-gray-500">No matching diseases found</p>
+            )}
+            {symptomResults?.map((item, index) => (
               <div
                 key={index}
                 className="flex w-full px-3 lg:px-5 items-center border rounded-lg border-gray-200 flex-row justify-between"
               >
                 <div className="flex flex-col py-1 gap-1">
                   <h1>{item.name} </h1>
-                  <p>Symptoms : {item.symptions}</p>
+                  <p>Symptoms: {item.symptoms?.join(", ")}</p>
                 </div>
                 <div className="bg-blue-200 cursor-pointer flex flex-row text-blue-700 px-2 py-2 rounded-full">
                   <PlusIcon /> Add
