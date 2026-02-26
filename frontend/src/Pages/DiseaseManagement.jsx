@@ -8,7 +8,7 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const DiseaseManagement = () => {
   const [diseaseList, setDiseaseList] = useState([]);
-  const [symptomResults, setSymptomResults] = useState([]); // Symptom checker 
+  const [symptomResults, setSymptomResults] = useState([]); // Symptom checker
   const [symptomQuery, setSymptomQuery] = useState("");
   useEffect(() => {
     const fetchAllDiseases = async () => {
@@ -69,6 +69,29 @@ const DiseaseManagement = () => {
 
     fetchBySymptom();
   }, [symptomQuery]);
+
+  const handleAddDisease = (disease) => {
+    const alreadyExists = diseaseList.find((item) => item._id === disease._id);
+    if (alreadyExists) {
+      toast.info("Disease already added.", {
+        position: "top-right",
+        autoClose: 2000,
+        theme: "colored",
+      });
+      return;
+    }
+
+    setDiseaseList((prev) => [...prev, disease]);
+    setSymptomResults((prev) =>
+      prev.filter((item) => item._id !== disease._id),
+    );
+    toast.success("Disease added to Current Diagnosis.", {
+      position: "top-right",
+      autoClose: 2000,
+      theme: "colored",
+    });
+  };
+
   return (
     <div className="bg-white h-full py-2 px-4">
       <h1 className="text-2xl">Disease Management</h1>
@@ -81,19 +104,26 @@ const DiseaseManagement = () => {
               {diseaseList?.map((item, index) => (
                 <div
                   key={index}
-                  className="flex w-full px-3 lg:px-5 items-center border rounded-lg border-gray-200 flex-row justify-between"
+                  className="flex w-full px-3 lg:px-5 items-center border rounded-lg border-gray-200 
+                  flex-row justify-between"
                 >
                   <div className="flex flex-col py-2 gap-1 ml-3">
                     <h1>{item.name} </h1>
                     <p>Symptoms : {item.symptoms?.join(", ")}</p>
                   </div>
-                  <Trash className="text-red-500 cursor-pointer" />
+                  <Trash
+                    
+                    className="text-red-500 cursor-pointer"
+                  />
                 </div>
               ))}
             </div>
           </div>
         </div>
-        <div className="mt-3 lg:mt-7 mx-2 w-full lg:w-[30%] border flex flex-col gap-2 rounded-lg py-2 px-4 border-gray-200">
+        <div
+          className="mt-3 lg:mt-7 mx-2 w-full lg:w-[30%] border flex flex-col gap-2 rounded-lg 
+        py-2 px-4 border-gray-200"
+        >
           <span className="flex my-3 items-center gap-3">
             <svg
               width="20"
@@ -116,7 +146,10 @@ const DiseaseManagement = () => {
             >
               Patient Symptoms
             </label>
-            <div className="flex items-center w-full rounded-lg border p-1 border-gray-300 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500">
+            <div
+              className="flex items-center w-full rounded-lg border p-1 border-gray-300 
+            focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500"
+            >
               <input
                 type="text"
                 placeholder="Search Symptom (e.g. fever)"
@@ -134,13 +167,17 @@ const DiseaseManagement = () => {
             {symptomResults?.map((item, index) => (
               <div
                 key={index}
-                className="flex w-full px-3 lg:px-5 items-center border rounded-lg border-gray-200 flex-row justify-between"
+                className="flex w-full px-3 lg:px-5 items-center border rounded-lg border-gray-200 
+                flex-row justify-between"
               >
                 <div className="flex flex-col py-1 gap-1">
                   <h1>{item.name} </h1>
                   <p>Symptoms: {item.symptoms?.join(", ")}</p>
                 </div>
-                <div className="bg-blue-200 cursor-pointer flex flex-row text-blue-700 px-2 py-2 rounded-full">
+                <div
+                  onClick={() => handleAddDisease(item)}
+                  className="bg-blue-200 cursor-pointer flex flex-row text-blue-700 px-2 py-2 rounded-full"
+                >
                   <PlusIcon /> Add
                 </div>
               </div>
