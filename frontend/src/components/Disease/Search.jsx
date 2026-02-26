@@ -6,36 +6,46 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const SearchDisease = ({ setDiseaseList }) => {
   const [searchQuery, setSearchQuery] = useState("");
+
+  const fetchDiseases = async () => {
+    try {
+      const res = await axios.get(
+        `${API_URL}/api/disease?search=${searchQuery}`,
+      );
+
+      if (res.data.success) {
+        setDiseaseList(res.data.diseases);
+      } else {
+        toast.error("Failed to search diseases. Please try again later.", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+      }
+    } catch (error) {
+      toast.error("Error searching diseases. Please try again later.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      console.error("Search error:", error);
+    }
+  };
+
   useEffect(() => {
     if (!searchQuery) {
       setDiseaseList([]);
       return;
     }
-    const fetchDiseases = async () => {
-      try {
-        const res = await axios.get(
-          `${API_URL}/api/disease?search=${searchQuery}`,
-        );
 
-        if (res.data.success) {
-          setDiseaseList(res.data.diseases);
-        } else {
-          toast.error("Failed to search diseases. Please try again later.", {
-            position: "top-right",
-            autoClose: 3000,
-            theme: "colored",
-          });
-        }
-      } catch (error) {
-        toast.error("Error searching diseases. Please try again later.", {
-          position: "top-right",
-          autoClose: 3000,
-          theme: "colored",
-        });
-        console.error("Search error:", error);
+    const handler = setTimeout(() => {
+      if (searchQuery.length > 2) {
+        fetchDiseases();
       }
+    }, 500);
+    return () => {
+      clearTimeout(handler);
     };
-    fetchDiseases();
   }, [searchQuery]);
   return (
     <div className="flex max-sm:flex-col flex-row items-center justify-between">

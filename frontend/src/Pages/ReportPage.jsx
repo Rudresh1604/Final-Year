@@ -1,39 +1,30 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import InfoRow from "../components/Report/InfoRow";
 import html2pdf from "html2pdf.js";
 import InfoBlock from "../components/Report/InfoBlock";
 import PrescriptionTable from "../components/Report/PrescriptionTable";
-import { useLocation, useNavigate } from "react-router-dom";
-
-const reportData = {
-  patient: {
-    name: "John Doe",
-    age: 30,
-    gender: "Male",
-    dateOfCheckup: "03-09-2025",
-  },
-  medical: {
-    disease: "Asthma",
-    description:
-      "Diagnosed with asthma at age 10. Symptoms include wheezing and shortness of breath, especially during exercise or exposure to allergens.",
-    precautions: "Avoid oily food, smoking, and dust exposure.",
-  },
-  prescriptions: [
-    { medicine: "Inhaler", time: "Twice Daily", amount: "2 Puffs" },
-    { medicine: "Syrup", time: "Morning", amount: "5 ml" },
-    { medicine: "Tablet", time: "Night", amount: "1 Pill" },
-  ],
-  doctorName: "Dr. Smith Johnson",
-  nextSession: "10-09-2025",
-  notes: "Patient should continue medication and follow breathing exercises.",
-};
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import axios from "axios";
 
 const ReportPage = () => {
   const reportRef = useRef();
-  const location = useLocation();
+  const [reportData, setReportData] = useState(null);
   const navigate = useNavigate();
+  const params = useParams();
 
-  const reportData = location.state;
+  useEffect(() => {
+    if (!params.reportId) {
+      navigate("/");
+    }
+
+    async function getReport() {
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/reports/${params.reportId}`,
+      );
+      setReportData(res.data.report);
+    }
+    getReport();
+  }, [params.reportId]);
 
   //no data found in report
   if (!reportData) {
@@ -86,12 +77,12 @@ const ReportPage = () => {
           Patient Details
         </h2>
         <div>
-          <InfoRow label="Name" value={reportData.patient.name} />
-          <InfoRow label="Age" value={reportData.patient.age} />
-          <InfoRow label="Gender" value={reportData.patient.gender} />
+          <InfoRow label="Name" value={reportData.patientId.name} />
+          <InfoRow label="Age" value={reportData.patientId.age} />
+          <InfoRow label="Gender" value={reportData.patientId.gender} />
           <InfoRow
             label="Date of Checkup"
-            value={reportData.patient.dateOfCheckup}
+            value={new Date(reportData.appointmentId.date).toISOString().split('T')[0]}
           />
         </div>
 
@@ -100,24 +91,24 @@ const ReportPage = () => {
           Medical Info
         </h2>
         <div>
-          <InfoRow label="Disease" value={reportData.medical.disease} />
+          <InfoRow label="Disease" value={reportData.diseases} />
           <InfoBlock
             label="Description"
-            value={reportData.medical.description}
+            value={reportData.description}
           />
-          <PrescriptionTable prescriptions={reportData.prescriptions} />
+          <PrescriptionTable prescriptions={reportData.medicines} />
           <InfoBlock
             label="Precautions"
-            value={reportData.medical.precautions}
+            value={reportData.precautions}
           />
           <InfoBlock
             label="Recommended Diet"
-            value={reportData.medical.diet || "No specific diet recommended"}
+            value={reportData.diet || "No specific diet recommended"}
           />
           <InfoBlock
             label="Recommended Workout"
             value={
-              reportData.medical.workout || "No specific workout recommended"
+              reportData.workout || "No specific workout recommended"
             }
           />
         </div>
@@ -127,8 +118,8 @@ const ReportPage = () => {
           <h3 className="text-lg font-semibold border-b pb-2 mb-3 text-gray-700">
             Doctor's Details
           </h3>
-          <InfoRow label="Doctor's Name" value={reportData.doctorName} />
-          <InfoRow label="Next Session Date" value={reportData.nextSession} />
+          <InfoRow label="Doctor's Name" value={reportData.doctorId.name} />
+          <InfoRow label="Next Session Date" value={new Date(reportData.nextVisit).toISOString().split('T')[0] || "None"} />
           <InfoBlock label="Notes" value={reportData.notes} />
         </div>
       </section>
