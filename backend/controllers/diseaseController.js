@@ -59,12 +59,16 @@ const CreateDisease = async (req, res) => {
 //Get all disease
 const getAllDiseases = async (req, res) => {
   try {
-    const { search } = req.query;
+    const { search, symptom } = req.query;
     let query = {};
+    // Search by disease name
     if (search) {
       query.name = { $regex: search, $options: "i" }; // case insensitive
     }
-
+    // Search by symptom
+    if (symptom) {
+      query.symptoms = { $regex: symptom, $options: "i" };
+    }
     const diseases = await Disease.find(query);
     return res.status(200).json({ success: true, diseases });
   } catch (error) {
