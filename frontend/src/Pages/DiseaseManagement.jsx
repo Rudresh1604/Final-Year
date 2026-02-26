@@ -13,7 +13,7 @@ const DiseaseManagement = () => {
   useEffect(() => {
     const fetchAllDiseases = async () => {
       try {
-        const res = await axios.get(`${API_URL}/api/disease`);
+        const res = await axios.get(`${API_URL}/api/disease?limit=10`);
 
         if (res.data.success) {
           setDiseaseList(res.data.diseases);
