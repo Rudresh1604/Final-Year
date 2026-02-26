@@ -36,38 +36,43 @@ const DiseaseManagement = () => {
     fetchAllDiseases();
   }, []);
 
+  const fetchBySymptom = async () => {
+    try {
+      const res = await axios.get(
+        `${API_URL}/api/disease?symptom=${symptomQuery}`,
+      );
+
+      if (res.data.success) {
+        setSymptomResults(res.data.diseases);
+      } else {
+        toast.error("Failed to fetch diseases. Please try again later.", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+      }
+    } catch (error) {
+      toast.error("Error searching by symptom. Please try again later.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      console.error("Error searching by symptom:", error);
+    }
+  };
   useEffect(() => {
     if (!symptomQuery.trim()) {
       setSymptomResults([]);
       return;
     }
-
-    const fetchBySymptom = async () => {
-      try {
-        const res = await axios.get(
-          `${API_URL}/api/disease?symptom=${symptomQuery}`,
-        );
-
-        if (res.data.success) {
-          setSymptomResults(res.data.diseases);
-        } else {
-          toast.error("Failed to fetch diseases. Please try again later.", {
-            position: "top-right",
-            autoClose: 3000,
-            theme: "colored",
-          });
-        }
-      } catch (error) {
-        toast.error("Error searching by symptom. Please try again later.", {
-          position: "top-right",
-          autoClose: 3000,
-          theme: "colored",
-        });
-        console.error("Error searching by symptom:", error);
+    const handler = setTimeout(() => {
+      if (symptomQuery.length > 2) {
+        fetchBySymptom();
       }
+    }, 500);
+    return () => {
+      clearTimeout(handler);
     };
-
-    fetchBySymptom();
   }, [symptomQuery]);
 
   const handleAddDisease = (disease) => {
