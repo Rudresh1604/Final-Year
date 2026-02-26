@@ -55,7 +55,7 @@ function App() {
 
               <Route path="/disease" element={<DiseaseManagement />} />
               <Route path="/" element={<HomePage />} />
-              <Route path="/report" element={<ReportPage />} />
+              <Route path="/report/:reportId" element={<ReportPage />} />
               <Route path="/medical-ai" element={<MedicalAI />} />
               <Route path="/create-report" element={<ReportFormPage />} />
               <Route

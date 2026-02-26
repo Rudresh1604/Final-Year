@@ -48,7 +48,8 @@ const createReport = async (req, res) => {
       if (!med.medicine || !med.time || !med.amount || med.days < 1) {
         return res.status(400).json({
           success: false,
-          message: "Each medicine must include medicine name, time, amount and days.",
+          message:
+            "Each medicine must include medicine name, time, amount and days.",
         });
       }
     }
@@ -138,8 +139,12 @@ const getAllReports = async (req, res) => {
 const getReportById = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(404).json({ success: false, message: "Invalid ID" });
+    }
+
     const report = await Report.findById(id)
-      .populate("patientId", "name email")
+      .populate("patientId", "name gender age")
       .populate("doctorId", "name specialization")
       .populate("appointmentId");
 
