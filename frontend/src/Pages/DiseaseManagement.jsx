@@ -1,41 +1,136 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SearchDisease from "../components/Disease/Search";
 import { PlusIcon, Trash } from "lucide-react";
 import PatientTimeline from "../components/Disease/PatientTimeline";
+import axios from "axios";
+import { toast } from "react-toastify";
+const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const DiseaseManagement = () => {
-  const diseaseList = [
-    { name: "Diaheria", symptions: "Fatigue" },
-    { name: "Diaheria", symptions: "Fatigue" },
-    { name: "Diaheria", symptions: "Fatigue" },
-    { name: "Diaheria", symptions: "Fatigue" },
-    { name: "Diaheria", symptions: "Fatigue" },
-  ];
+  const [diseaseList, setDiseaseList] = useState([]);
+  const [symptomResults, setSymptomResults] = useState([]); // Symptom checker
+  const [symptomQuery, setSymptomQuery] = useState("");
+  useEffect(() => {
+    const fetchAllDiseases = async () => {
+      try {
+        const res = await axios.get(`${API_URL}/api/disease`);
+
+        if (res.data.success) {
+          setDiseaseList(res.data.diseases);
+        } else {
+          toast.error("Failed to fetch diseases. Please try again later.", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+          });
+        }
+      } catch (error) {
+        toast.error("Error fetching diseases. Please try again later.", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+        console.error("Error fetching diseases:", error);
+      }
+    };
+    fetchAllDiseases();
+  }, []);
+
+  useEffect(() => {
+    if (!symptomQuery.trim()) {
+      setSymptomResults([]);
+      return;
+    }
+
+    const fetchBySymptom = async () => {
+      try {
+        const res = await axios.get(
+          `${API_URL}/api/disease?symptom=${symptomQuery}`,
+        );
+
+        if (res.data.success) {
+          setSymptomResults(res.data.diseases);
+        } else {
+          toast.error("Failed to fetch diseases. Please try again later.", {
+            position: "top-right",
+            autoClose: 3000,
+            theme: "colored",
+          });
+        }
+      } catch (error) {
+        toast.error("Error searching by symptom. Please try again later.", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+        console.error("Error searching by symptom:", error);
+      }
+    };
+
+    fetchBySymptom();
+  }, [symptomQuery]);
+
+  const handleAddDisease = (disease) => {
+    const alreadyExists = diseaseList.find((item) => item._id === disease._id);
+    if (alreadyExists) {
+      toast.info("Disease already added.", {
+        position: "top-right",
+        autoClose: 2000,
+        theme: "colored",
+      });
+      return;
+    }
+
+    setDiseaseList((prev) => [...prev, disease]);
+    setSymptomResults((prev) =>
+      prev.filter((item) => item._id !== disease._id),
+    );
+    toast.success("Disease added to Current Diagnosis.", {
+      position: "top-right",
+      autoClose: 2000,
+      theme: "colored",
+    });
+  };
+  const handleDeleteDisease = (id) => {
+    setDiseaseList((prev) => prev.filter((item) => item._id !== id));
+    toast.success("Disease removed.", {
+      position: "top-right",
+      autoClose: 2000,
+      theme: "colored",
+    });
+  };
   return (
     <div className="bg-white h-full py-2 px-4">
       <h1 className="text-2xl">Disease Management</h1>
       <div className="w-full flex flex-col md:flex-row">
         <div className="mt-3 lg:mt-7 mx-2 border w-full lg:w-[70%] rounded-lg p-2 border-gray-200">
-          <SearchDisease />
+          <SearchDisease setDiseaseList={setDiseaseList} />
           <div className="flex flex-col my-4 mx-3">
             <h1 className="text-xl text-gray-700">Current Diagnosis</h1>
             <div className="w-full flex flex-col gap-2 my-2 lg:my-4">
               {diseaseList?.map((item, index) => (
                 <div
                   key={index}
-                  className="flex w-full px-3 lg:px-5 items-center border rounded-lg border-gray-200 flex-row justify-between"
+                  className="flex w-full px-3 lg:px-5 items-center border rounded-lg border-gray-200 
+                  flex-row justify-between"
                 >
                   <div className="flex flex-col py-2 gap-1 ml-3">
                     <h1>{item.name} </h1>
-                    <p>Symptoms : {item.symptions}</p>
+                    <p>Symptoms : {item.symptoms?.join(", ")}</p>
                   </div>
-                  <Trash className="text-red-500 cursor-pointer" />
+                  <Trash
+                    onClick={() => handleDeleteDisease(item._id)}
+                    className="text-red-500 cursor-pointer"
+                  />
                 </div>
               ))}
             </div>
           </div>
         </div>
-        <div className="mt-3 lg:mt-7 mx-2 w-full lg:w-[30%] border flex flex-col gap-2 rounded-lg py-2 px-4 border-gray-200">
+        <div
+          className="mt-3 lg:mt-7 mx-2 w-full lg:w-[30%] border flex flex-col gap-2 rounded-lg 
+        py-2 px-4 border-gray-200"
+        >
           <span className="flex my-3 items-center gap-3">
             <svg
               width="20"
@@ -58,26 +153,38 @@ const DiseaseManagement = () => {
             >
               Patient Symptoms
             </label>
-            <div className="flex items-center w-full rounded-lg border p-1 border-gray-300 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500">
+            <div
+              className="flex items-center w-full rounded-lg border p-1 border-gray-300 
+            focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500"
+            >
               <input
                 type="text"
-                placeholder="Search Disease"
-                className="w-full p-1   focus:outline-none"
+                placeholder="Search Symptom (e.g. fever)"
+                value={symptomQuery}
+                onChange={(e) => setSymptomQuery(e.target.value)}
+                className="w-full p-1 focus:outline-none"
               />
             </div>
           </div>
           <span className="ml-2">Potential Diseases</span>
           <div className="mt-3 mx-3 flex flex-col gap-2">
-            {diseaseList?.map((item, index) => (
+            {symptomQuery && symptomResults.length === 0 && (
+              <p className="text-gray-500">No matching diseases found</p>
+            )}
+            {symptomResults?.map((item, index) => (
               <div
                 key={index}
-                className="flex w-full px-3 lg:px-5 items-center border rounded-lg border-gray-200 flex-row justify-between"
+                className="flex w-full px-3 lg:px-5 items-center border rounded-lg border-gray-200 
+                flex-row justify-between"
               >
                 <div className="flex flex-col py-1 gap-1">
                   <h1>{item.name} </h1>
-                  <p>Symptoms : {item.symptions}</p>
+                  <p>Symptoms: {item.symptoms?.join(", ")}</p>
                 </div>
-                <div className="bg-blue-200 cursor-pointer flex flex-row text-blue-700 px-2 py-2 rounded-full">
+                <div
+                  onClick={() => handleAddDisease(item)}
+                  className="bg-blue-200 cursor-pointer flex flex-row text-blue-700 px-2 py-2 rounded-full"
+                >
                   <PlusIcon /> Add
                 </div>
               </div>
