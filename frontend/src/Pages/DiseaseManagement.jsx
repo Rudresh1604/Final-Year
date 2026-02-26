@@ -91,7 +91,14 @@ const DiseaseManagement = () => {
       theme: "colored",
     });
   };
-
+  const handleDeleteDisease = (id) => {
+    setDiseaseList((prev) => prev.filter((item) => item._id !== id));
+    toast.success("Disease removed.", {
+      position: "top-right",
+      autoClose: 2000,
+      theme: "colored",
+    });
+  };
   return (
     <div className="bg-white h-full py-2 px-4">
       <h1 className="text-2xl">Disease Management</h1>
@@ -112,7 +119,7 @@ const DiseaseManagement = () => {
                     <p>Symptoms : {item.symptoms?.join(", ")}</p>
                   </div>
                   <Trash
-                    
+                    onClick={() => handleDeleteDisease(item._id)}
                     className="text-red-500 cursor-pointer"
                   />
                 </div>
