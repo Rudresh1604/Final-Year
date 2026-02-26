@@ -60,6 +60,8 @@ const CreateDisease = async (req, res) => {
 const getAllDiseases = async (req, res) => {
   try {
     const { search, symptom } = req.query;
+    let limit = parseInt(req.query.limit) || 10; //default 10
+    limit = Math.min(limit, 50); // max 50 results
     let query = {};
     // Search by disease name
     if (search) {
@@ -69,7 +71,7 @@ const getAllDiseases = async (req, res) => {
     if (symptom) {
       query.symptoms = { $regex: symptom, $options: "i" };
     }
-    const diseases = await Disease.find(query);
+    const diseases = await Disease.find(query).limit(limit);
     return res.status(200).json({ success: true, diseases });
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
