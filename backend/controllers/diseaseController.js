@@ -67,9 +67,18 @@ const getAllDiseases = async (req, res) => {
     if (search) {
       query.name = { $regex: search, $options: "i" }; // case insensitive
     }
-    // Search by symptom
+    // Search by symptoms
     if (symptom) {
-      query.symptoms = { $regex: symptom, $options: "i" };
+      const symptomArray = symptom
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+
+      if (symptomArray.length > 0) {
+        query.symptoms = {
+          $all: symptomArray.map((s) => new RegExp(s, "i")),
+        };
+      }
     }
     const diseases = await Disease.find(query).limit(limit);
     return res.status(200).json({ success: true, diseases });
