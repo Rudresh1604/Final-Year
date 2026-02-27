@@ -38,10 +38,17 @@ const DiseaseManagement = () => {
 
   const fetchBySymptom = async () => {
     try {
-      const res = await axios.get(
-        `${API_URL}/api/disease?symptom=${symptomQuery}`,
-      );
-
+      if (!symptomQuery.trim()) {
+        toast.error("Please enter at least one symptom", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+        return;
+      }
+      const res = await axios.get(`${API_URL}/api/disease`, {
+        params: { symptom: symptomQuery },
+      });
       if (res.data.success) {
         setSymptomResults(res.data.diseases);
       } else {
