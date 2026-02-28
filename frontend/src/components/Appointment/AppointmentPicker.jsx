@@ -9,9 +9,10 @@ import axios from "axios";
 import moment from "moment";
 import { Loader } from "lucide-react";
 
-const AppointmentPicker = ({ doctorId, patientId }) => {
+const AppointmentPicker = ({ doctorId, doctorDetails, patientDetails }) => {
   const [openModal, setOpenModal] = useState(false);
-  const { user } = useSelector(selectAuth);
+  // const user = useSelector((state)=>state.auth);
+  console.log(patientDetails);
 
   const [availableSlot, setAvailableSlot] = useState([]);
   const [timeSlots, setTimeSlots] = useState([]);
@@ -24,6 +25,7 @@ const AppointmentPicker = ({ doctorId, patientId }) => {
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
   // Fetch doctor's available days
+
   useEffect(() => {
     if (doctorId) {
       fetchDoctorAvailability();
@@ -46,12 +48,14 @@ const AppointmentPicker = ({ doctorId, patientId }) => {
 
       console.log("🔍 Fetching doctor availability for:", doctorId);
       const response = await axios.get(
-        `${API_BASE_URL}/api/doctors/${doctorId}`
+        `${API_BASE_URL}/api/doctors/${doctorId}`,
       );
-
-      if (response.data.availableSlots) {
+      console.log(response.data, "Available Slots");
+      if (response.data?.doctor?.availableSlots) {
         // Remove duplicate days - keep only one entry per day
-        const uniqueSlots = removeDuplicateDays(response.data.availableSlots);
+        const uniqueSlots = removeDuplicateDays(
+          response.data.doctor?.availableSlots,
+        );
         setAvailableSlot(uniqueSlots);
 
         // Set first available day as default selection
@@ -104,7 +108,11 @@ const AppointmentPicker = ({ doctorId, patientId }) => {
             doctorId: doctorId,
             date: date,
           },
-        }
+          headers: {
+            Authorization: `Bearer ${patientDetails.token}`,
+            "Content-Type": "application/json",
+          },
+        },
       );
 
       if (response.data.availableSlots) {
@@ -247,7 +255,9 @@ const AppointmentPicker = ({ doctorId, patientId }) => {
               selectedTime={selectedTime}
               selectedDay={selectedDay}
               doctorId={doctorId}
-              patientId={patientId}
+              doctorName={doctorDetails?.name}
+              patientId={patientDetails?.id}
+              patientDetails={patientDetails}
               onSuccess={() => {
                 setOpenModal(false);
                 setSelectedTime(null);

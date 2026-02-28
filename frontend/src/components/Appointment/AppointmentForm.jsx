@@ -13,8 +13,9 @@ import { formatDateDisplay, formatTime, getDayName } from "../../utils/utils";
 const AppointmentForm = ({
   selectedTime,
   selectedDay,
+  patientDetails,
   doctorId,
-  patientId,
+  patientId = patientDetails?.id,
   doctorName,
   onSuccess,
 }) => {
@@ -28,6 +29,19 @@ const AppointmentForm = ({
       toast("All fields are required to book an appointment !");
       return;
     }
+    console.log(
+      selectedTime,
+      selectedDay,
+      doctorId,
+      patientId,
+      doctorName,
+      patientDetails,
+    );
+
+    if (!patientDetails || !patientDetails?.token || !patientDetails?.id) {
+      toast("Please login to book an appointment !");
+      return;
+    }
     try {
       setLoading(true);
       const response = await axios.post(
@@ -38,7 +52,12 @@ const AppointmentForm = ({
           patientId: patientId,
           doctorId: doctorId,
           reason: reason,
-        }
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${patientDetails.token}`,
+          },
+        },
       );
       if (response.data.appointment) {
         // toastTheme
@@ -48,7 +67,7 @@ const AppointmentForm = ({
       }
       toast(
         response.data.message ||
-          "Something went wrong ! Please try again later.."
+          "Something went wrong ! Please try again later..",
       );
     } catch (error) {
       console.log(error);
@@ -65,7 +84,7 @@ const AppointmentForm = ({
         <h1> Your appointment details are as follows </h1>
         <h1 className="flex items-center gap-2">
           <User className="text-green-500 text-2xl" />{" "}
-          {`Doctor Name : Dr. ${doctorName ? doctorName : "John Doe"}`}
+          {`Doctor Name : Dr. ${doctorName}`}
         </h1>
         <h1 className="flex items-center gap-2">
           <Calendar className="text-red-500" />{" "}
