@@ -49,7 +49,7 @@ const addDoctor = async (req, res) => {
 
     const uploadResult = await uploadToCloudinary(
       req.file.buffer,
-      "healthScan/doctors"
+      "healthScan/doctors",
     );
 
     const existingDoctor = await Doctor.findOne({ email });
@@ -105,7 +105,7 @@ const addDoctorSlot = async (req, res) => {
     }
     //duplicate slot
     const duplicate = doctor.availableSlots.find(
-      (slot) => (slot.day === day && slot.from === from) || slot.to === to
+      (slot) => (slot.day === day && slot.from === from) || slot.to === to,
     );
     if (duplicate) {
       return res
@@ -136,7 +136,7 @@ const updateDoctorSlot = async (req, res) => {
 
     // Remove old slot for the day if it exists
     doctor.availableSlots = doctor.availableSlots.filter(
-      (slot) => slot.day !== day
+      (slot) => slot.day !== day,
     );
 
     // Push the new slot
@@ -261,7 +261,7 @@ const updateDoctor = async (req, res) => {
       // Upload new image
       const uploadResult = await uploadToCloudinary(
         req.file.buffer,
-        "healthScan/doctors"
+        "healthScan/doctors",
       );
 
       updatedData.profilePicture = uploadResult.secure_url;

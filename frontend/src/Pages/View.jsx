@@ -62,7 +62,12 @@ const View = () => {
   return (
     <div>
       <DoctorIntro doctor={doctorDetails} />
-      <AppointmentPicker doctorId={doctorDetails?._id} patientId={patientId} />
+      <AppointmentPicker
+        doctorId={doctorDetails?._id}
+        doctorDetails={doctorDetails}
+        patientId={patientId}
+        patientDetails={userData}
+      />
     </div>
   );
 };

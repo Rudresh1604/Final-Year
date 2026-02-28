@@ -33,15 +33,18 @@ const bookAppointment = async (req, res) => {
 
     // Validate doctor & patient existence
     const doctor = await Doctor.findById(doctorId);
+    if (!doctor) {
+      return res.status(404).json({ message: "Doctor not found" });
+    }
     const patient = await Patient.findById(patientId);
-    if (!doctor || !patient) {
-      return res.status(404).json({ message: "Doctor or Patient not found" });
+    if (!patient) {
+      return res.status(404).json({ message: "Patient not found" });
     }
 
     // Check if doctor is available that day
     const dayOfWeek = appointmentDateTime.format("dddd"); // "Monday"
     const availableSlot = doctor.availableSlots.find(
-      (slot) => slot.day === dayOfWeek
+      (slot) => slot.day === dayOfWeek,
     );
 
     if (!availableSlot) {
@@ -107,7 +110,9 @@ const bookAppointment = async (req, res) => {
     });
   } catch (error) {
     console.error("Error booking appointment:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res
+      .status(500)
+      .json({ message: error?._message || "Internal server error" });
   }
 };
 
@@ -156,7 +161,7 @@ const getAvailableSlots = async (req, res) => {
 
     // 2. Get doctor's working hours for that day
     const availableSlot = doctor.availableSlots.find(
-      (slot) => slot.day === dayOfWeek
+      (slot) => slot.day === dayOfWeek,
     );
 
     if (!availableSlot) {
@@ -340,7 +345,7 @@ const getAppointmentsforthatday = async (req, res) => {
     const d = new Date(date); // Convert input → Date object
 
     const start = new Date(
-      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0)
+      Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0),
     );
     const end = new Date(
       Date.UTC(
@@ -350,8 +355,8 @@ const getAppointmentsforthatday = async (req, res) => {
         23,
         59,
         59,
-        999
-      )
+        999,
+      ),
     );
 
     const appointments = await Appointment.find({
@@ -373,6 +378,7 @@ const getAppointmentsforthatday = async (req, res) => {
   }
 };
 
+// get appointment by doctor or patient id 
 const getAppointments = async (req, res) => {
   try {
     const { id } = req.user;
