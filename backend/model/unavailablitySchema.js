@@ -20,6 +20,7 @@ const unavailabilitySchema = new mongoose.Schema(
         "OTHER",
       ],
       required: true,
+      default: "OTHER",
     },
     title: { type: String, required: true },
     startTime: { type: Date, required: true },
@@ -30,7 +31,7 @@ const unavailabilitySchema = new mongoose.Schema(
     reason: String,
     isActive: { type: Boolean, default: true },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("Unavailability", unavailabilitySchema);

@@ -21,7 +21,7 @@ const Profile = () => {
     }
     try {
       const res = await axios.get(
-        `${API_BASE_URL}/api/${isPatient ? "patients" : "doctors"}/` + userId
+        `${API_BASE_URL}/api/${isPatient ? "patients" : "doctors"}/` + userId,
       );
       console.log(res.data);
       if (res.data?.success) {
@@ -29,7 +29,7 @@ const Profile = () => {
         else setUserDetails(res.data?.doctor);
       } else {
         toast("Something went wrong ! Please login");
-        // navigate(`/`);
+        navigate(`/`);
       }
     } catch (error) {
       console.log(error);

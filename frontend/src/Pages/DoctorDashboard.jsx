@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AllAppointment from "../components/DoctorDashboard/AllAppointment";
 import AppointmentCalendar from "../components/DoctorDashboard/Calender/AppointmentCalender";
 import HeaderCard from "../components/DoctorDashboard/HeaderCard";
@@ -8,6 +8,7 @@ import {
   Calendar,
   TriangleAlert,
 } from "lucide-react/dist/cjs/lucide-react";
+import axios from "axios";
 
 const doctorCards = [
   {
@@ -34,11 +35,38 @@ const doctorCards = [
 ];
 
 const DoctorDashboard = () => {
+  const userData = JSON.parse(localStorage.getItem("userData"));
+  const [userDetails, setUserDetails] = useState(null);
+  const userId = userData?._id || userData?.id;
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+  const fetchDetails = async () => {
+    if (!userId) {
+      return;
+    }
+    try {
+      const res = await axios.get(`${API_BASE_URL}/api/doctors/` + userId);
+      console.log(res.data?.doctor);
+      if (res.data?.success) {
+        setUserDetails(res.data?.doctor);
+      } else {
+        toast("Something went wrong ! Please login");
+        navigate(`/`);
+      }
+    } catch (error) {
+      console.log(error);
+      toast(error.message);
+    }
+  };
+
+  useEffect(() => {
+    userId && fetchDetails();
+  }, [userId]);
   return (
     <div className="flex flex-col md:px-3 lg:px-5 rounded-2xl">
       <div className="my-2 mt-7 lg:my-5 mx-3 lg:mx-5">
         <h1 className="text-2xl lg:text-3xl font-semibold text-gray-600">
-          Welcome,Admin
+          Welcome, {userDetails?.name}
         </h1>
         <p>
           Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nostrum,
@@ -47,7 +75,7 @@ const DoctorDashboard = () => {
       </div>
       <HeaderCard cards={doctorCards} className={"lg:ml-6"} />
       <div className="flex flex-col md:flex-row w-full">
-        <AppointmentCalendar />
+        <AppointmentCalendar doctorId={userDetails?._id} />
         <div className="flex flex-col gap-2 lg:gap-1 items-center">
           <ReminderComponent />
           <ReminderComponent />

@@ -16,7 +16,7 @@ const AllAppointment = () => {
           headers: {
             Authorization: `Bearer ${selector.user.token}`,
           },
-        }
+        },
       );
       // console.log(response.data);
       setAppointments(response.data.appointments || []);
@@ -24,7 +24,6 @@ const AllAppointment = () => {
       console.error(error);
     }
   };
-
 
   useEffect(() => {
     fetchAppointments();
@@ -49,7 +48,9 @@ const AllAppointment = () => {
           </thead>
           <tbody>
             {appointments.length == 0 && (
-              <h1>Sorry No Appointments available</h1>
+              <tr>
+                <td>Sorry No Appointments available</td>
+              </tr>
             )}
             {appointments.length > 0 &&
               appointments?.map((item, index) => (
@@ -82,8 +83,8 @@ const AllAppointment = () => {
                         item?.status == "Cancelled"
                           ? "bg-red-400"
                           : item?.status == "Pending"
-                          ? "bg-yellow-100"
-                          : "bg-green-200"
+                            ? "bg-yellow-100"
+                            : "bg-green-200"
                       } rounded-2xl text-center w-auto lg:w-1/2`}
                     >
                       {item?.status}{" "}
