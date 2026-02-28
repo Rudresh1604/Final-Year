@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Doctor = require("../model/doctorSchema");
 const bcrypt = require("bcryptjs");
+const Unavailability = require("../model/unavailablitySchema");
 const { uploadToCloudinary } = require("../utils/cloudinaryUpload");
 const { cloudinary } = require("../config/cloudinary");
 
@@ -87,14 +88,27 @@ const addDoctor = async (req, res) => {
 // add slot
 const addDoctorSlot = async (req, res) => {
   try {
-    const { doctorId, day, from, to } = req.body;
+    let { doctorId, date, day, from, to } = req.body;
+    console.log(req.body);
 
-    if (!doctorId || !day || !from || !to) {
+    if (!doctorId || !date || !from || !to) {
       return res.status(400).json({
         success: false,
         message:
           "Fields doctorId, day, from, and to are required.please enter them",
       });
+    }
+    const weekDays = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
+    if (!day) {
+      day = weekDays[new Date(date).getDay()];
     }
 
     const doctor = await Doctor.findById(doctorId);
@@ -105,7 +119,7 @@ const addDoctorSlot = async (req, res) => {
     }
     //duplicate slot
     const duplicate = doctor.availableSlots.find(
-      (slot) => (slot.day === day && slot.from === from) || slot.to === to,
+      (slot) => slot.day === day && slot.from === from && slot.to === to,
     );
     if (duplicate) {
       return res
@@ -121,6 +135,8 @@ const addDoctorSlot = async (req, res) => {
       slots: doctor.availableSlots,
     });
   } catch (error) {
+    console.log(error);
+
     return res.status(500).json({ success: false, error: error.message });
   }
 };
@@ -317,38 +333,55 @@ const createUnavailability = async (req, res) => {
   try {
     const {
       doctorId,
-      type,
-      title,
-      startTime,
-      endTime,
+      unAvailabilitySlot,
       recurring,
       recurringDays,
       recurringEndDate,
       reason,
     } = req.body;
 
-    const unavailability = new Unavailability({
+    // Validation
+    if (
+      !doctorId ||
+      !unAvailabilitySlot ||
+      !Array.isArray(unAvailabilitySlot) ||
+      unAvailabilitySlot.length === 0
+    ) {
+      return res.status(400).json({
+        message: "Doctor ID and Unavailability slots are required",
+      });
+    }
+
+    // Prepare all unavailability documents
+    const unavailabilityDocuments = unAvailabilitySlot.map((element) => ({
       doctorId,
-      type,
-      title,
-      startTime: new Date(startTime),
-      endTime: new Date(endTime),
+      type: element?.type,
+      title: element?.title,
+      startTime: new Date(element?.startTime),
+      endTime: new Date(element?.endTime),
       recurring: recurring || false,
       recurringDays: recurring ? recurringDays : [],
       recurringEndDate: recurringEndDate ? new Date(recurringEndDate) : null,
-      reason,
+      reason: element?.reason || reason,
       isActive: true,
-    });
+    }));
 
-    await unavailability.save();
+    // Insert all documents at once
+    const savedUnavailabilities = await Unavailability.insertMany(
+      unavailabilityDocuments,
+    );
 
     res.status(201).json({
       message: "Unavailability created successfully",
-      unavailability,
+      count: savedUnavailabilities.length,
+      data: savedUnavailabilities,
     });
   } catch (error) {
     console.error("Error creating unavailability:", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 };
 

@@ -13,3 +13,10 @@ export const getDayName = (dateString) => {
 export const formatTime = (dateString) => {
   return moment(dateString).format("hh:mm A");
 };
+
+export const combineDateAndTime = (date, timeString) => {
+  const [hours, minutes] = timeString.split(":");
+  const newDate = new Date(date);
+  newDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+  return newDate.toISOString();
+};
