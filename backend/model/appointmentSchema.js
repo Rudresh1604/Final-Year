@@ -9,10 +9,12 @@ const appointmentSchema = new mongoose.Schema(
     endTime: { type: Date }, // changed from String → Date
     status: { type: String, enum: ["Scheduled", "Completed", "Cancelled"] },
     reason: String,
+    meetLink: String,
+    callId: String,
 
     report: { type: mongoose.Schema.Types.ObjectId, ref: "Report" },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Appointment = mongoose.model("Appointment", appointmentSchema);
