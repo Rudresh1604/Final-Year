@@ -2,9 +2,21 @@ const mongoose = require("mongoose");
 
 const reportSchema = new mongoose.Schema(
   {
-    appointmentId: { type: mongoose.Schema.Types.ObjectId, ref: "Appointment" },
+    appointmentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Appointment",
+      default: null,
+    },
     patientId: { type: mongoose.Schema.Types.ObjectId, ref: "Patient" },
-    doctorId: { type: mongoose.Schema.Types.ObjectId, ref: "Doctor" },
+    doctorId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Doctor",
+      default: null,
+    },
+    isAIGenerated: {
+      type: Boolean,
+      default: false,
+    },
 
     diseases: { type: String, required: true },
     description: { type: String, required: true },
@@ -15,7 +27,7 @@ const reportSchema = new mongoose.Schema(
         medicine: String,
         amount: String,
         time: String,
-        days:Number,
+        days: Number,
       },
     ],
     diet: String,
