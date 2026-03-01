@@ -1,74 +1,92 @@
+import React, { useEffect, useState } from "react";
+import AppointmentHeader from "../components/AppointmentDetails/AppointmentHeader";
+import ActionSection from "../components/AppointmentDetails/ActionSection";
+import ReportSection from "../components/AppointmentDetails/ReportSection";
+import PatientInfo from "../components/AppointmentDetails/PatientInfo";
+import DoctorInfo from "../components/AppointmentDetails/DoctorInfo";
+import MeetingCard from "../components/AppointmentDetails/MeetingCard";
 import axios from "axios";
-import { Clock } from "lucide-react";
-import moment from "moment";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function AppointmentDetails() {
-  const { appointmentId } = useParams();
-  const navigate = useNavigate();
 
+
+const AppointmentDetails = () => {
+  const params = useParams();
+  const navigate=useNavigate()
   const [appointment, setAppointment] = useState(null);
-  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-  const selector = useSelector((state) => state.auth);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const fetchAppointment = async () => {
+
+    // console.log("hello");
+
+    async function fetchAppointment ()  {
+      setLoading(true);
       const res = await axios.get(
-        `${API_BASE_URL}/api/appointment/${appointmentId}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/appointment/${params.appointmentId}`,
         {
           headers: {
-            Authorization: `Bearer ${selector.user.token}`,
+            Authorization: `Bearer ${JSON.parse(
+              localStorage.getItem("userData")
+            ).token}`,
           },
-        },
+        }
       );
-
-      console.log(res.data);
-      const data = res.data;
-      setAppointment(data.appointment);
+      if (res.data.success) {
+        setAppointment(res.data.appointment);
+      }
+      setLoading(false);
     };
 
     fetchAppointment();
-  }, [appointmentId]);
+  }, [params.appointmentId]);
 
-  if (!appointment) return <div>Loading appointment...</div>;
+  if (loading) {
+    return (
+      <div className="p-10 text-center">
+        <h2 className="text-xl font-semibold">Loading...</h2>
+      </div>
+    );
+  }
 
-  const joinMeeting = () => {
-    navigate(`/meet/${appointment.callId}`, {
-      state: {
-        appointment,
-      },
-    });
-  };
+  if (!loading && !appointment)
+    return (
+      <div className="p-10 text-center">
+        <h2 className="text-xl font-semibold">No report data found</h2>
+        <button
+          onClick={() => navigate("/")}
+          className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
+        >
+          Go Back
+        </button>
+      </div>
+    );
 
   return (
-    <div className="mx-5 my-4 p-3 border border-gray-200 rounded-lg flex flex-col justify-center items-center gap-3 bg-white">
-      <h2 className="text-xl font-bold">Appointment Details</h2>
-      <p>Doctor: {appointment.doctorId}</p>
-      <p>Patient: {appointment.patientId}</p>
-      <p> Date : {moment(appointment.time).format("DD/MM/YYYY")}</p>
-      <p className="flex items-center gap-2">
-        <span className="flex items-center gap-2">
-          <Clock className="text-sm max-sm:h-4 max-sm:w-4" /> Start Time :
-        </span>
-        {moment(appointment.time).format("hh:mm A")}
-      </p>
-      <p className="flex items-center gap-2">
-        <span className="flex items-center gap-2">
-          <Clock /> End Time :
-        </span>
+    <div className="min-h-screen bg-slate-50 p-6">
+      <div className="max-w-6xl mx-auto space-y-6">
+        {/* HEADER */}
+        <AppointmentHeader appointment={appointment} />
 
-        {moment(appointment.endTime).format("hh:mm A")}
-      </p>
+        {/* MAIN GRID */}
+        <div className="grid lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <MeetingCard appointment={appointment} />
+            <PatientInfo patient={appointment.patientId} />
+          </div>
 
-      <h1> Reason : {appointment?.reason} </h1>
-      <p>Status : {appointment?.status} </p>
-      <button
-        className="border cursor-pointer border-blue-600 text-white bg-blue-500 p-2 rounded-lg"
-        onClick={joinMeeting}
-      >
-        Join Meeting
-      </button>
+          <div className="space-y-6">
+            <DoctorInfo doctor={appointment.doctorId} />
+            {appointment.status !== "Completed" ? (
+              <ActionSection status={appointment.status} />
+            ) : (
+              <ReportSection report={appointment.report} />
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default AppointmentDetails;
