@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import PatientAppointments from "../components/PatientDashboard/AllAppointmentsViewer";
 import HeaderCard from "../components/DoctorDashboard/HeaderCard";
 import {
+  Brain,
   Calendar,
   FileText,
   History,
@@ -55,6 +56,17 @@ const PatientDashboard = () => {
     }
   };
 
+  const handleViewMedicalAi = () => {
+    if (patientId) {
+      navigate(`/medical-ai/${patientId}`);
+    } else {
+      toast.warning("Patient ID not found!", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+    }
+  };
   const fetchDetails = async () => {
     if (!patientId) {
       return;
@@ -94,20 +106,29 @@ const PatientDashboard = () => {
               "Here's a summary of your health journey."}{" "}
           </p>
         </div>
-
-        <button
-          onClick={handleViewMedicalHistory}
-          className="flex items-center justify-center gap-2 bg-green-500 text-white 
-          px-4 py-2 rounded-lg font-medium text-sm sm:text-base w-full sm:w-auto
-          hover:bg-green-600 active:scale-95 transition-all duration-200 cursor-pointer"
-        >
-          <Stethoscope size={18} />
-          <span>Medical History</span>
-        </button>
+        <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-3">
+          <button
+            onClick={handleViewMedicalHistory}
+            className="flex items-center justify-center gap-2 bg-green-500 text-white px-5  py-2.5 
+            rounded-xl font-medium text-sm sm:text-base w-full sm:w-auto shadow-sm hover:shadow-md
+            hover:bg-green-600 active:scale-95 transition-all duration-200 cursor-pointer"
+          >
+            <Stethoscope size={18} />
+            <span>Medical History</span>
+          </button>
+          <button
+            onClick={handleViewMedicalAi}
+            className="flex items-center justify-center gap-2 bg-blue-500 text-white px-5 py-2.5 
+            rounded-xl font-medium text-sm sm:text-base w-full sm:w-auto shadow-sm hover:shadow-md
+            hover:bg-purple-600 active:scale-95 transition-all duration-200 cursor-pointer"
+          >
+            <Brain size={18} />
+            <span>Health AI Assistant</span>
+          </button>
+        </div>
       </div>
 
       <HeaderCard cards={patientCards} className={"lg:ml-1"} />
-
       <div className="flex flex-col items-center w-full">
         <PatientAppointments />
       </div>
