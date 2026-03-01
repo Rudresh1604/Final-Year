@@ -3,7 +3,7 @@ import InfoRow from "../components/Report/InfoRow";
 import html2pdf from "html2pdf.js";
 import InfoBlock from "../components/Report/InfoBlock";
 import PrescriptionTable from "../components/Report/PrescriptionTable";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 
 const ReportPage = () => {
@@ -82,7 +82,13 @@ const ReportPage = () => {
           <InfoRow label="Gender" value={reportData.patientId.gender} />
           <InfoRow
             label="Date of Checkup"
-            value={new Date(reportData.appointmentId.date).toISOString().split('T')[0]}
+            value={
+              reportData.appointmentId?.date
+                ? new Date(reportData.appointmentId.date)
+                    .toISOString()
+                    .split("T")[0]
+                : new Date().toLocaleDateString()
+            }
           />
         </div>
 
@@ -92,24 +98,16 @@ const ReportPage = () => {
         </h2>
         <div>
           <InfoRow label="Disease" value={reportData.diseases} />
-          <InfoBlock
-            label="Description"
-            value={reportData.description}
-          />
+          <InfoBlock label="Description" value={reportData.description} />
           <PrescriptionTable prescriptions={reportData.medicines} />
-          <InfoBlock
-            label="Precautions"
-            value={reportData.precautions}
-          />
+          <InfoBlock label="Precautions" value={reportData.precautions} />
           <InfoBlock
             label="Recommended Diet"
             value={reportData.diet || "No specific diet recommended"}
           />
           <InfoBlock
             label="Recommended Workout"
-            value={
-              reportData.workout || "No specific workout recommended"
-            }
+            value={reportData.workout || "No specific workout recommended"}
           />
         </div>
 
@@ -118,8 +116,18 @@ const ReportPage = () => {
           <h3 className="text-lg font-semibold border-b pb-2 mb-3 text-gray-700">
             Doctor's Details
           </h3>
-          <InfoRow label="Doctor's Name" value={reportData.doctorId.name} />
-          <InfoRow label="Next Session Date" value={new Date(reportData.nextVisit).toISOString().split('T')[0] || "None"} />
+          <InfoRow
+            label="Doctor's Name"
+            value={reportData.doctorId?.name || "AI Generated"}
+          />
+          <InfoRow
+            label="Next Session Date"
+            value={
+              reportData.nextVisit
+                ? new Date(reportData.nextVisit).toISOString().split("T")[0]
+                : "None"
+            }
+          />
           <InfoBlock label="Notes" value={reportData.notes} />
         </div>
       </section>
