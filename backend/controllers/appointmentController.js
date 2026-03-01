@@ -445,6 +445,18 @@ const getAppointments = async (req, res) => {
   }
 };
 
+// get streeam token
+const getStreamToken = async (req, res) => {
+  const { userId } = req.params;
+
+  const token = streamClient.generateUserToken({
+    user_id: userId,
+    iat: Math.floor(Date.now() / 1000) - 60, // Account for clock drift
+  });
+
+  res.json({ token });
+};
+
 module.exports = {
   bookAppointment,
   cancelAppointment,
@@ -452,4 +464,5 @@ module.exports = {
   getAvailableSlots,
   getAppointmentsforthatday,
   getAppointments,
+  getStreamToken,
 };

@@ -53,7 +53,11 @@ function App() {
               />
               <Route path="/profile" element={<Profile />} />
               <Route path="/view/doctors/:doctorId" element={<View />} />
-
+              <Route
+                path="/appointment/:appointmentId"
+                element={<AppointmentDetails />}
+              />
+              <Route path="/meet/:callId" element={<MeetingPage />} />
               <Route path="/disease" element={<DiseaseManagement />} />
               <Route path="/" element={<HomePage />} />
               <Route path="/report/:reportId" element={<ReportPage />} />

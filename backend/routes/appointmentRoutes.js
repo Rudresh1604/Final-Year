@@ -5,6 +5,7 @@ const {
   getAvailableSlots,
   getAppointmentsforthatday,
   getAppointments,
+  getStreamToken,
 } = require("../controllers/appointmentController");
 
 const express = require("express");
@@ -16,5 +17,6 @@ router.delete("/cancel/:id", cancelAppointment);
 router.get("/day", getAppointmentsforthatday);
 router.get("/all", getAppointments);
 router.get("/:id", getAppointmentById);
+router.get("/stream/token/:userId", getStreamToken);
 
 module.exports = router;
