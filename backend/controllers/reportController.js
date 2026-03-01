@@ -21,8 +21,6 @@ const createReport = async (req, res) => {
       isAIGenerated,
     } = req.body;
 
-    console.log(req.body);
-
     if (!patientId) {
       return res.status(400).json({
         success: false,
