@@ -110,36 +110,50 @@ const MedicalAI = () => {
     fetchSymptoms();
   }, []);
 
-  const handleGenerateReport = () => {
-    if (!result) return;
+  const handleGenerateReport = async () => {
+  if (!result) return;
 
-    const reportData = {
-      patient: {
-        name: patientName || "N/A",
-        age: patientAge || "N/A",
-        gender: "N/A",
-        dateOfCheckup: new Date().toLocaleDateString(),
-      },
-      medical: {
-        disease: result.predicted_disease,
+  try {
+    toast.info("Saving AI report...");
+    const patientId = "690f793c63dcb98c723ee140"
+
+    if (!patientId) {
+      toast.error("Patient not logged in");
+      return;
+    }
+
+    const response = await axios.post(
+      `${API_URL}/api/reports/add`,
+      {
+        patientId,
+        diseases: result.predicted_disease,
         description: result.description,
-        precautions: (result.precautions || []).join(", "),
-        diet: (result.diet || []).join(", "),
-        workout: (result.workout || []).join(", "),
-      },
-      prescriptions: (result.medications || []).map((m) => ({
-        medicine: m,
-        time: "As prescribed",
-        amount: "N/A",
-      })),
-      doctorName: "AI Medical System",
-      nextSession: "N/A",
-      notes: "AI generated report. Please consult a doctor.",
-    };
+        precautions: result.precautions?.join(", "),
+        medicines: (result.medications || []).map((m) => ({
+          medicine: m,
+          amount: "N/A",
+          time: "As prescribed",
+          days: 1,
+        })),
+        diet: result.diet?.join(", "),
+        workout: result.workout?.join(", "),
+        notes: "AI generated report. Please consult a doctor.",
+        nextVisit: null,
+        isAIGenerated: true,
+      }
+    );
 
-    navigate("/report", { state: reportData });
-  };
+    toast.success("Report saved successfully!");
 
+    const reportId = response.data.report._id;
+
+    // Navigate using ID
+    navigate(`/report/${reportId}`);
+
+  } catch (error) {
+    toast.error(error.response?.data?.message || "Failed to save report");
+  }
+};
   // Format symptom for display
   const formatSymptom = (name) => {
     return name.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
