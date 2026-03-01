@@ -53,26 +53,29 @@ const MedicalAI = () => {
   const { patientId } = useParams();
 
   useEffect(() => {
-  const fetchPatient = async () => {
-    try {
-      if (!patientId) return;
-      const res = await axios.get(
-        `${API_URL}/api/patients/${patientId}`
-      );
+    const fetchPatient = async () => {
+      try {
+        if (!patientId) return;
+        const res = await axios.get(`${API_URL}/api/patients/${patientId}`);
 
-      if (res.data?.success) {
-        const patient = res.data.patient;
-        setPatientName(patient.name || "");
-        setPatientAge(patient.age || "");
-        setPatientLocation(patient.address.city || "");
+        if (res.data?.success) {
+          const patient = res.data.patient;
+          setPatientName(patient.name || "");
+          setPatientAge(patient.age || "");
+          setPatientLocation(patient.address?.city || "");
+        }
+      } catch (err) {
+        toast.error("Failed to load patient data.", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+        console.log("Failed to fetch patient", err);
       }
-    } catch (err) {
-      console.log("Failed to fetch patient", err);
-    }
-  };
+    };
 
-  fetchPatient();
-}, [patientId]);
+    fetchPatient();
+  }, [patientId]);
 
   // Fetch symptoms from Flask API
   useEffect(() => {
@@ -134,17 +137,26 @@ const MedicalAI = () => {
   }, []);
 
   const handleGenerateReport = async () => {
-    if (!result) return;
+    if (!result) {
+      toast.warning("Please generate AI result first.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return;
+    }
+
+    if (!patientId) {
+      toast.error("Patient not logged in", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return;
+    }
+    const toastId = toast.loading("Saving AI report...");
 
     try {
-      toast.info("Saving AI report...");
-      // const patientId = "690f793c63dcb98c723ee140"
-
-      if (!patientId) {
-        toast.error("Patient not logged in");
-        return;
-      }
-
       const response = await axios.post(`${API_URL}/api/reports/add`, {
         patientId,
         diseases: result.predicted_disease,
@@ -163,14 +175,27 @@ const MedicalAI = () => {
         isAIGenerated: true,
       });
 
-      toast.success("Report saved successfully!");
+      toast.update(toastId, {
+        render: "Report saved successfully!",
+        type: "success",
+        position: "top-right",
+        isLoading: false,
+        autoClose: 2000,
+        theme: "colored",
+      });
 
       const reportId = response.data.report._id;
-
-      // Navigate using ID
       navigate(`/report/${reportId}`);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to save report");
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to save report. Please try again.",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        },
+      );
     }
   };
   // Format symptom for display
