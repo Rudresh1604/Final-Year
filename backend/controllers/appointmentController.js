@@ -2,26 +2,18 @@ const Appointment = require("../model/appointmentSchema");
 const Doctor = require("../model/doctorSchema");
 const Patient = require("../model/patientSchema");
 const Unavailability = require("../model/unavailablitySchema");
+const streamClient = require("../utils/StreamClient.js");
+
+const { v4: uuidv4 } = require("uuid");
 const moment = require("moment");
 
 const bookAppointment = async (req, res) => {
   try {
     const { doctorId, patientId, day, time, reason } = req.body;
 
-    console.log("Booking appointment with data:", {
-      doctorId,
-      patientId,
-      day,
-      time,
-      reason,
-    });
-
-    // Extract time from the time object
-    const startTime = time?.from; // "2025-08-04T10:30:00.000Z"
-    const endTime = time?.to; // "2025-08-04T11:00:00.000Z"
-
-    // Extract date from the day object
-    const appointmentDate = day?.from; // "2025-08-04T10:00:00Z"
+    const startTime = time?.from;
+    const endTime = time?.to;
+    const appointmentDate = day?.from;
 
     if (!startTime || !endTime || !appointmentDate) {
       return res.status(400).json({ message: "Invalid time or day data" });
@@ -31,18 +23,20 @@ const bookAppointment = async (req, res) => {
     const appointmentEndTime = moment(endTime);
     const appointmentDateOnly = moment(appointmentDate).startOf("day");
 
-    // Validate doctor & patient existence
+    // Validate doctor & patient
     const doctor = await Doctor.findById(doctorId);
     if (!doctor) {
       return res.status(404).json({ message: "Doctor not found" });
     }
+
     const patient = await Patient.findById(patientId);
     if (!patient) {
       return res.status(404).json({ message: "Patient not found" });
     }
 
-    // Check if doctor is available that day
-    const dayOfWeek = appointmentDateTime.format("dddd"); // "Monday"
+    // Check doctor availability
+    const dayOfWeek = appointmentDateTime.format("dddd");
+
     const availableSlot = doctor.availableSlots.find(
       (slot) => slot.day === dayOfWeek,
     );
@@ -53,11 +47,9 @@ const bookAppointment = async (req, res) => {
         .json({ message: "Doctor not available on this day" });
     }
 
-    // Convert doctor's slot times to moments for comparison
     const slotFrom = moment(availableSlot.from);
     const slotTo = moment(availableSlot.to);
 
-    // Check if requested time is within doctor's working hours
     if (
       appointmentDateTime.isBefore(slotFrom) ||
       appointmentEndTime.isAfter(slotTo)
@@ -67,7 +59,7 @@ const bookAppointment = async (req, res) => {
       });
     }
 
-    // Check for existing appointment conflict
+    // Check appointment conflict
     const existingAppointment = await Appointment.findOne({
       doctorId,
       status: { $in: ["Scheduled"] },
@@ -83,15 +75,56 @@ const bookAppointment = async (req, res) => {
       return res.status(409).json({ message: "Time slot already booked" });
     }
 
-    // Create new appointment
+    /*
+      ==============================
+      STREAM VIDEO CALL CREATION
+      ==============================
+    */
+    // Create stream users first
+    await streamClient.upsertUsers([
+      {
+        id: doctorId.toString(),
+        name: doctor.name,
+      },
+      {
+        id: patientId.toString(),
+        name: patient.name,
+      },
+    ]);
+
+    // Create video call
+    const callId = uuidv4();
+    const call = streamClient.video.call("default", callId);
+
+    await call.create({
+      data: {
+        created_by_id: patientId.toString(),
+        members: [
+          { user_id: doctorId.toString() },
+          { user_id: patientId.toString() },
+        ],
+        starts_at: appointmentDateTime.toISOString(),
+      },
+    });
+
+    const meetLink = `https://localhost:5173/meet/${callId}`;
+
+    /*
+      ==============================
+      CREATE APPOINTMENT
+      ==============================
+    */
+
     const newAppointment = new Appointment({
       doctorId,
       patientId,
-      date: appointmentDateOnly.toDate(), // Store just the date part
-      time: appointmentDateTime.toDate(), // Store as Date object
-      endTime: appointmentEndTime.toDate(), // Store as Date object
+      date: appointmentDateOnly.toDate(),
+      time: appointmentDateTime.toDate(),
+      endTime: appointmentEndTime.toDate(),
       status: "Scheduled",
       reason,
+      meetLink: meetLink,
+      callId: callId,
     });
 
     await newAppointment.save();
@@ -100,19 +133,21 @@ const bookAppointment = async (req, res) => {
     doctor.appointments.push(newAppointment._id);
     doctor.patients.addToSet(patientId);
     await doctor.save();
-    patient.appointments.push(newAppointment._id);
 
+    patient.appointments.push(newAppointment._id);
     await patient.save();
 
     return res.status(201).json({
       message: "Appointment booked successfully",
       appointment: newAppointment,
+      meetLink,
     });
   } catch (error) {
     console.error("Error booking appointment:", error);
-    return res
-      .status(500)
-      .json({ message: error?._message || "Internal server error" });
+
+    return res.status(500).json({
+      message: error?.message || "Internal server error",
+    });
   }
 };
 
@@ -378,7 +413,7 @@ const getAppointmentsforthatday = async (req, res) => {
   }
 };
 
-// get appointment by doctor or patient id 
+// get appointment by doctor or patient id
 const getAppointments = async (req, res) => {
   try {
     const { id } = req.user;
