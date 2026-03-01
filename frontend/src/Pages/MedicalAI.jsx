@@ -52,6 +52,28 @@ const MedicalAI = () => {
   const navigate = useNavigate();
   const { patientId } = useParams();
 
+  useEffect(() => {
+  const fetchPatient = async () => {
+    try {
+      if (!patientId) return;
+      const res = await axios.get(
+        `${API_URL}/api/patients/${patientId}`
+      );
+
+      if (res.data?.success) {
+        const patient = res.data.patient;
+        setPatientName(patient.name || "");
+        setPatientAge(patient.age || "");
+        setPatientLocation(patient.address.city || "");
+      }
+    } catch (err) {
+      console.log("Failed to fetch patient", err);
+    }
+  };
+
+  fetchPatient();
+}, [patientId]);
+
   // Fetch symptoms from Flask API
   useEffect(() => {
     const fetchSymptoms = async () => {
