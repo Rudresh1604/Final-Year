@@ -22,6 +22,7 @@ import MedicalHistorySummary from "./Pages/MedicalHistorySummary";
 
 import View from "./Pages/View";
 import Profile from "./Pages/Profile";
+import AppointmentDetails from "./Pages/AppointmentDetails";
 
 function App() {
   return (
@@ -62,6 +63,7 @@ function App() {
                 path="medical-summary/:patientId"
                 element={<MedicalHistorySummary />}
               />
+              <Route path="/appointment/:appointmentId" element={<AppointmentDetails />} />
             </Routes>
           </div>
           <FooterComponent />

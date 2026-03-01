@@ -315,8 +315,9 @@ const getAppointmentById = async (req, res) => {
       return res.status(500).json({ message: "Invalid Appointment" });
     }
 
-    const appointment = await Appointment.findById(id);
-
+    const appointment = await Appointment.findById(id)
+      .populate("patientId", "name email phone")
+      .populate("doctorId", "name specialization phone");
     if (!appointment) {
       return res.status(409).json({ message: "Appointment not available" });
     }
@@ -378,7 +379,7 @@ const getAppointmentsforthatday = async (req, res) => {
   }
 };
 
-// get appointment by doctor or patient id 
+// get appointment by doctor or patient id
 const getAppointments = async (req, res) => {
   try {
     const { id } = req.user;
