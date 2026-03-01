@@ -63,7 +63,7 @@ function App() {
                 path="medical-summary/:patientId"
                 element={<MedicalHistorySummary />}
               />
-              <Route path="/appointment" element={<AppointmentDetails />} />
+              <Route path="/appointment/:appointmentId" element={<AppointmentDetails />} />
             </Routes>
           </div>
           <FooterComponent />

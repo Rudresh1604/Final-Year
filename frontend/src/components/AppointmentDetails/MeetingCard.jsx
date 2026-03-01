@@ -38,7 +38,7 @@ const MeetingCard = ({ appointment }) => {
           </div>
 
           <a
-            href={appointment.meetingLink}
+            // href={appointment.meetingLink}
             target="_blank"
             rel="noreferrer"
             className="block w-full sm:w-auto mx-auto bg-blue-600 text-white px-6 py-3 rounded-xl text-lg font-medium hover:opacity-90 transition"

@@ -1,38 +1,67 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import AppointmentHeader from "../components/AppointmentDetails/AppointmentHeader";
 import ActionSection from "../components/AppointmentDetails/ActionSection";
 import ReportSection from "../components/AppointmentDetails/ReportSection";
 import PatientInfo from "../components/AppointmentDetails/PatientInfo";
 import DoctorInfo from "../components/AppointmentDetails/DoctorInfo";
 import MeetingCard from "../components/AppointmentDetails/MeetingCard";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 
-const appointment = {
-  _id: "65f1ab2345cde67890123456",
-  patientId: {
-    _id: "p123",
-    name: "Rahul Sharma",
-    email: "rahul.sharma@email.com",
-    phone: "+91 9876543210",
-    age: 32,
-    gender: "Male",
-  },
-  doctorId: {
-    _id: "d456",
-    name: "Dr. Priya Mehta",
-    specialization: "Cardiologist",
-    phone: "+91 9988776655",
-    hospital: "City Care Hospital, Pune",
-  },
-  date: new Date(),
-  time: new Date("2026-03-05T10:00:00"),
-  endTime: new Date("2026-03-05T10:30:00"),
-  status: "Completed",
-  reason: "Chest discomfort and mild shortness of breath for 2 days",
-  report: "",
-  createdAt: new Date("2026-03-01T09:00:00"),
-};
+
 
 const AppointmentDetails = () => {
+  const params = useParams();
+  const navigate=useNavigate()
+  const [appointment, setAppointment] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+
+    // console.log("hello");
+
+    async function fetchAppointment ()  {
+      setLoading(true);
+      const res = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/appointment/${params.appointmentId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${JSON.parse(
+              localStorage.getItem("userData")
+            ).token}`,
+          },
+        }
+      );
+      if (res.data.success) {
+        setAppointment(res.data.appointment);
+      }
+      setLoading(false);
+    };
+
+    fetchAppointment();
+  }, [params.appointmentId]);
+
+  if (loading) {
+    return (
+      <div className="p-10 text-center">
+        <h2 className="text-xl font-semibold">Loading...</h2>
+      </div>
+    );
+  }
+
+  if (!loading && !appointment)
+    return (
+      <div className="p-10 text-center">
+        <h2 className="text-xl font-semibold">No report data found</h2>
+        <button
+          onClick={() => navigate("/")}
+          className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
+        >
+          Go Back
+        </button>
+      </div>
+    );
+
   return (
     <div className="min-h-screen bg-slate-50 p-6">
       <div className="max-w-6xl mx-auto space-y-6">
