@@ -18,7 +18,7 @@ import {
 import React, { useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const FLASK_API_URL = import.meta.env.VITE_FLASK_URL;
 const API_URL = import.meta.env.VITE_BACKEND_URL;
@@ -50,6 +50,7 @@ const MedicalAI = () => {
 
   const inputRef = useRef(null);
   const navigate = useNavigate();
+  const { patientId } = useParams();
 
   // Fetch symptoms from Flask API
   useEffect(() => {
@@ -111,20 +112,18 @@ const MedicalAI = () => {
   }, []);
 
   const handleGenerateReport = async () => {
-  if (!result) return;
+    if (!result) return;
 
-  try {
-    toast.info("Saving AI report...");
-    const patientId = "690f793c63dcb98c723ee140"
+    try {
+      toast.info("Saving AI report...");
+      // const patientId = "690f793c63dcb98c723ee140"
 
-    if (!patientId) {
-      toast.error("Patient not logged in");
-      return;
-    }
+      if (!patientId) {
+        toast.error("Patient not logged in");
+        return;
+      }
 
-    const response = await axios.post(
-      `${API_URL}/api/reports/add`,
-      {
+      const response = await axios.post(`${API_URL}/api/reports/add`, {
         patientId,
         diseases: result.predicted_disease,
         description: result.description,
@@ -140,20 +139,18 @@ const MedicalAI = () => {
         notes: "AI generated report. Please consult a doctor.",
         nextVisit: null,
         isAIGenerated: true,
-      }
-    );
+      });
 
-    toast.success("Report saved successfully!");
+      toast.success("Report saved successfully!");
 
-    const reportId = response.data.report._id;
+      const reportId = response.data.report._id;
 
-    // Navigate using ID
-    navigate(`/report/${reportId}`);
-
-  } catch (error) {
-    toast.error(error.response?.data?.message || "Failed to save report");
-  }
-};
+      // Navigate using ID
+      navigate(`/report/${reportId}`);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to save report");
+    }
+  };
   // Format symptom for display
   const formatSymptom = (name) => {
     return name.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -339,29 +336,6 @@ const MedicalAI = () => {
 
     setLoading(true);
     setResult(null);
-    //     await fetch(`${API_URL}/api/reports/add`, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({
-    //     appointmentId,
-    //     patientId,
-    //     doctorId,
-
-    //     diseases: [data.predicted_disease],
-    //     description: data.description,
-    //     precautions: data.precautions,
-    //     medicines: data.medications?.map((m) => ({
-    //       name: m,
-    //       dosage: "N/A",
-    //       duration: "N/A"
-    //     })),
-
-    //     diet: data.diet,
-    //     workout: data.workout,
-    //     notes: "AI generated report",
-    //     nextVisit: null,
-    //   }),
-    // });
 
     try {
       toast.info("Predicting disease...");
