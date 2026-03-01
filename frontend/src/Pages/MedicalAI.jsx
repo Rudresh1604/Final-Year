@@ -18,7 +18,7 @@ import {
 import React, { useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const FLASK_API_URL = import.meta.env.VITE_FLASK_URL;
 const API_URL = import.meta.env.VITE_BACKEND_URL;
@@ -50,6 +50,32 @@ const MedicalAI = () => {
 
   const inputRef = useRef(null);
   const navigate = useNavigate();
+  const { patientId } = useParams();
+
+  useEffect(() => {
+    const fetchPatient = async () => {
+      try {
+        if (!patientId) return;
+        const res = await axios.get(`${API_URL}/api/patients/${patientId}`);
+
+        if (res.data?.success) {
+          const patient = res.data.patient;
+          setPatientName(patient.name || "");
+          setPatientAge(patient.age || "");
+          setPatientLocation(patient.address?.city || "");
+        }
+      } catch (err) {
+        toast.error("Failed to load patient data.", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
+        console.log("Failed to fetch patient", err);
+      }
+    };
+
+    fetchPatient();
+  }, [patientId]);
 
   // Fetch symptoms from Flask API
   useEffect(() => {
@@ -110,36 +136,68 @@ const MedicalAI = () => {
     fetchSymptoms();
   }, []);
 
-  const handleGenerateReport = () => {
-    if (!result) return;
+  const handleGenerateReport = async () => {
+    if (!result) {
+      toast.warning("Please generate AI result first.", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return;
+    }
 
-    const reportData = {
-      patient: {
-        name: patientName || "N/A",
-        age: patientAge || "N/A",
-        gender: "N/A",
-        dateOfCheckup: new Date().toLocaleDateString(),
-      },
-      medical: {
-        disease: result.predicted_disease,
+    if (!patientId) {
+      toast.error("Patient not logged in", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
+      return;
+    }
+    const toastId = toast.loading("Saving AI report...");
+
+    try {
+      const response = await axios.post(`${API_URL}/api/reports/add`, {
+        patientId,
+        diseases: result.predicted_disease,
         description: result.description,
-        precautions: (result.precautions || []).join(", "),
-        diet: (result.diet || []).join(", "),
-        workout: (result.workout || []).join(", "),
-      },
-      prescriptions: (result.medications || []).map((m) => ({
-        medicine: m,
-        time: "As prescribed",
-        amount: "N/A",
-      })),
-      doctorName: "AI Medical System",
-      nextSession: "N/A",
-      notes: "AI generated report. Please consult a doctor.",
-    };
+        precautions: result.precautions?.join(", "),
+        medicines: (result.medications || []).map((m) => ({
+          medicine: m,
+          amount: "N/A",
+          time: "As prescribed",
+          days: 1,
+        })),
+        diet: result.diet?.join(", "),
+        workout: result.workout?.join(", "),
+        notes: "AI generated report. Please consult a doctor.",
+        nextVisit: null,
+        isAIGenerated: true,
+      });
 
-    navigate("/report", { state: reportData });
+      toast.update(toastId, {
+        render: "Report saved successfully!",
+        type: "success",
+        position: "top-right",
+        isLoading: false,
+        autoClose: 2000,
+        theme: "colored",
+      });
+
+      const reportId = response.data.report._id;
+      navigate(`/report/${reportId}`);
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to save report. Please try again.",
+        {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        },
+      );
+    }
   };
-
   // Format symptom for display
   const formatSymptom = (name) => {
     return name.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
@@ -325,29 +383,6 @@ const MedicalAI = () => {
 
     setLoading(true);
     setResult(null);
-    //     await fetch(`${API_URL}/api/reports/add`, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({
-    //     appointmentId,
-    //     patientId,
-    //     doctorId,
-
-    //     diseases: [data.predicted_disease],
-    //     description: data.description,
-    //     precautions: data.precautions,
-    //     medicines: data.medications?.map((m) => ({
-    //       name: m,
-    //       dosage: "N/A",
-    //       duration: "N/A"
-    //     })),
-
-    //     diet: data.diet,
-    //     workout: data.workout,
-    //     notes: "AI generated report",
-    //     nextVisit: null,
-    //   }),
-    // });
 
     try {
       toast.info("Predicting disease...");

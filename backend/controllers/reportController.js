@@ -18,15 +18,24 @@ const createReport = async (req, res) => {
       workout,
       notes,
       nextVisit,
+      isAIGenerated,
     } = req.body;
 
-    console.log(req.body);
-
-    if (!appointmentId || !patientId || !doctorId) {
+    if (!patientId) {
       return res.status(400).json({
         success: false,
-        message: "appointmentId, patientId, and doctorId are required.",
+        message: "patientId is required.",
       });
+    }
+    // AI generated report
+    if (!isAIGenerated) {
+      if (!appointmentId || !doctorId) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "appointmentId and doctorId are required for doctor reports.",
+        });
+      }
     }
 
     if (!diseases || !description) {
@@ -55,9 +64,9 @@ const createReport = async (req, res) => {
     }
 
     const report = await Report.create({
-      appointmentId,
+      appointmentId: appointmentId || null,
       patientId,
-      doctorId,
+      doctorId: doctorId || null,
       diseases,
       description,
       precautions,
@@ -66,17 +75,28 @@ const createReport = async (req, res) => {
       workout,
       notes,
       nextVisit,
+      isAIGenerated: isAIGenerated || false,
     });
 
     const patient = await Patient.findById(patientId);
-    const appointment = await Appointment.findById(appointmentId);
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: "Patient not found",
+      });
+    }
+
     patient.reports.push(report._id);
-    appointment.report = report._id;
     await patient.save();
-    await appointment.save();
+    if (appointmentId) {
+      const appointment = await Appointment.findById(appointmentId);
+      appointment.report = report._id;
+      await appointment.save();
+    }
 
     return res.status(201).json({ success: true, report });
   } catch (error) {
+    console.log("❌ ERROR:", error);
     return res.status(500).json({ success: false, error: error.message });
   }
 };
