@@ -4,12 +4,18 @@ import { PlusIcon, Trash } from "lucide-react";
 import PatientTimeline from "../components/Disease/PatientTimeline";
 import axios from "axios";
 import { toast } from "react-toastify";
+import AddDiseaseModal from "../components/Disease/addDisease";
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const DiseaseManagement = () => {
   const [diseaseList, setDiseaseList] = useState([]);
   const [symptomResults, setSymptomResults] = useState([]); // Symptom checker
   const [symptomQuery, setSymptomQuery] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [defaultDiseaseName, setDefaultDiseaseName] = useState("");
+  const [clearSearch, setClearSearch] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+
   useEffect(() => {
     const fetchAllDiseases = async () => {
       try {
@@ -50,7 +56,7 @@ const DiseaseManagement = () => {
         params: { symptom: symptomQuery },
       });
       if (res.data.success) {
-        setSymptomResults(res.data.diseases);
+        setSymptomResults(res.data.diseases || []);
       } else {
         toast.error("Failed to fetch diseases. Please try again later.", {
           position: "top-right",
@@ -111,12 +117,56 @@ const DiseaseManagement = () => {
       theme: "colored",
     });
   };
+  const openAddModal = (name) => {
+    setDefaultDiseaseName(name);
+    setShowModal(true);
+  };
+  const handleDiseaseCreated = (disease) => {
+    setDiseaseList((prev) => [...prev, disease]);
+    setClearSearch((prev) => !prev);
+  };
   return (
     <div className="bg-white h-full py-2 px-4">
       <h1 className="text-2xl">Disease Management</h1>
       <div className="w-full flex flex-col md:flex-row">
         <div className="mt-3 lg:mt-7 mx-2 border w-full lg:w-[70%] rounded-lg p-2 border-gray-200">
-          <SearchDisease setDiseaseList={setDiseaseList} />
+          <SearchDisease
+            setSearchResults={setSearchResults}
+            openAddModal={openAddModal}
+            clearSearch={clearSearch}
+          />
+          <AddDiseaseModal
+            show={showModal}
+            onClose={() => setShowModal(false)}
+            onCreated={handleDiseaseCreated}
+            defaultName={defaultDiseaseName}
+          />
+          <div className="flex flex-col my-4 mx-3">
+            {searchResults?.length > 0 && (
+              <div className="w-full flex flex-col gap-2 my-2 lg:my-4">
+                {searchResults?.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex w-full px-3 lg:px-5 items-center border rounded-lg border-gray-200 
+                    flex-row justify-between"
+                  >
+                    <div className="flex flex-col py-2 gap-1 ml-3">
+                      <h1>{item.name}</h1>
+                      <p>Symptoms : {item.symptoms?.join(", ")}</p>
+                    </div>
+
+                    <div
+                      onClick={() => handleAddDisease(item)}
+                      className="bg-blue-200 cursor-pointer flex items-center text-blue-700 px-3 py-2 
+                      rounded-full"
+                    >
+                      <PlusIcon className="mr-1" size={18} /> Add
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="flex flex-col my-4 mx-3">
             <h1 className="text-xl text-gray-700">Current Diagnosis</h1>
             <div className="w-full flex flex-col gap-2 my-2 lg:my-4">
@@ -183,6 +233,7 @@ const DiseaseManagement = () => {
             {symptomQuery && symptomResults.length === 0 && (
               <p className="text-gray-500">No matching diseases found</p>
             )}
+
             {symptomResults?.map((item, index) => (
               <div
                 key={index}

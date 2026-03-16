@@ -57,7 +57,7 @@ function App() {
                 path="/appointment/:appointmentId"
                 element={<AppointmentDetails />}
               />
-              <Route path="/meet/:callId" element={<MeetingPage />} />
+              {/* <Route path="/meet/:callId" element={<MeetingPage />} /> */}
               <Route path="/disease" element={<DiseaseManagement />} />
               <Route path="/" element={<HomePage />} />
               <Route path="/report/:reportId" element={<ReportPage />} />
