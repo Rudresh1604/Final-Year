@@ -14,6 +14,8 @@ const DiseaseManagement = () => {
   const [showModal, setShowModal] = useState(false);
   const [defaultDiseaseName, setDefaultDiseaseName] = useState("");
   const [clearSearch, setClearSearch] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  
   useEffect(() => {
     const fetchAllDiseases = async () => {
       try {
@@ -129,7 +131,7 @@ const DiseaseManagement = () => {
       <div className="w-full flex flex-col md:flex-row">
         <div className="mt-3 lg:mt-7 mx-2 border w-full lg:w-[70%] rounded-lg p-2 border-gray-200">
           <SearchDisease
-            setDiseaseList={setDiseaseList}
+            setSearchResults={setSearchResults}
             openAddModal={openAddModal}
             clearSearch={clearSearch}
           />
@@ -139,6 +141,26 @@ const DiseaseManagement = () => {
             onCreated={handleDiseaseCreated}
             defaultName={defaultDiseaseName}
           />
+          <div className="w-full flex flex-col gap-2 my-2 mx-3 lg:my-4">
+            {searchResults?.map((item, index) => (
+              <div
+                key={index}
+                className="flex w-full px-3 lg:px-5 items-center border rounded-lg border-gray-200 flex-row justify-between"
+              >
+                <div className="flex flex-col py-1 gap-1">
+                  <h1>{item.name}</h1>
+                  <p>Symptoms: {item.symptoms?.join(", ")}</p>
+                </div>
+
+                <div
+                  onClick={() => handleAddDisease(item)}
+                  className="bg-blue-200 cursor-pointer flex flex-row text-blue-700 px-2 py-2 rounded-full"
+                >
+                  <PlusIcon className="mr-1" /> Add
+                </div>
+              </div>
+            ))}
+          </div>
           <div className="flex flex-col my-4 mx-3">
             <h1 className="text-xl text-gray-700">Current Diagnosis</h1>
             <div className="w-full flex flex-col gap-2 my-2 lg:my-4">
@@ -205,7 +227,7 @@ const DiseaseManagement = () => {
             {symptomQuery && symptomResults.length === 0 && (
               <p className="text-gray-500">No matching diseases found</p>
             )}
-            
+
             {symptomResults?.map((item, index) => (
               <div
                 key={index}

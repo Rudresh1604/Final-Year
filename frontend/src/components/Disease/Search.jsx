@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
-const SearchDisease = ({ setDiseaseList, openAddModal, clearSearch }) => {
+const SearchDisease = ({ setSearchResults, openAddModal, clearSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [noResult, setNoResult] = useState(false);
   const fetchDiseases = async () => {
@@ -14,7 +14,7 @@ const SearchDisease = ({ setDiseaseList, openAddModal, clearSearch }) => {
       );
 
       if (res.data.success) {
-        setDiseaseList(res.data.diseases);
+        setSearchResults(res.data.diseases);
         setNoResult(res.data.diseases.length === 0);
       } else {
         toast.error("Failed to search diseases. Please try again later.", {
@@ -35,7 +35,7 @@ const SearchDisease = ({ setDiseaseList, openAddModal, clearSearch }) => {
 
   useEffect(() => {
     if (!searchQuery) {
-      setDiseaseList([]);
+      setSearchResults([]);
       setNoResult(false);
       return;
     }
@@ -49,7 +49,7 @@ const SearchDisease = ({ setDiseaseList, openAddModal, clearSearch }) => {
       clearTimeout(handler);
     };
   }, [searchQuery]);
-  
+
   useEffect(() => {
     setSearchQuery("");
     setNoResult(false);
