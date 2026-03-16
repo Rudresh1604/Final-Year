@@ -4,12 +4,16 @@ import { PlusIcon, Trash } from "lucide-react";
 import PatientTimeline from "../components/Disease/PatientTimeline";
 import axios from "axios";
 import { toast } from "react-toastify";
+import AddDiseaseModal from "../components/Disease/addDisease";
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const DiseaseManagement = () => {
   const [diseaseList, setDiseaseList] = useState([]);
   const [symptomResults, setSymptomResults] = useState([]); // Symptom checker
   const [symptomQuery, setSymptomQuery] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [defaultDiseaseName, setDefaultDiseaseName] = useState("");
+  const [clearSearch, setClearSearch] = useState(false);
   useEffect(() => {
     const fetchAllDiseases = async () => {
       try {
@@ -50,7 +54,7 @@ const DiseaseManagement = () => {
         params: { symptom: symptomQuery },
       });
       if (res.data.success) {
-        setSymptomResults(res.data.diseases);
+        setSymptomResults(res.data.diseases || []);
       } else {
         toast.error("Failed to fetch diseases. Please try again later.", {
           position: "top-right",
@@ -111,12 +115,30 @@ const DiseaseManagement = () => {
       theme: "colored",
     });
   };
+  const openAddModal = (name) => {
+    setDefaultDiseaseName(name);
+    setShowModal(true);
+  };
+  const handleDiseaseCreated = (disease) => {
+    setDiseaseList((prev) => [...prev, disease]);
+    setClearSearch((prev) => !prev);
+  };
   return (
     <div className="bg-white h-full py-2 px-4">
       <h1 className="text-2xl">Disease Management</h1>
       <div className="w-full flex flex-col md:flex-row">
         <div className="mt-3 lg:mt-7 mx-2 border w-full lg:w-[70%] rounded-lg p-2 border-gray-200">
-          <SearchDisease setDiseaseList={setDiseaseList} />
+          <SearchDisease
+            setDiseaseList={setDiseaseList}
+            openAddModal={openAddModal}
+            clearSearch={clearSearch}
+          />
+          <AddDiseaseModal
+            show={showModal}
+            onClose={() => setShowModal(false)}
+            onCreated={handleDiseaseCreated}
+            defaultName={defaultDiseaseName}
+          />
           <div className="flex flex-col my-4 mx-3">
             <h1 className="text-xl text-gray-700">Current Diagnosis</h1>
             <div className="w-full flex flex-col gap-2 my-2 lg:my-4">
@@ -183,6 +205,7 @@ const DiseaseManagement = () => {
             {symptomQuery && symptomResults.length === 0 && (
               <p className="text-gray-500">No matching diseases found</p>
             )}
+            
             {symptomResults?.map((item, index) => (
               <div
                 key={index}
