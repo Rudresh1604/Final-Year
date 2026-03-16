@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
-const SearchDisease = ({ setDiseaseList, openAddModal }) => {
+const SearchDisease = ({ setDiseaseList, openAddModal, clearSearch }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [noResult, setNoResult] = useState(false);
   const fetchDiseases = async () => {
@@ -49,6 +49,11 @@ const SearchDisease = ({ setDiseaseList, openAddModal }) => {
       clearTimeout(handler);
     };
   }, [searchQuery]);
+  
+  useEffect(() => {
+    setSearchQuery("");
+    setNoResult(false);
+  }, [clearSearch]);
   return (
     <div className="flex flex-col gap-2">
       <div className="flex max-sm:flex-col flex-row items-center justify-between">
@@ -56,7 +61,10 @@ const SearchDisease = ({ setDiseaseList, openAddModal }) => {
           Manage Patient Diseases
         </label>
 
-        <div className="flex items-center w-[60%] max-sm:w-full rounded-lg border p-1 border-gray-300 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500">
+        <div
+          className="flex items-center w-[60%] max-sm:w-full rounded-lg border p-1 
+        border-gray-300 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500"
+        >
           <Search />
           <input
             type="text"
@@ -71,7 +79,7 @@ const SearchDisease = ({ setDiseaseList, openAddModal }) => {
       {noResult && (
         <button
           onClick={() => openAddModal(searchQuery)}
-          className="bg-blue-500 text-white px-3 py-2 rounded-lg w-fit"
+          className="bg-blue-500 text-white px-3 py-2 rounded-lg w-fit cursor-pointer"
         >
           Add "{searchQuery}" as New Disease
         </button>
