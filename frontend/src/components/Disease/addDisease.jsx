@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { X, PlusCircle, Stethoscope } from "lucide-react";
+import { X, Stethoscope } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -45,7 +45,11 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
   const handleCreateDisease = async () => {
     try {
       if (!newDisease.name || !newDisease.symptoms) {
-        toast.error("Name and Symptoms are required");
+        toast.error("Name and Symptoms are required", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
         return;
       }
 
@@ -73,13 +77,21 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
       const res = await axios.post(`${API_URL}/api/disease/add`, formattedData);
 
       if (res.data.success) {
-        toast.success("Disease created successfully!");
+        toast.success("Disease created successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
         onCreated(res.data.disease);
         resetForm();
         onClose();
       }
     } catch (error) {
-      toast.error("Failed to create disease");
+      toast.error("Failed to create disease", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
       console.error(error);
     }
   };
@@ -88,25 +100,26 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl shadow-lg w-full max-w-2xl sm:max-w-lg max-h-[90vh] 
+      overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center border-b px-6 py-4">
-          <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 flex items-center gap-2">
             <Stethoscope className="text-green-600" size={22} /> Add New Disease
           </h2>
 
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-red-500 text-lg cursor-pointer"
+            className="p-2 sm:p-1 text-gray-500 hover:text-red-500 text-lg cursor-pointer"
           >
             <X size={22} />
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           {/* Disease Name */}
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <label className="text-sm font-medium text-gray-600">
               Disease Name
             </label>
@@ -121,7 +134,7 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
           </div>
 
           {/* Spread Level */}
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <label className="text-sm font-medium text-gray-600">
               Spread Level
             </label>
@@ -201,7 +214,7 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
                   value={newDisease.city}
                   onChange={handleInputChange}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 
-              focus:outline-none focus:ring-2 focus:ring-green-400"
+                  focus:outline-none focus:ring-2 focus:ring-green-400"
                 />
               </div>
 
@@ -290,7 +303,7 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
         </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 border-t px-6 py-4">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 border-t px-6 py-4">
           <button
             onClick={onClose}
             className="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition cursor-pointer"
