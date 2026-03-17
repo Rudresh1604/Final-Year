@@ -12,14 +12,14 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
     symptoms: "",
     medication: "",
     precautions: "",
-    workflow:"",
-      
-    notes:"",
-      
+    workflow:
+      "Diagnosis → Isolation → Treatment → Recovery → Follow-up Monitoring → Prevention",
+    notes:
+      "Proper hygiene, nutrition, and follow-up care are essential for recovery.",
     spreadLevel: "Low",
     city: "",
     state: "",
-    country: "",
+    country: "India",
     caseCount: 0,
   };
 
@@ -100,8 +100,10 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-lg w-full max-w-2xl sm:max-w-lg max-h-[90vh] 
-      overflow-y-auto">
+      <div
+        className="bg-white rounded-2xl shadow-lg w-full max-w-2xl sm:max-w-lg max-h-[90vh] 
+      overflow-y-auto"
+      >
         {/* Header */}
         <div className="flex justify-between items-center border-b px-6 py-4">
           <h2 className="text-lg sm:text-xl font-semibold text-gray-800 flex items-center gap-2">
