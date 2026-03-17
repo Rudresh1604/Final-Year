@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -6,32 +5,40 @@ import { toast } from "react-toastify";
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
-  const [newDisease, setNewDisease] = useState({
+  const defaultForm = {
     name: "",
     description: "",
     symptoms: "",
     medication: "",
     precautions: "",
-    workflow: "",
-    notes: "",
+    workflow:"",
+      
+    notes:"",
+      
     spreadLevel: "Low",
     city: "",
     state: "",
     country: "",
     caseCount: 0,
-  });
+  };
+
+  const [newDisease, setNewDisease] = useState(defaultForm);
 
   useEffect(() => {
-    if (defaultName) {
-      setNewDisease((prev) => ({ ...prev, name: defaultName }));
+    if (show) {
+      setNewDisease({ ...defaultForm, name: defaultName || "" });
     }
-  }, [defaultName]);
+  }, [show, defaultName]);
 
   const handleInputChange = (e) => {
     setNewDisease({
       ...newDisease,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const resetForm = () => {
+    setNewDisease(defaultForm);
   };
 
   const handleCreateDisease = async () => {
@@ -67,6 +74,7 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
       if (res.data.success) {
         toast.success("Disease created successfully!");
         onCreated(res.data.disease);
+        resetForm();
         onClose();
       }
     } catch (error) {
@@ -80,7 +88,6 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-
         {/* Header */}
         <div className="flex justify-between items-center border-b px-6 py-4">
           <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
@@ -97,7 +104,6 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
 
         {/* Body */}
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-
           {/* Disease Name */}
           <div>
             <label className="text-sm font-medium text-gray-600">
@@ -186,7 +192,6 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
               <div>
                 <label className="text-sm text-gray-600">City</label>
                 <input
@@ -235,7 +240,6 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
                   focus:outline-none focus:ring-2 focus:ring-green-400"
                 />
               </div>
-
             </div>
           </div>
 
@@ -282,7 +286,6 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
               focus:outline-none focus:ring-2 focus:ring-green-400"
             />
           </div>
-
         </div>
 
         {/* Footer */}
@@ -302,11 +305,9 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
             Create Disease
           </button>
         </div>
-
       </div>
     </div>
   );
 };
 
 export default AddDiseaseModal;
-
