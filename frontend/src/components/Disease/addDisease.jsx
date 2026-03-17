@@ -1,30 +1,35 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { X, Stethoscope } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
 const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
-  const [newDisease, setNewDisease] = useState({
+  const defaultForm = {
     name: "",
     description: "",
     symptoms: "",
     medication: "",
     precautions: "",
-    workflow: "",
-    notes: "",
+    workflow:
+      "Diagnosis → Isolation → Treatment → Recovery → Follow-up Monitoring → Prevention",
+    notes:
+      "Proper hygiene, nutrition, and follow-up care are essential for recovery.",
     spreadLevel: "Low",
     city: "",
     state: "",
-    country: "",
+    country: "India",
     caseCount: 0,
-  });
+  };
+
+  const [newDisease, setNewDisease] = useState(defaultForm);
 
   useEffect(() => {
-    if (defaultName) {
-      setNewDisease((prev) => ({ ...prev, name: defaultName }));
+    if (show) {
+      setNewDisease({ ...defaultForm, name: defaultName || "" });
     }
-  }, [defaultName]);
+  }, [show, defaultName]);
 
   const handleInputChange = (e) => {
     setNewDisease({
@@ -33,10 +38,18 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
     });
   };
 
+  const resetForm = () => {
+    setNewDisease(defaultForm);
+  };
+
   const handleCreateDisease = async () => {
     try {
       if (!newDisease.name || !newDisease.symptoms) {
-        toast.error("Name and Symptoms are required");
+        toast.error("Name and Symptoms are required", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
         return;
       }
 
@@ -64,12 +77,21 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
       const res = await axios.post(`${API_URL}/api/disease/add`, formattedData);
 
       if (res.data.success) {
-        toast.success("Disease created successfully!");
+        toast.success("Disease created successfully!", {
+          position: "top-right",
+          autoClose: 3000,
+          theme: "colored",
+        });
         onCreated(res.data.disease);
+        resetForm();
         onClose();
       }
     } catch (error) {
-      toast.error("Failed to create disease");
+      toast.error("Failed to create disease", {
+        position: "top-right",
+        autoClose: 3000,
+        theme: "colored",
+      });
       console.error(error);
     }
   };
@@ -78,168 +100,223 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div
+        className="bg-white rounded-2xl shadow-lg w-full max-w-2xl sm:max-w-lg max-h-[90vh] 
+      overflow-y-auto"
+      >
         {/* Header */}
         <div className="flex justify-between items-center border-b px-6 py-4">
-          <h2 className="text-xl font-semibold text-gray-700">
-            Add New Disease
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800 flex items-center gap-2">
+            <Stethoscope className="text-green-600" size={22} /> Add New Disease
           </h2>
 
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-red-500 text-lg"
+            className="p-2 sm:p-1 text-gray-500 hover:text-red-500 text-lg cursor-pointer"
           >
-            ✕
+            <X size={22} />
           </button>
         </div>
 
         {/* Body */}
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          {/* Disease Name */}
+          <div className="col-span-2 sm:col-span-1">
+            <label className="text-sm font-medium text-gray-600">
+              Disease Name
+            </label>
+            <input
+              name="name"
+              placeholder="Enter disease name (e.g. Dengue)"
+              value={newDisease.name}
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
+              focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+          </div>
 
-  <div>
-    <label className="text-sm font-medium text-gray-600">Disease Name</label>
-    <input
-      name="name"
-      value={newDisease.name}
-      onChange={handleInputChange}
-      placeholder="Enter disease name (e.g. Dengue)"
-      className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
-    focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition"
-    />
-  </div>
+          {/* Spread Level */}
+          <div className="col-span-2 sm:col-span-1">
+            <label className="text-sm font-medium text-gray-600">
+              Spread Level
+            </label>
+            <select
+              name="spreadLevel"
+              value={newDisease.spreadLevel}
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
+              focus:outline-none focus:ring-2 focus:ring-green-400 cursor-pointer"
+            >
+              <option value="Low">Low</option>
+              <option value="Moderate">Moderate</option>
+              <option value="High">High</option>
+            </select>
+          </div>
 
-  <div>
-    <label className="text-sm font-medium text-gray-600">Symptoms (comma separated)</label>
-    <input
-      name="symptoms"
-      value={newDisease.symptoms}
-      placeholder="e.g. fever, headache, nausea"
-      onChange={handleInputChange}
-      className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
-    focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition"
-    />
-  </div>
+          {/* Symptoms */}
+          <div className="col-span-2">
+            <label className="text-sm font-medium text-gray-600">
+              Symptoms (comma separated)
+            </label>
+            <textarea
+              rows={2}
+              name="symptoms"
+              placeholder="e.g. fever, headache, nausea"
+              value={newDisease.symptoms}
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
+              focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+          </div>
 
-  <div>
-    <label className="text-sm font-medium text-gray-600">Medication</label>
-    <input
-      name="medication"
-      value={newDisease.medication}
-      placeholder="e.g. Paracetamol, Hydration"
-      onChange={handleInputChange}
-      className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
-    focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition"
-    />
-  </div>
+          {/* Medication */}
+          <div className="col-span-2">
+            <label className="text-sm font-medium text-gray-600">
+              Medication
+            </label>
+            <textarea
+              rows={2}
+              name="medication"
+              placeholder="e.g. Paracetamol, Oral rehydration, Rest"
+              value={newDisease.medication}
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
+              focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+          </div>
 
-  <div>
-    <label className="text-sm text-gray-600">City</label>
-    <input
-      name="city"
-      value={newDisease.city}
-      onChange={handleInputChange}
-      className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
-    focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition"
-    />
-  </div>
+          {/* Precautions */}
+          <div className="col-span-2">
+            <label className="text-sm font-medium text-gray-600">
+              Precautions
+            </label>
+            <textarea
+              rows={2}
+              name="precautions"
+              placeholder="e.g. Drink fluids, Avoid mosquito bites"
+              value={newDisease.precautions}
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
+              focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+          </div>
 
-  <div>
-    <label className="text-sm text-gray-600">State</label>
-    <input
-      name="state"
-      value={newDisease.state}
-      onChange={handleInputChange}
-      className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
-    focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition"
-    />
-  </div>
+          {/* Affected Region Section */}
+          <div className="col-span-2 rounded-xl p-4 bg-gray-50">
+            <h3 className="text-md font-semibold text-gray-700 mb-3">
+              Affected Region
+            </h3>
 
-  <div>
-    <label className="text-sm text-gray-600">Country</label>
-    <input
-      name="country"
-      value={newDisease.country}
-      onChange={handleInputChange}
-      className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
-    focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition"
-    />
-  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm text-gray-600">City</label>
+                <input
+                  name="city"
+                  placeholder="Enter affected city"
+                  value={newDisease.city}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 
+                  focus:outline-none focus:ring-2 focus:ring-green-400"
+                />
+              </div>
 
-  <div className="col-span-2">
-    <label className="text-sm text-gray-600">Spread Level</label>
-    <select
-      name="spreadLevel"
-      value={newDisease.spreadLevel}
-      onChange={handleInputChange}
-      className="w-full border rounded-xl p-2 mt-1"
-    >
-      <option value="Low">Low</option>
-      <option value="Moderate">Moderate</option>
-      <option value="High">High</option>
-    </select>
-  </div>
- <div className="col-span-2">
-    <label className="text-sm font-medium text-gray-600">Precautions</label>
-    <textarea
-      name="precautions"
-      value={newDisease.precautions}
-      rows={3}
-      placeholder="Enter disease name (e.g. Dengue)"
-      onChange={handleInputChange}
-      className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
-    focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition"
-    />
-  </div>
-  <div className="col-span-2">
-    <label className="text-sm text-gray-600">Description</label>
-    <textarea
-      name="description"
-      rows={3}
-      value={newDisease.description}
-      onChange={handleInputChange}
-      className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
-    focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition"
-    />
-  </div>
+              <div>
+                <label className="text-sm text-gray-600">State</label>
+                <input
+                  name="state"
+                  placeholder="Enter state"
+                  value={newDisease.state}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 
+                  focus:outline-none focus:ring-2 focus:ring-green-400"
+                />
+              </div>
 
-  <div className="col-span-2">
-    <label className="text-sm text-gray-600">Workflow / Treatment Process</label>
-    <textarea
-      name="workflow"
-      rows={3}
-      value={newDisease.workflow}
-      onChange={handleInputChange}
-      className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
-    focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition"
-    />
-  </div>
+              <div>
+                <label className="text-sm text-gray-600">Country</label>
+                <input
+                  name="country"
+                  placeholder="Enter country"
+                  value={newDisease.country}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 
+                  focus:outline-none focus:ring-2 focus:ring-green-400"
+                />
+              </div>
 
-  <div className="col-span-2">
-    <label className="text-sm text-gray-600">Doctor Notes</label>
-    <textarea
-      name="notes"
-      rows={3}
-      value={newDisease.notes}
-      onChange={handleInputChange}
-      className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
-    focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-green-400 transition"
-    />
-  </div>
+              <div>
+                <label className="text-sm text-gray-600">Case Count</label>
+                <input
+                  type="number"
+                  name="caseCount"
+                  placeholder="Enter reported cases"
+                  value={newDisease.caseCount}
+                  onChange={handleInputChange}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 
+                  focus:outline-none focus:ring-2 focus:ring-green-400"
+                />
+              </div>
+            </div>
+          </div>
 
-</div>
+          {/* Description */}
+          <div className="col-span-2">
+            <label className="text-sm text-gray-600">Description</label>
+            <textarea
+              rows={3}
+              name="description"
+              placeholder="Enter a brief description of the disease"
+              value={newDisease.description}
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
+              focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+          </div>
+
+          {/* Workflow */}
+          <div className="col-span-2">
+            <label className="text-sm text-gray-600">
+              Workflow / Treatment Process
+            </label>
+            <textarea
+              rows={3}
+              name="workflow"
+              placeholder="Describe treatment process followed by doctors"
+              value={newDisease.workflow}
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
+              focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+          </div>
+
+          {/* Notes */}
+          <div className="col-span-2">
+            <label className="text-sm text-gray-600">Doctor Notes</label>
+            <textarea
+              rows={3}
+              name="notes"
+              placeholder="Additional notes or recommendations"
+              value={newDisease.notes}
+              onChange={handleInputChange}
+              className="w-full border border-gray-300 bg-gray-50 rounded-lg px-3 py-2 mt-1 
+              focus:outline-none focus:ring-2 focus:ring-green-400"
+            />
+          </div>
+        </div>
 
         {/* Footer */}
-        <div className="flex justify-end gap-3 border-t px-6 py-4">
+        <div className="flex flex-col sm:flex-row justify-end gap-3 border-t px-6 py-4">
           <button
             onClick={onClose}
-            className="px-5 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 transition"
+            className="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition cursor-pointer"
           >
             Cancel
           </button>
 
           <button
             onClick={handleCreateDisease}
-            className="px-5 py-2 rounded-xl bg-green-500 text-white hover:bg-green-600 active:scale-95 transition"
+            className="px-5 py-2 rounded-lg bg-green-500 text-white font-medium
+            hover:bg-green-600 active:scale-95 transition cursor-pointer"
           >
             Create Disease
           </button>
