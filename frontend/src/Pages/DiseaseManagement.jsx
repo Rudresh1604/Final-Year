@@ -174,15 +174,16 @@ const DiseaseManagement = () => {
                 <div
                   key={index}
                   className="flex w-full px-3 lg:px-5 items-center border rounded-lg border-gray-200 
-                  flex-row justify-between"
+                  flex-row justify-between gap-2"
                 >
                   <div className="flex flex-col py-2 gap-1 ml-3">
                     <h1>{item.name} </h1>
                     <p>Symptoms : {item.symptoms?.join(", ")}</p>
                   </div>
                   <Trash
+                    size={28}
                     onClick={() => handleDeleteDisease(item._id)}
-                    className="text-red-500 cursor-pointer"
+                    className="sm:w-5 sm:h-5 text-red-500 cursor-pointer"
                   />
                 </div>
               ))}
