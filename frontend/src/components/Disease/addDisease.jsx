@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { X, PlusCircle, Stethoscope } from "lucide-react";
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -91,14 +92,14 @@ const AddDiseaseModal = ({ show, onClose, onCreated, defaultName }) => {
         {/* Header */}
         <div className="flex justify-between items-center border-b px-6 py-4">
           <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-            🦠 Add New Disease
+            <Stethoscope className="text-green-600" size={22} /> Add New Disease
           </h2>
 
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-red-500 text-lg cursor-pointer"
           >
-            ✕
+            <X size={22} />
           </button>
         </div>
 
