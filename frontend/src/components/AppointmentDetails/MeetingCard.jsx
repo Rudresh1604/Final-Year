@@ -1,13 +1,20 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const MeetingCard = ({ appointment }) => {
   const now = new Date();
   const start = new Date(appointment.time);
   const end = new Date(appointment.endTime);
 
-  const isLive = now >= start && now <= end;
+  const navigate=useNavigate();
+
+
+
+  const isLive = true;
+  // const isLive = now >= start && now <= end;
   const isUpcoming = now < start;
-  const isEnded = now > end;
+  const isEnded = false;
+  // const isEnded = now > end;
 
   const formatTime = (date) =>
     new Date(date).toLocaleTimeString("en-IN", {
@@ -37,14 +44,12 @@ const MeetingCard = ({ appointment }) => {
             <p className="text-green-600 font-medium">Consultation Live</p>
           </div>
 
-          <a
-            // href={appointment.meetingLink}
-            target="_blank"
-            rel="noreferrer"
+          <button
             className="block w-full sm:w-auto mx-auto bg-blue-600 text-white px-6 py-3 rounded-xl text-lg font-medium hover:opacity-90 transition"
+            onClick={()=>navigate(`/meet/${appointment.callId}`,{state:appointment})}
           >
             Join Now
-          </a>
+          </button>
         </>
       )}
 

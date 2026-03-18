@@ -2,10 +2,12 @@ import React, { useEffect } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AllAppointment = () => {
   const [appointments, setAppointments] = useState([]);
   const selector = useSelector((state) => state.auth);
+  const navigate = useNavigate();
   // console.log(selector.user);
 
   const fetchAppointments = async () => {
@@ -54,7 +56,11 @@ const AllAppointment = () => {
             )}
             {appointments.length > 0 &&
               appointments?.map((item, index) => (
-                <tr key={index} className="bg-white border-b border-gray-300">
+                <tr
+                  key={index}
+                  className="bg-white border-b border-gray-300"
+                  onClick={()=>navigate(`/appointment/${item?._id}`)}
+                >
                   <td className=" px-3 py-2 font-medium text-gray-900 flex items-center gap-2">
                     <img
                       className="rounded-full w-8 h-8 ml-1.5"

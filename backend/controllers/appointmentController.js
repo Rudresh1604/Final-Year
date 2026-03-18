@@ -107,7 +107,7 @@ const bookAppointment = async (req, res) => {
       },
     });
 
-    const meetLink = `https://localhost:5173/meet/${callId}`;
+    const meetLink = `http://localhost:5173/meet/${callId}`;
 
     /*
       ==============================

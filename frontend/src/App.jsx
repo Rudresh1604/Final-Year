@@ -23,6 +23,7 @@ import MedicalHistorySummary from "./Pages/MedicalHistorySummary";
 import View from "./Pages/View";
 import Profile from "./Pages/Profile";
 import AppointmentDetails from "./Pages/AppointmentDetails";
+import MeetingPage from "./Pages/Meeting";
 
 function App() {
   return (
@@ -57,7 +58,7 @@ function App() {
                 path="/appointment/:appointmentId"
                 element={<AppointmentDetails />}
               />
-              {/* <Route path="/meet/:callId" element={<MeetingPage />} /> */}
+              <Route path="/meet/:callId" element={<MeetingPage />} />
               <Route path="/disease" element={<DiseaseManagement />} />
               <Route path="/" element={<HomePage />} />
               <Route path="/report/:reportId" element={<ReportPage />} />

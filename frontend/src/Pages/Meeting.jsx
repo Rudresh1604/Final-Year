@@ -16,7 +16,8 @@ export default function MeetingPage() {
   const { callId } = useParams();
   const location = useLocation();
 
-  const appointment = location.state?.appointment;
+  const appointment = location.state;
+  console.log(location.state);
 
   const userId = appointment.patientId || appointment.doctorId;
   const selector = useSelector((state) => state.auth);
