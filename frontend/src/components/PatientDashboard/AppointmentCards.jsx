@@ -2,6 +2,7 @@ import React from "react";
 import { formatDateDisplay, formatTime } from "../../utils/utils";
 import { Calendar, Clock } from "lucide-react";
 import AppointmentStatusButton from "../Appointment/AppointmentStatus";
+import { useNavigate } from "react-router-dom";
 
 const AppointmentCards = ({
   name,
@@ -11,8 +12,12 @@ const AppointmentCards = ({
   isPatientView,
   appointment,
 }) => {
+  const navigate = useNavigate();
   return (
-    <div className="flex rounded-lg w-full text-gray-600 justify-between items-center py-2  px-2 border-1 border-gray-200 hover:bg-gray-100 ">
+    <div
+      className="flex rounded-lg w-full text-gray-600 justify-between items-center py-2  px-2 border-1 border-gray-200 hover:bg-gray-100 "
+      onClick={navigate(`/appointment/${appointment?._id}`)}
+    >
       <div className="flex items-center w-full gap-2">
         <img
           className="rounded-full w-14 h-15 ml-1.5"
