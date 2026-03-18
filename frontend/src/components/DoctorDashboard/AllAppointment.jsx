@@ -59,7 +59,7 @@ const AllAppointment = () => {
                 <tr
                   key={index}
                   className="bg-white border-b border-gray-300"
-                  onClick={navigate(`/appointment/${item?._id}`)}
+                  onClick={()=>navigate(`/appointment/${item?._id}`)}
                 >
                   <td className=" px-3 py-2 font-medium text-gray-900 flex items-center gap-2">
                     <img
