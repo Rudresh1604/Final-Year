@@ -108,7 +108,9 @@ const addDoctorSlot = async (req, res) => {
       "Sunday",
     ];
     if (!day) {
-      day = weekDays[new Date(date).getDay()];
+      console.log(new Date(date).getDay());
+
+      day = weekDays[new Date(date).getDay() - 1];
     }
 
     const doctor = await Doctor.findById(doctorId);

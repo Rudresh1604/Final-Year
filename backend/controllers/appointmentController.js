@@ -194,6 +194,8 @@ const getAvailableSlots = async (req, res) => {
     const requestedDate = moment(date);
     const dayOfWeek = requestedDate.format("dddd");
 
+    console.log(requestedDate, dayOfWeek);
+
     // 2. Get doctor's working hours for that day
     const availableSlot = doctor.availableSlots.find(
       (slot) => slot.day === dayOfWeek,
@@ -327,7 +329,7 @@ const getAvailableSlots = async (req, res) => {
         available: !isUnavailable && !isBooked,
       };
     });
-
+    console.log(filteredSlots);
     res.status(200).json({
       date: requestedDate.format("YYYY-MM-DD"),
       dayOfWeek,
@@ -446,17 +448,28 @@ const getAppointments = async (req, res) => {
 };
 
 // get streeam token
+// backend controller
 const getStreamToken = async (req, res) => {
   const { userId } = req.params;
+  console.log("Received userId:", userId); // Check what's coming through
 
-  const token = streamClient.generateUserToken({
-    user_id: userId,
-    iat: Math.floor(Date.now() / 1000) - 60, // Account for clock drift
-  });
+  if (!userId) {
+    return res.status(400).json({ error: "userId is required" });
+  }
 
-  res.json({ token });
+  try {
+    const token = streamClient.generateUserToken({
+      user_id: userId,
+      iat: Math.floor(Date.now() / 1000) - 60,
+    });
+
+    console.log("Generated token for user:", userId);
+    res.json({ token });
+  } catch (error) {
+    console.error("Token generation error:", error);
+    res.status(500).json({ error: "Failed to generate token" });
+  }
 };
-
 module.exports = {
   bookAppointment,
   cancelAppointment,
