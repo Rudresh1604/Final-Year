@@ -400,7 +400,22 @@ const DoctorSignup = () => {
           </div>
         </div>
 
-        
+        {/* Street */}
+        <div>
+          <label className="block mb-1 font-medium text-gray-700">Street</label>
+          <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
+            <Home className="w-5 h-5 text-gray-500 mx-2" />
+            <input
+              id="street"
+              name="street"
+              type="text"
+              value={formData.address.street}
+              placeholder="123 Main Street"
+              onChange={handleChange}
+              className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
+            />
+          </div>
+        </div>
         {/* City & State */}
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -450,7 +465,44 @@ const DoctorSignup = () => {
             </div>
           </div>
         </div>
-        
+        {/* Country & Pincode */}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block mb-1 font-medium text-gray-700">
+              Pincode
+            </label>
+            <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
+              <ListChecks className="w-5 h-5 text-gray-500 mx-2" />
+              <input
+                id="pincode"
+                name="pincode"
+                type="text"
+                value={formData.address.pincode}
+                placeholder="411001"
+                onChange={handleChange}
+                className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block mb-1 font-medium text-gray-700">
+              Country
+            </label>
+            <div className="flex items-center rounded-xl border border-gray-300 bg-gray-200">
+              <Globe className="w-5 h-5 text-gray-500 mx-2" />
+              <input
+                id="country"
+                name="country"
+                type="text"
+                value={formData.address.country}
+                placeholder="India"
+                onChange={handleChange}
+                className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
+              />
+            </div>
+          </div>
+        </div>
 
         {/* Submit */}
         <button
