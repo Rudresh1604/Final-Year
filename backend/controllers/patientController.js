@@ -32,9 +32,13 @@ const createPatient = async (req, res) => {
 
     const uploadResult = await uploadToCloudinary(
       req.file.buffer,
-      "healthScan/patients"
+      "healthScan/patients",
     );
+    let parsedAddress = {};
 
+    if (address) {
+      parsedAddress = JSON.parse(address);
+    }
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const patient = await Patient.create({
@@ -43,7 +47,13 @@ const createPatient = async (req, res) => {
       phone: phone,
       password: hashedPassword,
       bloodGroup: bloodGroup,
-      address: address,
+      address: {
+        street: parsedAddress.street,
+        city: parsedAddress.city,
+        state: parsedAddress.state,
+        pincode: parsedAddress.pincode,
+        country: parsedAddress.country,
+      },
       gender: gender,
       age: age,
       profilePicture: uploadResult.secure_url,
@@ -52,18 +62,22 @@ const createPatient = async (req, res) => {
     if (!patient) {
       return res.json(
         { success: false, message: "Failed, Try again later!" },
-        { status: 500 }
+        { status: 500 },
       );
     }
     // console.log(patient);
 
-    return res.json(
-      { success: true, message: "Created Successfully", id: patient._id },
-      { status: 200 }
-    );
+    return res.status(201).json({
+      success: true,
+      message: "Created Successfully",
+      id: patient._id,
+    });
   } catch (error) {
     console.log(error);
-    return res.json({ success: true, message: error.message }, { status: 500 });
+    return res.json(
+      { success: false, message: error.message },
+      { status: 500 },
+    );
   }
 };
 
@@ -110,18 +124,18 @@ const deletePatient = async (req, res) => {
     if (!patient) {
       return res.json(
         { success: false, message: "Failed, Try again later!" },
-        { status: 500 }
+        { status: 500 },
       );
     }
     return res.json(
       { success: true, message: "Patient Deleted Successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     // console.log(error);
     return res.json(
       { success: false, message: error.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };
@@ -157,7 +171,7 @@ const updatePatient = async (req, res) => {
 
       const uploadResult = await uploadToCloudinary(
         req.file.buffer,
-        "healthScan/patients"
+        "healthScan/patients",
       );
 
       updateQuery.$set.profilePicture = uploadResult.secure_url;
@@ -190,10 +204,13 @@ const getPatientFullSummary = async (req, res) => {
       return res.status(400).json({ success: false, message: "Invalid ID" });
     }
 
-    const patient = await Patient.findById(id).populate({
-      path: "medicalHistory.diseaseId",
-      select: "name description precautions medication workflow notes symptoms",
-    }).select("-password -public_id");
+    const patient = await Patient.findById(id)
+      .populate({
+        path: "medicalHistory.diseaseId",
+        select:
+          "name description precautions medication workflow notes symptoms",
+      })
+      .select("-password -public_id");
 
     if (!patient) {
       return res

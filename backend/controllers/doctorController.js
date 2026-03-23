@@ -17,7 +17,7 @@ const addDoctor = async (req, res) => {
       specialization,
       experience,
       password,
-      location,
+      address,
     } = req.body;
 
     if (!req.file) {
@@ -34,7 +34,7 @@ const addDoctor = async (req, res) => {
       !specialization ||
       !experience ||
       !password ||
-      !location ||
+      !address ||
       !gender
     ) {
       return res
@@ -47,7 +47,11 @@ const addDoctor = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Gender is invalid" });
     }
+    let parsedAddress = {};
 
+    if (address) {
+      parsedAddress = JSON.parse(address);
+    }
     const uploadResult = await uploadToCloudinary(
       req.file.buffer,
       "healthScan/doctors",
@@ -72,7 +76,13 @@ const addDoctor = async (req, res) => {
       specialization,
       experience,
       password: hashedPassword,
-      location,
+      address: {
+        street: parsedAddress.street,
+        city: parsedAddress.city,
+        state: parsedAddress.state,
+        pincode: parsedAddress.pincode,
+        country: parsedAddress.country,
+      },
       profilePicture: uploadResult.secure_url,
       public_id: uploadResult.public_id,
     });
@@ -192,7 +202,7 @@ const getDoctorById = async (req, res) => {
       })
       .populate({
         path: "patients",
-        select: "name profilePicture gender phone location age _id",
+        select: "name profilePicture gender phone address age _id",
       })
       .select("-password -public_id");
     if (!doctor) {
@@ -227,11 +237,11 @@ const getDoctors = async (req, res) => {
     }
 
     if (city) {
-      filter["location.city"] = { $regex: city, $options: "i" };
+      filter["address.city"] = { $regex: city, $options: "i" };
     }
 
     if (state) {
-      filter["location.state"] = { $regex: state, $options: "i" };
+      filter["address.state"] = { $regex: state, $options: "i" };
     }
 
     const doctors = await Doctor.find(filter).select("-password -public_id");
