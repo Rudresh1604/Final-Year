@@ -16,7 +16,7 @@ const AppointmentCards = ({
   return (
     <div
       className="flex rounded-lg w-full text-gray-600 justify-between items-center py-2  px-2 border-1 border-gray-200 hover:bg-gray-100 "
-      onClick={navigate(`/appointment/${appointment?._id}`)}
+      onClick={() => navigate(`/appointment/${appointment?._id}`)}
     >
       <div className="flex items-center w-full gap-2">
         <img

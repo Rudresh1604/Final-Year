@@ -130,7 +130,10 @@ const PatientDashboard = () => {
 
       <HeaderCard cards={patientCards} className={"lg:ml-1"} />
       <div className="flex flex-col items-center w-full">
-        <PatientAppointments />
+        <PatientAppointments
+          appointments={patientDetails?.appointments}
+          isPatientView={true}
+        />
       </div>
     </div>
   );
