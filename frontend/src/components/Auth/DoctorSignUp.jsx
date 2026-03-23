@@ -11,6 +11,9 @@ import {
   CalendarDays,
   Eye,
   EyeOff,
+  Home,
+  Globe,
+  ListChecks,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { registerDoctor } from "../../redux/authSlice";
@@ -33,13 +36,26 @@ const DoctorSignup = () => {
     gender: "",
     specialization: "",
     experience: "",
-    city: "",
-    state: "",
+    address: {
+      street: "",
+      city: "",
+      state: "",
+      pincode: "",
+      country: "",
+    },
   });
   const [file, setFile] = useState(null);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name in formData.address) {
+      setFormData({
+        ...formData,
+        address: { ...formData.address, [name]: value },
+      });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleFileChange = (e) => {
@@ -67,11 +83,14 @@ const DoctorSignup = () => {
       fd.append("specialization", formData.specialization);
 
       fd.append(
-        "location",
+       "address",
         JSON.stringify({
-          city: formData.city,
-          state: formData.state,
-        })
+          street: formData.address.street,
+          city: formData.address.city,
+          state: formData.address.state,
+          pincode: formData.address.pincode,
+          country: formData.address.country,
+        }),
       );
 
       if (file) {
@@ -381,6 +400,7 @@ const DoctorSignup = () => {
           </div>
         </div>
 
+        
         {/* City & State */}
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -399,7 +419,7 @@ const DoctorSignup = () => {
                 id="city"
                 name="city"
                 type="text"
-                value={formData.city}
+                value={formData.address.city}
                 onChange={handleChange}
                 placeholder="Pune"
                 className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
@@ -422,7 +442,7 @@ const DoctorSignup = () => {
                 id="state"
                 name="state"
                 type="text"
-                value={formData.state}
+                value={formData.address.state}
                 onChange={handleChange}
                 placeholder="Maharashtra"
                 className="w-full bg-gray-200 p-2.5 focus:outline-none rounded-r-xl"
@@ -430,6 +450,7 @@ const DoctorSignup = () => {
             </div>
           </div>
         </div>
+        
 
         {/* Submit */}
         <button
